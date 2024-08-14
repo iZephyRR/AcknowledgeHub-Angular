@@ -7,17 +7,19 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { MessageService } from '../message/message.service';
 import { er } from '@fullcalendar/core/internal-common';
+import { CheckAuth } from 'src/app/modules/check-auth';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class AuthService {
   private baseUrl: string;
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
     private router: Router,
-   // private jwtHelper: JwtHelperService,
+    // private jwtHelper: JwtHelperService,
     private message: MessageService
   ) {
     this.baseUrl = "http://localhost:8080/api/v1"
@@ -25,8 +27,8 @@ export class AuthService {
 
   login(credentials: any) {
     return this.http.post<{ jwt_TOKEN: string }>(`${this.baseUrl}/login`, credentials).pipe(
-      catchError(error =>{
-        console.log('error : '+error)
+      catchError(error => {
+        console.log('error : ' + error)
         this.router.navigate(['/auth/login']);
 
         return throwError(error);
@@ -48,6 +50,10 @@ export class AuthService {
     );
   }
 
+  check(): Observable<CheckAuth> {
+    return this.http.get<CheckAuth>(`${this.baseUrl}/check`);
+  }
+  
   logOut(): void {
     if (this.message.comfirmed('Are you sure to log out?')) {
       this.invalidateToken();
