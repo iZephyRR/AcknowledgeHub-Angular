@@ -19,21 +19,25 @@ export class AuthGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> {
-    console.log('Token :b '+this.authService.getToken());
+    console.log('Token :b ' + this.authService.getToken());
     return this.authService.check().pipe(
       map(data => {
-        if (data.status === 'ACTIVATED' && data.role === route.data['role']) {
-          console.log(1);
-          return true;
+        const allowedRoles: string[] = route.data['roles'] || [];
+        if (data.status === 'ACTIVATED') {
+          if (allowedRoles.includes(data.role)) {
+            return true;
+          } else {
+            this.router.navigate(['/notfound']);
+            return false;
+          }
         } else {
-          this.router.navigate(['/notfound']); // Redirect to unauthorized or another page if not allowed
-          console.log(2);
+          this.authService.invalidateToken();
+          this.router.navigate(['/notfound']);
           return false;
         }
       }),
       catchError((error) => {
-        console.log(3);
-        this.router.navigate(['/notfound']); // Redirect to login on error
+        this.router.navigate(['/notfound']);
         return of(false);
       })
     );
