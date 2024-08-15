@@ -1,32 +1,92 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { NodeService } from 'src/app/demo/service/node.service';
+import { TreeNode } from 'primeng/api';
 
 @Component({
-    templateUrl: './formlayoutdemo.component.html'
+  selector: 'app-form-layout-demo',
+  templateUrl: './formlayoutdemo.component.html',
 })
-export class FormLayoutDemoComponent {
+export class FormLayoutDemoComponent implements OnInit {
+  
+  // Properties for form
+  title: string = '';
+  selectedCategory: any;
+  categories = [
+    { label: 'Category 1', value: 'cat1' },
+    { label: 'Category 2', value: 'cat2' }
+  ];
+  target: string = '';
+  scheduleOption: string = 'now';
+  showDatePicker: boolean = false;
+  scheduleDate: Date = new Date();
+  selectedFile: File | null = null;
+  filename?: string;
+  filePreview?: string;
+  fileType?: string;
 
-    selectedState: any = null;
+  // Properties for tree
+  files1: TreeNode[] = [];
+  selectedFiles1: TreeNode[] = [];
+  cols: any[] = [];
 
-    states: any[] = [
-        {name: 'Arizona', code: 'Arizona'},
-        {name: 'California', value: 'California'},
-        {name: 'Florida', code: 'Florida'},
-        {name: 'Ohio', code: 'Ohio'},
-        {name: 'Washington', code: 'Washington'}
+  constructor(private nodeService: NodeService) {}
+
+  ngOnInit() {
+    // Initialize tree data
+    this.nodeService.getFiles().then(files => this.files1 = files);
+
+    this.cols = [
+      { field: 'name', header: 'Name' },
+      { field: 'size', header: 'Size' },
+      { field: 'type', header: 'Type' }
     ];
+  }
 
-    dropdownItems = [
-        { name: 'Option 1', code: 'Option 1' },
-        { name: 'Option 2', code: 'Option 2' },
-        { name: 'Option 3', code: 'Option 3' }
-    ];
+  toggleDatePicker(show: boolean): void {
+    this.showDatePicker = show;
+  }
 
-    cities1: any[] = [];
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    
+    if (file) {
+      this.filename = file.name;
+      this.fileType = file.type;
 
-    cities2: any[] = [];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.filePreview = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
 
-    city1: any = null;
+  triggerFileInput(): void {
+    const fileInput = document.getElementById('pdf-file') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
 
-    city2: any = null;
+  onSubmit(): void {
+    // Handle form submission logic
+    if (this.selectedFile) {
+      // Process the selected file
+      console.log('Form submitted with file:', this.selectedFile);
+    }
+  }
+
+  isImage(): boolean {
+    return this.fileType?.startsWith('image/') ||  false;
+  }
+
+  isVideo(): boolean {
+    return this.fileType?.startsWith('video/') || false;
+  }
+
+  isAudio(): boolean {
+    return this.fileType?.startsWith('audio/') || false;
+  }
 
 }

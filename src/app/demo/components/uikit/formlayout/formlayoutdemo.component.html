@@ -1,107 +1,235 @@
-<div class="grid">
-	<div class="col-12 md:col-6">
-		<div class="card p-fluid">
-			<h5>Vertical</h5>
-			<div class="field">
-				<label htmlFor="name1">Name</label>
-				<input pInputText id="name1" type="text" />
-			</div>
-			<div class="field">
-				<label htmlFor="email1">Email</label>
-				<input pInputText id="email1" type="text" />
-			</div>
-			<div class="field">
-				<label htmlFor="age1">Age</label>
-				<input pInputText id="age1" type="text" />
-			</div>
+<!-- Form Layout -->
+<div class="container">
+	<div class="form-card">
+		<div class="card-header">
+			<h2>Create Announcement</h2>
 		</div>
-		
-		<div class="card p-fluid">
-			<h5>Vertical Grid</h5>
-			<div class="p-formgrid grid">
-				<div class="field col">
-					<label htmlFor="name2">Name</label>
-					<input pInputText id="name2" type="text" />
+		<div class="card-body">
+			<form (ngSubmit)="onSubmit()">
+				<!-- Category Field -->
+				<div class="form-group">
+					<label for="category">Category</label>
+					<p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
+						placeholder="Select a category" required></p-dropdown>
 				</div>
-				<div class="field col">
-					<label htmlFor="email2">Email</label>
-					<input pInputText id="email2" type="text" />
-				</div>
-			</div>
-		</div>
-	</div>
 
-	<div class="col-12 md:col-6">
-		<div class="card p-fluid">
-			<h5>Horizontal</h5>
-			<div class="field grid">
-				<label htmlFor="name3" class="col-12 mb-2 md:col-2 md:mb-0">Name</label>
-				<div class="col-12 md:col-10">
-					<input pInputText id="name3" type="text" />
+				<!-- Title Field -->
+				<div class="form-group">
+					<label for="title">Title</label>
+					<input type="text" id="title" name="title" [(ngModel)]="title" required />
 				</div>
-			</div>
-			<div class="field grid">
-				<label htmlFor="email3" class="col-12 mb-2 md:col-2 md:mb-0">Email</label>
-				<div class="col-12 md:col-10">
-					<input pInputText id="email3" type="text" />
-				</div>
-			</div>
-		</div>
 
-		<div class="card">
-			<h5>Inline</h5>
-			<div class="formgroup-inline">
-				<div class="field">
-					<label htmlFor="firstname1" class="p-sr-only">Firstname</label>
-					<input pInputText id="firstname1" type="text" placeholder="Firstname" />
-				</div>
-				<div class="field">
-					<label htmlFor="lastname1" class="p-sr-only">Lastname</label>
-					<input pInputText id="lastname1" type="text" placeholder="Lastname" />
-				</div>
-				<button pButton label="Submit"></button>
-			</div>
-		</div>
+				<!-- PDF File Upload -->
+				<div class="form-group">
+					<label for="pdf-file">PDF File</label>
+					<p-toolbar>
+						<div class="p-toolbar-group-left flex flex-wrap">
+							<button type="button" pButton label="Open" icon="pi pi-folder-open"
+								class="p-button-secondary mr-2" (click)="fileInput.click()"></button>
+						</div>
+					</p-toolbar>
+					<!-- Hidden file input -->
+					<input type="file" id="media" name="media"
+						accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+						(change)="onFileChange($event)" #fileInput style="display: none;" />
+					<!-- Display the selected file name -->
 
-		<div class="card">
-			<h5>Help Text</h5>
-			<div class="field p-fluid">
-				<label htmlFor="username">Username</label>
-				<input pInputText id="username" type="text" />
-				<small>Enter your username to reset your password.</small>
-			</div>
-		</div>
-	</div>
 
-	<div class="col-12">
-		<div class="card">
-			<h5>Advanced</h5>
-			<div class="p-fluid p-formgrid grid">
-				<div class="field col-12 md:col-6">
-					<label htmlFor="firstname2">Firstname</label>
-					<input pInputText id="firstname2" type="text" />
+					<div *ngIf="filePreview">
+						<p class="mt-3">File selected: {{filename}}</p>
+						<div *ngIf="isImage()">
+							<img [src]="filePreview" alt="Preview" class="img-fluid mt-3">
+						</div>
+						<div *ngIf="isVideo()">
+							<video [src]="filePreview" controls class="mt-3"></video>
+						</div>
+						<div *ngIf="isAudio()">
+							<audio [src]="filePreview" controls class="mt-3"></audio>
+						</div>
+					</div>
 				</div>
-				<div class="field col-12 md:col-6">
-					<label htmlFor="lastname2">Lastname</label>
-					<input pInputText id="lastname2" type="text" />
+
+
+
+
+				<!-- Tree View -->
+				<div class="form-group">
+					<h5>Target</h5>
+					<p-tree [value]="files1" selectionMode="checkbox" [(selection)]="selectedFiles1"></p-tree>
 				</div>
-				<div class="field col-12">
-					<label htmlFor="address">Address</label>
-					<input pInputTextarea id="address" rows="4" />
+
+				<!-- Schedule Options -->
+				<div class="form-group">
+					<label>Schedule:</label>
+					<div class="schedule-options">
+						<div class="form-check-inline">
+							<input class="form-check-input" type="radio" name="schedule" id="schedule-now" value="now"
+								[(ngModel)]="scheduleOption" (change)="toggleDatePicker(false)" required />
+							<label class="form-check-label" for="schedule-now"> Now </label>
+						</div>
+						<div class="form-check-inline">
+							<input class="form-check-input" type="radio" name="schedule" id="schedule-later"
+								value="later" [(ngModel)]="scheduleOption" (change)="toggleDatePicker(true)" required />
+							<label class="form-check-label" for="schedule-later"> Later </label>
+						</div>
+					</div>
 				</div>
-				<div class="field col-12 md:col-6">
-					<label htmlFor="city">City</label>
-					<input pInputText id="city" type="text" />
+
+				<!-- Date Picker (hidden by default) -->
+				<div class="form-group" *ngIf="showDatePicker">
+					<label for="schedule-date">Select Date</label>
+					<p-calendar id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate"
+						required></p-calendar>
 				</div>
-				<div class="field col-12 md:col-3">
-					<label htmlFor="state">State</label>
-					<p-dropdown [options]="dropdownItems" optionLabel="name" [(ngModel)]="selectedState"></p-dropdown>
+
+				<!-- Submit Button -->
+				<div class="form-group">
+					<button pButton pRipple type="submit" label="Submit" icon="pi pi-check"
+						class="btn-primary"></button>
+					<button pButton pRipple type="button" label="Save" icon="pi pi-save" class="btn-success"></button>
+					<button pButton pRipple type="button" label="Cancel" class="btn-secondary"></button>
+					<button pButton pRipple type="button" label="Delete" icon="pi pi-trash" class="btn-danger"></button>
 				</div>
-				<div class="field col-12 md:col-3">
-					<label htmlFor="zip">Zip</label>
-					<input pInputText id="zip" type="text" />
-				</div>
-			</div>
+			</form>
 		</div>
 	</div>
 </div>
+
+<style>
+	video , img {
+		max-width: 100%;
+		height: auto;
+		max-height: 400px;
+		border-radius: 5px;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		margin-top: 10px;
+	}
+
+	/* Container Styles */
+	.container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		padding: 20px;
+	}
+
+	/* Form Card Styles */
+	.form-card {
+		border-radius: 12px;
+		box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+		width: 100%;
+		max-width: 800px;
+		padding: 40px;
+		background-color: #ffffff;
+	}
+
+	/* Card Header Styles */
+	.card-header {
+		padding: 15px;
+		text-align: center;
+	}
+
+	/* Form Group Styles */
+	.form-group {
+		margin-bottom: 20px;
+	}
+
+	input[type="text"],
+	input[type="file"] {
+		width: 100%;
+		padding: 10px;
+		border: 1px solid #ced4da;
+		border-radius: 6px;
+		transition: border-color 0.3s;
+		font-size: 16px;
+	}
+
+	input:focus {
+		border-color: #007bff;
+		outline: none;
+	}
+
+	label {
+		display: block;
+		margin-bottom: 5px;
+		font-weight: bold;
+	}
+
+	/* Button Styles */
+	.btn-primary {
+		background-color: #007bff;
+		color: #ffffff;
+		border: none;
+		border-radius: 6px;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.btn-primary:hover {
+		background-color: #0056b3;
+	}
+
+	.btn-success {
+		background-color: #28a745;
+		color: #ffffff;
+		border: none;
+		border-radius: 6px;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.btn-success:hover {
+		background-color: #218838;
+	}
+
+	.btn-secondary {
+		background-color: #6c757d;
+		color: #ffffff;
+		border: none;
+		border-radius: 6px;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.btn-secondary:hover {
+		background-color: #5a6268;
+	}
+
+	.btn-danger {
+		background-color: #dc3545;
+		color: #ffffff;
+		border: none;
+		border-radius: 6px;
+		padding: 10px 20px;
+		font-size: 16px;
+		cursor: pointer;
+		transition: background-color 0.3s;
+	}
+
+	.btn-danger:hover {
+		background-color: #c82333;
+	}
+
+	/* Flexbox for Schedule Options */
+	.schedule-options {
+		display: flex;
+		align-items: center;
+	}
+
+	.form-check-inline {
+		display: flex;
+		align-items: center;
+		margin-right: 10px;
+	}
+
+	.form-check-input {
+		margin-right: 5px;
+	}
+</style>
