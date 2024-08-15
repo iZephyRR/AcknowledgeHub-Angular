@@ -6,7 +6,6 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { MessageService } from '../message/message.service';
-import { er } from '@fullcalendar/core/internal-common';
 import { CheckAuth } from 'src/app/modules/check-auth';
 
 @Injectable({

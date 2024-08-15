@@ -1,73 +1,143 @@
-import { Component, OnInit } from '@angular/core';
-import { SelectItem } from 'primeng/api';
-import { DataView } from 'primeng/dataview';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { CategoryService } from 'src/app/service/category/category.service';
+import { Category } from 'src/app/service/category/modules/categroy';
+
 
 @Component({
-    templateUrl: './listdemo.component.html'
+  selector: 'app-categories',
+  templateUrl: './listdemo.component.html',
+  providers: [ConfirmationService, MessageService]
 })
 export class ListDemoComponent implements OnInit {
+  categories: Category[] = [];
+  sortedArray: Category[] = [];
+  check: boolean = false;
+  inputVisible: boolean = false;
+  buttonLabel: string = 'Add Category';
+  inputValue: string = '';
+  loading: boolean = false;
+  @ViewChild('editConfirmDialog') editConfirmDialog: any;
+  @ViewChild('deleteConfirmDialog') deleteConfirmDialog: any;
+  constructor(private categoryService: CategoryService, private confirmationService: ConfirmationService, private messageService: MessageService) { }
 
-    products: Product[] = [];
+  add(categoryName: string): void {
+    if (!categoryName.trim()) return; // Prevent empty category names
 
-    sortOptions: SelectItem[] = [];
+    const newCategory: Category = {
+      id: BigInt(0), // Use appropriate default or generated values
+      name: categoryName
+    };
 
-    sortOrder: number = 0;
+    console.log('Category:', newCategory);
+    this.inputVisible = false;
+    this.buttonLabel = 'Add Category';
 
-    sortField: string = '';
+    this.categoryService.createCategory(newCategory).subscribe(
+      data => {
+        this.findAll();
+      },
+      error => {
+        console.error('Error creating category', error);
+      }
+    );
+  }
 
-    sourceCities: any[] = [];
-
-    targetCities: any[] = [];
-
-    orderCities: any[] = [];
-
-    constructor(private productService: ProductService) { }
-
-    ngOnInit() {
-        this.productService.getProducts().then(data => this.products = data);
-
-        this.sourceCities = [
-            { name: 'San Francisco', code: 'SF' },
-            { name: 'London', code: 'LDN' },
-            { name: 'Paris', code: 'PRS' },
-            { name: 'Istanbul', code: 'IST' },
-            { name: 'Berlin', code: 'BRL' },
-            { name: 'Barcelona', code: 'BRC' },
-            { name: 'Rome', code: 'RM' }];
-
-        this.targetCities = [];
-
-        this.orderCities = [
-            { name: 'San Francisco', code: 'SF' },
-            { name: 'London', code: 'LDN' },
-            { name: 'Paris', code: 'PRS' },
-            { name: 'Istanbul', code: 'IST' },
-            { name: 'Berlin', code: 'BRL' },
-            { name: 'Barcelona', code: 'BRC' },
-            { name: 'Rome', code: 'RM' }];
-
-        this.sortOptions = [
-            { label: 'Price High to Low', value: '!price' },
-            { label: 'Price Low to High', value: 'price' }
-        ];
-    }
-
-    onSortChange(event: any) {
-        const value = event.value;
-
-        if (value.indexOf('!') === 0) {
-            this.sortOrder = -1;
-            this.sortField = value.substring(1, value.length);
+  findAll(): void {
+    this.categoryService.getAllCategories().subscribe(
+      data => {
+        if (data !== this.categories) {
+          this.check = true;
+          this.categories = data;
+          this.sortData();
         } else {
-            this.sortOrder = 1;
-            this.sortField = value;
+          this.check = false;
         }
-    }
+      },
+      error => {
+        console.error('Error fetching categories', error);
+      }
+    );
+  }
 
-    onFilter(dv: DataView, event: Event) {
-        dv.filter((event.target as HTMLInputElement).value);
+  sortData(): void {
+    this.sortedArray = [...this.categories].sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  ngOnInit(): void {
+    this.findAll();
+  }
+
+  toggleInput(): void {
+    if (this.inputValue.trim() && this.inputVisible) {
+      this.add(this.inputValue);
+      this.inputValue = '';
+    } else {
+      this.inputVisible = true;
+      this.buttonLabel = 'Submit';
     }
-    
+  }
+  onBlur(): void {
+    if (this.inputValue.trim() === '') {
+      this.inputVisible = false;
+      this.buttonLabel = 'Add Category';
+    }
+  }
+  confirm1(category: Category): void {
+    this.confirmationService.confirm({
+        key: 'confirm1',
+        message: `Are you sure you want to delete the category "${category.name}"?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            this.categoryService.softDeleteCategory(Number(category.id)).subscribe(
+                () => {
+                    this.findAll(); // Refresh the category list
+                    this.messageService.add({severity:'success', summary:'Deleted', detail:`Category "${category.name}" has been deleted.`});
+                },
+                error => {
+                    console.error('Error deleting category', error);
+                    this.messageService.add({severity:'error', summary:'Error', detail:'Failed to delete category.'});
+                }
+            );
+        },
+        reject: () => {
+            this.messageService.add({severity:'info', summary:'Cancelled', detail:`Deletion of category "${category.name}" was cancelled.`});
+        }
+    });
+}
+  
+ 
+  editCategory(category: Category): void {
+    console.log('Edit category called for:', category); // Add this line for debugging
+    this.confirmationService.confirm({
+      key: 'editConfirm',
+      message:` Are you sure you want to edit the category "${category.name}"?`,
+      header: 'Edit Confirmation',
+      icon: 'pi pi-pencil',
+      accept: () => {
+        this.messageService.add({severity:'info', summary:'Edit Confirmed', detail:`Category "${category.name}" will be edited`});
+      },
+      reject: () => {
+        this.messageService.add({severity:'error', summary:'Edit Canceled', detail:`Editing category "${category.name}" was canceled`});
+      }
+    });
+  }
+  
+isValidCategoryName(name: string): boolean {
+  if (!name.trim()) {
+    this.messageService.add({severity:'error', summary:'Validation Error', detail:'Category name cannot be empty.'});
+    return false;
+  }
+
+  const isDuplicate = this.categories.some(category => category.name.toLowerCase() === name.trim().toLowerCase());
+  if (isDuplicate) {
+    this.messageService.add({severity:'error', summary:'Validation Error', detail:'Category name already exists.'});
+    return false;
+  }
+
+  return true;
+}
 }
