@@ -9,7 +9,7 @@ export class SystemService {
 
   spinner = document.getElementById('nb-global-spinner');
 
-  hideSpinner() {
+  hideSpinner() :void{
     if (this.spinner) {
       this.spinner.style.display = 'none';
     }
