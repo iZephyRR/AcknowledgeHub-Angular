@@ -23,6 +23,6 @@ export class AppComponent implements OnInit, AfterViewInit {
       if (spinner) {
         spinner.style.display = 'none';
       }
-    }, 1500);
+    }, 8000); // 3 seconds delay before hiding the spinner
   }
 }
