@@ -22,7 +22,7 @@ export class AuthService {
     // private jwtHelper: JwtHelperService,
     private message: MessageService
   ) {
-    this.baseUrl = "http://localhost:8080/api/v1"
+    this.baseUrl = "http://localhost:8080/api/v1/auth"
   }
 
   login(credentials: any) {
@@ -36,28 +36,22 @@ export class AuthService {
     )
       .subscribe(response => {
         this.session.add('token', response.jwt_TOKEN);
-        //console.log('login response : '+JSON.stringify(response));
         this.router.navigate(['/']);
       })
       ;
   }
 
   invalidateToken(): void {
-    this.http.get<boolean>(`${this.baseUrl}/logout`).pipe(
-      catchError(error => {
-        return throwError(error);
-      })
-    );
+    this.session.clear();
   }
 
   check(): Observable<CheckAuth> {
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`);
   }
-  
+
   logOut(): void {
     if (this.message.comfirmed('Are you sure to log out?')) {
       this.invalidateToken();
-      this.session.clear();
       this.session.restartPage();
     }
   }
