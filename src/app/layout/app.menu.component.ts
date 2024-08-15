@@ -1,6 +1,9 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
+import { AuthService } from '../services/auth/auth.service';
+import { AppComponent } from '../app.component';
+import { Role } from '../modules/check-auth';
 
 @Component({
     selector: 'app-menu',
@@ -10,7 +13,7 @@ export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
 
-    constructor(public layoutService: LayoutService) { }
+    constructor(public layoutService: LayoutService,private authService:AuthService) { }
 
     ngOnInit() {
         this.model = [
@@ -20,32 +23,35 @@ export class AppMenuComponent implements OnInit {
                     { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }
                 ]
             },
-            
+
             {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
-                    
-                    {
-                        label: 'Announcement',
-                        icon: 'pi pi-fw pi-megaphone',
-                        items: [
-                            {
-                                label: 'Create Announcement',
-                                icon: 'pi pi-fw pi-pencil',
-                                routerLink: ['/uikit/formlayout']
-                            },
-                            {
-                                label: 'Announcement List',
-                                icon: 'pi pi-fw pi-list',
-                                routerLink: ['/uikit/media'] 
-                            },
-                        ]
-                    },
+                    ...(this.authService.canActivateFor(['MAIN_HR'])? [
+                        {
+                            label: 'Announcement',
+                            icon: 'pi pi-fw pi-megaphone',
+                            items: [
+                                {
+                                    label: 'Create Announcement',
+                                    icon: 'pi pi-fw pi-pencil',
+                                    routerLink: ['/uikit/formlayout']
+                                },
+                                {
+                                    label: 'Announcement List',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/uikit/media']
+                                },
+                            ]
+                        }
+                    ] : []
+                    )
+                    ,
                     {
                         label: 'Category',
                         icon: 'pi pi-fw pi-tags',
-                        routerLink: ['/uikit/list'] 
+                        routerLink: ['/uikit/list']
                     },
                     {
                         label: 'Reports',
@@ -55,12 +61,10 @@ export class AppMenuComponent implements OnInit {
                     {
                         label: 'Employee List',
                         icon: 'pi pi-fw pi-user',
-                        routerLink: ['/uikit/table'] 
+                        routerLink: ['/uikit/table']
                     },
-                    
+
                 ]
-            
-            
             }
         ];
     }
