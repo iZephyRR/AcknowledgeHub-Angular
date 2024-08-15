@@ -6,7 +6,6 @@ import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { LocalStorageService } from '../local-storage/local-storage.service';
 import { MessageService } from '../message/message.service';
-import { er } from '@fullcalendar/core/internal-common';
 import { CheckAuth } from 'src/app/modules/check-auth';
 
 @Injectable({
@@ -22,7 +21,7 @@ export class AuthService {
     // private jwtHelper: JwtHelperService,
     private message: MessageService
   ) {
-    this.baseUrl = "http://localhost:8080/api/v1"
+    this.baseUrl = "http://localhost:8080/api/v1/auth"
   }
 
   login(credentials: any) {
@@ -30,34 +29,27 @@ export class AuthService {
       catchError(error => {
         console.log('error : ' + error)
         this.router.navigate(['/auth/login']);
-
         return throwError(error);
       })
     )
       .subscribe(response => {
         this.session.add('token', response.jwt_TOKEN);
-        //console.log('login response : '+JSON.stringify(response));
         this.router.navigate(['/']);
       })
       ;
   }
 
   invalidateToken(): void {
-    this.http.get<boolean>(`${this.baseUrl}/logout`).pipe(
-      catchError(error => {
-        return throwError(error);
-      })
-    );
+    this.session.clear();
   }
 
   check(): Observable<CheckAuth> {
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`);
   }
-  
+
   logOut(): void {
     if (this.message.comfirmed('Are you sure to log out?')) {
       this.invalidateToken();
-      this.session.clear();
       this.session.restartPage();
     }
   }

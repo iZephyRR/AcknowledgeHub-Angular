@@ -1,52 +1,118 @@
 <div class="grid p-fluid">
     <div class="col-12">
         <div class="card">
-            <h5>Carousel</h5>
-            <p-carousel [value]="products" [numVisible]="3" [numScroll]="3" [circular]="false" [responsiveOptions]="carouselResponsiveOptions">
+            <h5>Announcement List</h5>
+            <p-carousel [value]="products" [numVisible]="2" [numScroll]="2" [circular]="false" [responsiveOptions]="carouselResponsiveOptions">
                 <ng-template let-product pTemplate="item">
-                        <div class="border-round m-2 text-center p-2" style="border: 1px solid var(--surface-d)">
-                            <div class="my-5">
-                                <img src="assets/demo/images/product/{{product.image}}" [alt]="product.name" class="shadow-4" width="50%"/>
-                            </div>
-                            <div>
-                                <h5 class="mb-1">{{product.name}}</h5>
-                                <h6 class="mt-0 mb-3">${{product.price}}</h6>
-                                <span [class]="'product-badge status-'+product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
-                                <div class="my-5">
-                                    <button pButton pRipple icon="pi pi-search" class="mr-2 p-button-rounded"></button>
-                                    <button pButton pRipple icon="pi pi-star-fill" class="mr-2 p-button-rounded p-button-success"></button>
-                                    <button pButton pRipple icon="pi pi-cog" class="p-button-rounded p-button-info"></button>
-                                </div>
-                            </div>
+                    <div class="product-card">
+                        <img src="assets/demo/images/product/{{product.image}}" [alt]="product.name" class="product-image"/>
+                        <div class="product-details">
+                            <h5 class="product-name">{{product.name}}</h5>
+                            <h6 class="product-price">${{product.price}}</h6>
+                            <span class="product-status status-{{product.inventoryStatus.toLowerCase()}}">{{product.inventoryStatus}}</span>
+                            <button (click)="display=true" pButton icon="pi pi-external-link" label="Show" class="show-button"></button>
                         </div>
+                    </div>
                 </ng-template>
             </p-carousel>
         </div>
     </div>
-
-    <div class="col-12">
-        <div class="card">
-            <h5>Image</h5>
-            <div class="flex justify-content-center">
-                <p-image src="assets/demo/images/galleria/galleria10.jpg" alt="Image" width="250" [preview]="true"></p-image>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12">
-        <div class="card">
-            <h5>Galleria</h5>
-            <p-galleria [value]="images" [responsiveOptions]="galleriaResponsiveOptions"
-                        [containerStyle]="{'max-width': '800px', 'margin':'auto'}" [numVisible]="6" [circular]="true">
-                <ng-template pTemplate="item" let-item>
-                    <img [src]="item.itemImageSrc" style="width: 100%; display: block;"/>
-                </ng-template>
-                <ng-template pTemplate="thumbnail" let-item>
-                    <div class="grid nogutter justify-center">
-                        <img [src]="item.thumbnailImageSrc" style="display: block;"/>
-                    </div>
-                </ng-template>
-            </p-galleria>
-        </div>
-    </div>
 </div>
+
+<style>
+    .card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        border-radius: 8px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+        margin: 10px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        max-width: 200px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .product-details {
+        text-align: center;
+    }
+
+    .product-name {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+
+    .product-price {
+        font-size: 1.3em;
+        color: #007bff;
+        margin-bottom: 15px;
+    }
+
+    .product-status {
+        display: inline-block;
+        padding: 7px 14px;
+        border-radius: 12px;
+        font-size: 1em;
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .status-in-stock {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .status-out-of-stock {
+        background-color: #dc3545;
+        color: #fff;
+    }
+
+    .status-limited-stock {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .show-button {
+        background-color: #007bff;
+        color: #fff;
+        border-radius: 20px;
+        font-size: 1em;
+        padding: 8px 25px;
+    }
+
+    .show-button:hover {
+        background-color: #0056b3;
+    }
+
+    /* Carousel Styles */
+    ::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
+        padding: 20px;
+    }
+
+    ::ng-deep .p-carousel-indicator {
+        background-color: #007bff !important;
+    }
+
+    ::ng-deep .p-carousel-indicator.p-highlight {
+        background-color: #0056b3 !important;
+    }
+</style>
