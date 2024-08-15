@@ -1,0 +1,26 @@
+{
+    "data": [
+    {
+      "id": 1,
+    "name": "Hnin",
+    "email":"h@gmail.com",
+    "role" :" M-HR",
+    "workentrydate" :"2/2/2021",
+    "company":"ACE",
+    "department":"Retail",
+    "status": "activated"
+   
+    },
+    {
+        "id": 2,
+      "name": "Wai",
+      "email":"h@gmail.com",
+      "role" :" M-HR",
+      "workentrydate" :"2/2/2021",
+      "company":"ACE",
+      "department":"Retail",
+      "status": "activated"
+     
+      }
+  ]
+}
