@@ -15,7 +15,7 @@ export class LocalStorageService {
   constructor(private router: Router) {
     try {
       const storedSessions = localStorage.getItem(LocalStorageService.STORAGE_KEY);
-      console.log('storedSession '+JSON.stringify(storedSessions));
+     // console.log('storedSession '+JSON.stringify(storedSessions));
       if (storedSessions) {
         LocalStorageService.sessions = JSON.parse(storedSessions);
       }
