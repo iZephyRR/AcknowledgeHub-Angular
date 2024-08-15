@@ -63,6 +63,7 @@ export class LocalStorageService {
   }
   
   restartPage(): void {
-    this.router.navigate(['/enlighten-net/home'])
+    window.location.reload();
+    this.router.navigate(['/']);
   }
 }
