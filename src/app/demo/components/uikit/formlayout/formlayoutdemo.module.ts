@@ -13,6 +13,10 @@ import { CascadeSelectModule } from "primeng/cascadeselect";
 import { MultiSelectModule } from "primeng/multiselect";
 import { InputTextareaModule } from "primeng/inputtextarea";
 import { InputTextModule } from "primeng/inputtext";
+import { ToolbarModule } from 'primeng/toolbar'; // Import ToolbarModule from PrimeNG
+import { TreeModule } from 'primeng/tree';  // Import TreeModule from PrimeNG
+import { TreeTableModule } from 'primeng/treetable';
+
 
 @NgModule({
 	imports: [
@@ -28,7 +32,10 @@ import { InputTextModule } from "primeng/inputtext";
 		CascadeSelectModule,
 		MultiSelectModule,
 		InputTextareaModule,
-		InputTextModule
+		InputTextModule,
+		ToolbarModule ,
+		TreeTableModule,
+		TreeModule  // Add TreeModule to imports
 	],
 	declarations: [FormLayoutDemoComponent]
 })
