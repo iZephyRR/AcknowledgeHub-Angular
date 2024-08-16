@@ -7,6 +7,7 @@ import { SystemService } from 'src/app/services/system/system.service';
 })
 export class NotfoundComponent implements OnInit{ 
 constructor(private systemService:SystemService){}
+
     ngOnInit(): void {
         this.systemService.hideSpinner();
     }
