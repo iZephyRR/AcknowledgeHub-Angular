@@ -14,9 +14,9 @@ import { AppComponent } from 'src/app/app.component';
   providedIn: 'root'
 })
 
-export class AuthService{
-   baseUrl: string;
-   role:Role;
+export class AuthService {
+  baseUrl: string;
+  role: Role;
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -40,99 +40,115 @@ export class AuthService{
     )
       .subscribe(response => {
         this.session.add('token', response.jwt_TOKEN);
+        console.log('saved token : ' + this.session.get('token'));
         this.router.navigate(['/']);
       })
       ;
   }
 
-  invalidateToken(): void {
+  clearCache(): void {
     this.session.clear();
   }
 
-// async getRole():Promise<Role>{
-//   try{
-//     const data = await firstValueFrom(this.http.get<Role>(`${this.baseUrl}/get-role`));
-//     console.log('Get role : ' + data);
-//     return data;
-//   }catch(error){
-//     console.log('Error getting roles', error);
-//     return null;
-//   }
-  
-// }
+  // async getRole():Promise<Role>{
+  //   try{
+  //     const data = await firstValueFrom(this.http.get<Role>(`${this.baseUrl}/get-role`));
+  //     console.log('Get role : ' + data);
+  //     return data;
+  //   }catch(error){
+  //     console.log('Error getting roles', error);
+  //     return null;
+  //   }
 
-//   async canShow(allowedRoles: Role[]): Promise<boolean> {
-//     try {
-//         const data = await firstValueFrom(this.check(allowedRoles));
-//         console.log('Can show : ' + data);
-//         return data;
-//     } catch (error) {
-//         console.error('Error checking roles', error);
-//         return false;
-//     }
-// }
-canActivateFor(roles:Role[]){
-  return roles.includes(this.role);
-}
-  check(allowedRoles: Role[]): Observable<boolean> {
-    return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
-      map(data => {
-        this.role=data.role;
-        //console.log('Auth data : ' + JSON.stringify(data));
-        //console.log('Allowed Roles for page : ' + JSON.stringify(allowedRoles));
-        switch (data.status) {
-          case 'ACTIVATED':
-            if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
-              this.systemService.hideSpinner();
-              console.log('Auth checked..');
-              return true;
-            } else {
+  // }
+
+  //   async canShow(allowedRoles: Role[]): Promise<boolean> {
+  //     try {
+  //         const data = await firstValueFrom(this.check(allowedRoles));
+  //         console.log('Can show : ' + data);
+  //         return data;
+  //     } catch (error) {
+  //         console.error('Error checking roles', error);
+  //         return false;
+  //     }
+  // }
+  canActivateFor(roles: Role[]) {
+    return roles.includes(this.role);
+  }
+
+  check(allowedRoles: Role[]): Observable<boolean> | boolean {
+    if (this.isLogin()) {
+      return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
+        map(data => {
+          this.role = data.role;
+          console.log('Auth data : ' + JSON.stringify(data));
+          console.log('local role : '+this.role);
+          //console.log('Allowed Roles for page : ' + JSON.stringify(allowedRoles));
+          switch (data.status) {
+            case 'ACTIVATED':
+              if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
+                this.systemService.hideSpinner();
+                console.log('Auth checked..');
+                return true;
+              } else {
                 this.router.navigate(['/notfound']);
-              this.systemService.hideSpinner()
-              console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
+                this.systemService.hideSpinner()
+                console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
+                return false;
+              };
+            case 'DEACTIVATED':
+            case 'DEPARTED':
+              console.log('This account has been deactivated!'); // default message for both case.
+              this.clearCache();
+              this.systemService.hideSpinner();
+              this.router.navigate(['/auth/login']);
               return false;
-            };
-          case 'DEACTIVATED':
-          case 'DEPARTED':
-            console.log('This account has been deactivated!'); // default message for both case.
-            this.invalidateToken();
-            this.systemService.hideSpinner();
+            default:
+              console.log('Session expired.')//show message
+              this.clearCache();
+              this.systemService.hideSpinner();
               this.router.navigate(['/auth/login']);
-            return false;
-          default:
-            console.log('Please login in first..')//show message
-            this.invalidateToken();
-            this.systemService.hideSpinner();
-              this.router.navigate(['/auth/login']);
-            return false;
-        }
-      }),
-      catchError((error) => {
-        this.role=null;
-        this.invalidateToken();
-        this.systemService.hideSpinner();
+              return false;
+          }
+        }),
+        catchError((error) => {
+          if(error.status==403){
+          console.log('Session expired..' + (error.status)); //Show message that session expired..
+          this.systemService.hideSpinner();
+          this.clearCache();
           this.router.navigate(['/auth/login']);
-        return of(false);
-      })
-    );
+          }else{
+            console.log('Internal server error..' + (error.status)); //Need a page to show 500 error..
+            this.systemService.hideSpinner();
+            this.router.navigate(['/notfound']);
+          }
+          return of(false);
+        })
+      );
+    } else {
+      console.log('Session expired.')//show message
+      this.clearCache();
+      this.systemService.hideSpinner();
+      this.router.navigate(['/auth/login']);
+      return false;
+    }
+
   }
 
   logOut(): void {
     if (this.messageService.comfirmed('Are you sure to log out?')) {
-      this.invalidateToken();
+      this.clearCache();
       this.session.restartPage();
     }
   }
 
-  // isLogin(): Observable<boolean> {
-  //   const id:number=this.getUserId();
-  //   return this.http.get<boolean>(`${this.baseUrl}/is-login/${id}`).pipe(
-  //     catchError(error => {
-  //       return throwError(error);
-  //     }
-  //     )
-  //   );
-  // }
+  isLogin(): boolean {
+    if ((this.getToken == null) || (this.getToken == undefined)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
 
   getToken(): string {
