@@ -15,7 +15,7 @@ import { AuthGuard } from './guards/auth.guard';
                     {
                         path: 'uikit',
                         canActivate: [AuthGuard],
-                        data:{roles:['ADMIN','MAIN_HR']},
+                        data:{roles:['MAIN_HR']},//Just for example. Anyone can change.
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
                     { path: 'utilities',
