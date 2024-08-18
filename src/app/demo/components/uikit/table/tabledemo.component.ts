@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Table } from 'primeng/table';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
-import { UserService } from 'src/app/demo/service/user.service';
-import { User } from 'src/app/service/category/modules/user';
+import { User } from 'src/app/modules/user';
+import { UserService } from 'src/app/services/user/user.service';
 
 type Status = 'ACTIVATED' | 'DEACTIVATED' | 'DEPARTED';
 

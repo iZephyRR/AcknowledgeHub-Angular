@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { CategoryService } from 'src/app/service/category/category.service';
-import { Category } from 'src/app/service/category/modules/categroy';
+import { CategoryService } from 'src/app/services/category/category.service';
+import { Category } from 'src/app/modules/categroy';
 
 
 @Component({
