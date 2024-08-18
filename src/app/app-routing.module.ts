@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
+import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
 
 @NgModule({
     imports: [
@@ -30,6 +31,7 @@ import { AuthGuard } from './guards/auth.guard';
             },
             { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
             { path: 'notfound', component: NotfoundComponent },
+            {path:'error',component:ServerErrorComponent},
             { path: '**', redirectTo: '/notfound' },
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })
     ],

@@ -12,6 +12,10 @@ import { RatingModule } from 'primeng/rating';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
+import { MessagesDemoRoutingModule } from '../messages/messagesdemo-routing.module';
+import { MessagesModule } from 'primeng/messages';
+import { MessageModule } from 'primeng/message';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
 	imports: [

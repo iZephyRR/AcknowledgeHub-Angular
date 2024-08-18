@@ -3,10 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/modules/user';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
+
 export class UserService {
     private baseUrl1 = 'http://localhost:8080/api/v1/get-user';
-
 
     getRepresentatives() {
         throw new Error('Method not implemented.');
@@ -27,3 +29,5 @@ export class UserService {
         return this.http.get<User>(`${this.baseUrl1}/${id}`);
       }
 }
+
+
