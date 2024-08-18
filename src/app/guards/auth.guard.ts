@@ -18,7 +18,7 @@ export class AuthGuard implements CanActivate {
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean{
-    console.log('Auth guard passed.');
+    console.log('Auth guard passed.'+this.authService.role);
     return this.authService.check(route.data['roles'] || []);
   }
 }

@@ -25,7 +25,7 @@ import { AppLayoutComponent } from "./app.layout.component";
         AppFooterComponent,
         AppMenuComponent,
         AppSidebarComponent,
-        AppLayoutComponent,
+        AppLayoutComponent
     ],
     imports: [
         BrowserModule,
