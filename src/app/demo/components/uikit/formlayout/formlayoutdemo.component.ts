@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NodeService } from 'src/app/demo/service/node.service';
 import { TreeNode } from 'primeng/api';
+import { Announcement } from 'src/app/modules/announcement';
+import { Category } from 'src/app/service/category/modules/categroy';
+import { AnnouncementTarget } from 'src/app/modules/announcement-target';
 
 @Component({
   selector: 'app-form-layout-demo',
@@ -9,21 +12,18 @@ import { TreeNode } from 'primeng/api';
 export class FormLayoutDemoComponent implements OnInit {
   
   // Properties for form
-  title: string = '';
-  selectedCategory: any;
-  categories = [
-    { label: 'Category 1', value: 'cat1' },
-    { label: 'Category 2', value: 'cat2' }
-  ];
-  target: string = '';
+  announcement : Announcement ;
+  category : Category[] = [];
+  target : AnnouncementTarget;
+
   scheduleOption: string = 'now';
   showDatePicker: boolean = false;
   scheduleDate: Date = new Date();
   selectedFile: File | null = null;
-  filename?: string;
-  filePreview?: string;
-  fileType?: string;
 
+  fileType?: string;
+  filePreview?: string;
+  
   // Properties for tree
   files1: TreeNode[] = [];
   selectedFiles1: TreeNode[] = [];
@@ -51,7 +51,7 @@ export class FormLayoutDemoComponent implements OnInit {
     const file = input.files?.[0];
     
     if (file) {
-      this.filename = file.name;
+      this.announcement.filename = file.name;
       this.fileType = file.type;
 
       const reader = new FileReader();
