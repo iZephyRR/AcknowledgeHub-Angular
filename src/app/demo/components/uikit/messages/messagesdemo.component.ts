@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Message, MessageService } from 'primeng/api';
 
 @Component({
+    selector:'app-message',
     templateUrl: './messagesdemo.component.html',
     providers: [MessageService]
 })

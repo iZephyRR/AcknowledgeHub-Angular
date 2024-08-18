@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MessageService } from 'src/app/services/message/message.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { SystemService } from 'src/app/services/system/system.service';
     templateUrl: './notfound.component.html',
 })
 export class NotfoundComponent implements OnInit{ 
-constructor(private systemService:SystemService,private messageService:MessageService){}
+constructor(private systemService:SystemService,private messageService:MessageDemoService){}
 
     ngOnInit(): void {
         this.systemService.hideSpinner();
