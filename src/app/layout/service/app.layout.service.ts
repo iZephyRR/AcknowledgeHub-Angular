@@ -23,7 +23,8 @@ interface LayoutState {
     providedIn: 'root',
 })
 export class LayoutService {
-    _config: AppConfig = {
+    // Initial configuration setup
+    private _config: AppConfig = {
         ripple: false,
         inputStyle: 'outlined',
         menuMode: 'static',
@@ -32,8 +33,10 @@ export class LayoutService {
         scale: 14,
     };
 
+    // Using Angular's signal to manage reactive state
     config = signal<AppConfig>(this._config);
 
+    // Initial layout state setup
     state: LayoutState = {
         staticMenuDesktopInactive: false,
         overlayMenuActive: false,
@@ -43,15 +46,16 @@ export class LayoutService {
         menuHoverActive: false,
     };
 
+    // Subjects to notify about updates
     private configUpdate = new Subject<AppConfig>();
-
     private overlayOpen = new Subject<any>();
 
+    // Observable streams
     configUpdate$ = this.configUpdate.asObservable();
-
     overlayOpen$ = this.overlayOpen.asObservable();
 
     constructor() {
+        // Using effect to reactively update on config changes
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
@@ -62,13 +66,15 @@ export class LayoutService {
         });
     }
 
-    updateStyle(config: AppConfig) {
+    // Checks if the style needs updating
+    updateStyle(config: AppConfig): boolean {
         return (
             config.theme !== this._config.theme ||
             config.colorScheme !== this._config.colorScheme
         );
     }
 
+    // Toggles menu state based on device type
     onMenuToggle() {
         if (this.isOverlay()) {
             this.state.overlayMenuActive = !this.state.overlayMenuActive;
@@ -90,6 +96,7 @@ export class LayoutService {
         }
     }
 
+    // Toggles profile sidebar visibility
     showProfileSidebar() {
         this.state.profileSidebarVisible = !this.state.profileSidebarVisible;
         if (this.state.profileSidebarVisible) {
@@ -97,62 +104,73 @@ export class LayoutService {
         }
     }
 
+    // Shows the configuration sidebar
     showConfigSidebar() {
         this.state.configSidebarVisible = true;
     }
 
-    isOverlay() {
+    // Checks if the current menu mode is overlay
+    isOverlay(): boolean {
         return this.config().menuMode === 'overlay';
     }
 
-    isDesktop() {
+    // Checks if the current view is desktop
+    isDesktop(): boolean {
         return window.innerWidth > 991;
     }
 
-    isMobile() {
+    // Checks if the current view is mobile
+    isMobile(): boolean {
         return !this.isDesktop();
     }
 
+    // Updates the configuration and notifies listeners
     onConfigUpdate() {
         this._config = { ...this.config() };
         this.configUpdate.next(this.config());
     }
 
+    // Handles theme changes based on configuration
     changeTheme() {
         const config = this.config();
-        const themeLink = <HTMLLinkElement>document.getElementById('theme-css');
-        const themeLinkHref = themeLink.getAttribute('href')!;
+        const themeLink = document.getElementById('theme-css') as HTMLLinkElement;
+        const themeLinkHref = themeLink?.getAttribute('href') ?? '';
         const newHref = themeLinkHref
             .split('/')
             .map((el) =>
-                el == this._config.theme
-                    ? (el = config.theme)
-                    : el == `theme-${this._config.colorScheme}`
-                    ? (el = `theme-${config.colorScheme}`)
+                el === this._config.theme
+                    ? config.theme
+                    : el === `theme-${this._config.colorScheme}`
+                    ? `theme-${config.colorScheme}`
                     : el
             )
             .join('/');
 
-        this.replaceThemeLink(newHref);
+        if (newHref) {
+            this.replaceThemeLink(newHref);
+        }
     }
+
+    // Replaces the theme link in the document
     replaceThemeLink(href: string) {
         const id = 'theme-css';
-        let themeLink = <HTMLLinkElement>document.getElementById(id);
-        const cloneLinkElement = <HTMLLinkElement>themeLink.cloneNode(true);
+        const themeLink = document.getElementById(id) as HTMLLinkElement;
 
-        cloneLinkElement.setAttribute('href', href);
-        cloneLinkElement.setAttribute('id', id + '-clone');
+        if (themeLink) {
+            const cloneLinkElement = themeLink.cloneNode(true) as HTMLLinkElement;
 
-        themeLink.parentNode!.insertBefore(
-            cloneLinkElement,
-            themeLink.nextSibling
-        );
-        cloneLinkElement.addEventListener('load', () => {
-            themeLink.remove();
-            cloneLinkElement.setAttribute('id', id);
-        });
+            cloneLinkElement.setAttribute('href', href);
+            cloneLinkElement.setAttribute('id', id + '-clone');
+
+            themeLink.parentNode?.insertBefore(cloneLinkElement, themeLink.nextSibling);
+            cloneLinkElement.addEventListener('load', () => {
+                themeLink.remove();
+                cloneLinkElement.setAttribute('id', id);
+            });
+        }
     }
 
+    // Changes the font scale of the document
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
