@@ -37,23 +37,54 @@
 }
 
 .layout-topbar-logo {
-    display: flex;
+    display: inline-flex; /* Changed to inline-flex to adjust width to content */
     align-items: center;
     margin: 0;
+    height: 1.5rem; /* Adjust this as needed */
+    padding: 0.25rem 0.5rem; /* Adjust padding for top/bottom and left/right */
+    width: auto; /* Auto width to fit the content */
 }
+
+
+.layout-topbar-logo a {
+    outline: none; /* Remove the outline on focus */
+    text-decoration: none; /* Remove underline if any */
+    box-shadow: none; /* Remove any box-shadow */
+}
+
+.layout-menu-wrapper {
+    position: absolute; /* Position the menu wrapper absolutely */
+    right: 1rem; /* Position it to the right of the topbar */
+    top: 50%;
+    transform: translateY(-50%); /* Center it vertically */
+    display: flex;
+    align-items: center;
+}
+
+.layout-topbar-logo a:focus {
+    outline: none; /* Ensure the outline is removed on focus */
+    box-shadow: none; /* Remove any box-shadow on focus */
+}
+
+.layout-topbar-logo span {
+    font-size: 1.2rem; /* Keep the font size consistent */
+}
+
 
 .layout-menu-button {
     padding: 0.5rem;
-    margin-left: 0;
-    border: none;
-    outline: none;
-    line-height: 1;
+    margin-left: 0; /* Remove all margin to make it as close as possible */
+    border: none; /* Ensure no border adds space */
+    outline: none; /* Remove any outline space */
+    line-height: 1; /* Align the icon and text properly */
 }
+
 
 .layout-topbar-menu {
     display: flex;
     align-items: center;
     margin-left: auto;
+    padding-left: 2rem;
 }
 
 .layout-topbar-button {
@@ -66,14 +97,6 @@
 
 .layout-topbar-button:last-child {
     margin-right: 0;
-}
-
-.layout-topbar-button i {
-    font-size: 1.2rem;
-}
-
-.layout-topbar-button span {
-    font-size: 0.875rem;
 }
 
  </style>
