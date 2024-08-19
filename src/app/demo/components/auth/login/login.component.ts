@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { catchError, throwError } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { LocalStorageService } from 'src/app/services/local-storage/local-storage.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styles: [`
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styles: [`
         :host ::ng-deep .pi-eye,
         :host ::ng-deep .pi-eye-slash {
             transform: scale(1.6);
@@ -21,9 +23,8 @@ import { SystemService } from 'src/app/services/system/system.service';
 })
 export class LoginComponent implements OnInit {
 
-    valCheck: string[] = ['remember'];
-    login: Login = {} as Login;
-    password!: string;
+  login: Login = {} as Login;
+  isValid: boolean = true;
     email: string = '';
     newPassword: string = '';
     confirmPassword: string = '';
@@ -38,24 +39,44 @@ export class LoginComponent implements OnInit {
     otp6: string = '';
     errorMessage: string | null = null;
 
-    constructor(
-        public layoutService: LayoutService,
-        private router: Router,
-        private authService: AuthService,
-        public systemService: SystemService,
-        public messageService: MessageDemoService,
-        private service: MessageService
-    ) { }
+  constructor(
+    public layoutService: LayoutService,
+    private router: Router,
+    private authService: AuthService,
+    public systemService: SystemService,
+    public messageService: MessageDemoService,
+    private session: LocalStorageService
+  ) { }
 
-    ngOnInit(): void {
-        this.systemService.hideSpinner();
-    }
 
-    onSubmit(): void {
-        this.authService.login(this.login);
-    }
+  onSubmit(): void {
+    this.authService.login(this.login).pipe(
+      catchError(error => {
+        if (error.status == 401) {
+          this.messageService.message('error', 'Account deactivated.', 'This account has been deactivated!');
+          this.isValid = true;
+        } else {
+          this.isValid = false;
+        }
+        console.log('error : ' + error)
+        this.router.navigate(['/auth/login']);
+        return throwError(error);
+      })
+    )
+      .subscribe(response => {
+        this.session.add('token', response.jwt_TOKEN);
+        console.log('saved token : ' + this.session.get('token'));
+        this.messageService.toast('success', 'Login success', 'Successfully logged in!');
+        this.router.navigate(['/']);
+        this.isValid = true;
+      });
+  }
 
-    showForgotPasswordDialog() {
+  ngOnInit(): void {
+    this.systemService.hideSpinner();
+
+  }
+   showForgotPasswordDialog() {
         this.displayForgotPasswordDialog = true;
     }
 
@@ -109,3 +130,4 @@ export class LoginComponent implements OnInit {
         }
     }
 }
+   
