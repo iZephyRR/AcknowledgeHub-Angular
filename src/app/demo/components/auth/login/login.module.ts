@@ -8,6 +8,10 @@ import { FormsModule } from '@angular/forms';
 import { PasswordModule } from 'primeng/password';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
+import { ButtonDemoRoutingModule } from '../../uikit/button/buttondemo-routing.module';
+import { RippleModule } from 'primeng/ripple';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { ToggleButtonModule } from 'primeng/togglebutton';
 
 @NgModule({
     imports: [
@@ -17,7 +21,11 @@ import { ToastModule } from 'primeng/toast';
         CheckboxModule,
         InputTextModule,
         FormsModule,
-        PasswordModule
+        PasswordModule,
+		ButtonDemoRoutingModule,
+		RippleModule,
+		SplitButtonModule,
+		ToggleButtonModule
     ],
     declarations: [LoginComponent]
 })
