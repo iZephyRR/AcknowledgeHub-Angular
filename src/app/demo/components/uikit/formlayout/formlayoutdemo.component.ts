@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { NodeService } from 'src/app/demo/service/node.service';
 import { TreeNode } from 'primeng/api';
 import { Announcement } from 'src/app/modules/announcement';
-import { Category } from 'src/app/service/category/modules/categroy';
+
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
+import { Category } from 'src/app/modules/categroy';
 
 @Component({
   selector: 'app-form-layout-demo',
