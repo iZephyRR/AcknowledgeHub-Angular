@@ -1,4 +1,4 @@
-import { OnInit } from '@angular/core';
+import { Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
 import { AuthService } from '../services/auth/auth.service';
@@ -9,13 +9,21 @@ import { Role } from '../modules/check-auth';
     selector: 'app-menu',
     templateUrl: './app.menu.component.html'
 })
-export class AppMenuComponent implements OnInit {
-
+export class AppMenuComponent implements OnInit, OnChanges {
+    @Input() inputData: string;
     model: any[] = [];
 
-    constructor(public layoutService: LayoutService,private authService:AuthService) { }
+    constructor(public layoutService: LayoutService, private authService: AuthService) { }
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.refresh();
+    }
+    ngOnChanges(changes: SimpleChanges): void {
+        if(changes['inputData']){
+            this.refresh();
+        }
+    }
+    private refresh(): void {
         this.model = [
             {
                 label: 'Home',
@@ -28,7 +36,7 @@ export class AppMenuComponent implements OnInit {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
-                    ...(this.authService.canActivateFor(['MAIN_HR'])? [
+                    ...(this.authService.canActivateFor(['MAIN_HR']) ? [
                         {
                             label: 'Announcement',
                             icon: 'pi pi-fw pi-megaphone',

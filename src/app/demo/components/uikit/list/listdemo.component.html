@@ -1,7 +1,6 @@
 <div class="d-flex align-items-center gap-2">
     <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
       placeholder="Category" pTooltip="Enter Category">
-  
     <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
       {{ buttonLabel }}
     </button>

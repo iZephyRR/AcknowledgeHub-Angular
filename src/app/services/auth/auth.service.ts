@@ -4,11 +4,10 @@ import { catchError, firstValueFrom, map, Observable, of, throwError } from 'rxj
 import { Router } from '@angular/router';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { LocalStorageService } from '../local-storage/local-storage.service';
-import { MessageService } from '../message/message.service';
 import { CheckAuth, Role } from 'src/app/modules/check-auth';
 import { SystemService } from '../system/system.service';
 import { Login } from 'src/app/modules/login';
-import { AppComponent } from 'src/app/app.component';
+import { MessageDemoService } from '../message/message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,18 +20,21 @@ export class AuthService {
     private http: HttpClient,
     private session: LocalStorageService,
     private router: Router,
-    // private jwtHelper: JwtHelperService,
-    private messageService: MessageService,
+    private messageService: MessageDemoService,
     private systemService: SystemService
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth"
-    //console.log('role : '+appComponent.role);
   }
 
 
   login(credentials: Login) {
     return this.http.post<{ jwt_TOKEN: string }>(`${this.baseUrl}/login`, credentials).pipe(
       catchError(error => {
+        if(error.status==401){
+this.messageService.message('error','Account deactivated.','This account has been deactivated!');
+        }else{
+//Show invalid email or password in login form.
+        }
         console.log('error : ' + error)
         this.router.navigate(['/auth/login']);
         return throwError(error);
@@ -41,6 +43,7 @@ export class AuthService {
       .subscribe(response => {
         this.session.add('token', response.jwt_TOKEN);
         console.log('saved token : ' + this.session.get('token'));
+        this.messageService.toast('success','Login success','Successfully logged in!');
         this.router.navigate(['/']);
       })
       ;
@@ -49,29 +52,6 @@ export class AuthService {
   clearCache(): void {
     this.session.clear();
   }
-
-  // async getRole():Promise<Role>{
-  //   try{
-  //     const data = await firstValueFrom(this.http.get<Role>(`${this.baseUrl}/get-role`));
-  //     console.log('Get role : ' + data);
-  //     return data;
-  //   }catch(error){
-  //     console.log('Error getting roles', error);
-  //     return null;
-  //   }
-
-  // }
-
-  //   async canShow(allowedRoles: Role[]): Promise<boolean> {
-  //     try {
-  //         const data = await firstValueFrom(this.check(allowedRoles));
-  //         console.log('Can show : ' + data);
-  //         return data;
-  //     } catch (error) {
-  //         console.error('Error checking roles', error);
-  //         return false;
-  //     }
-  // }
   canActivateFor(roles: Role[]) {
     return roles.includes(this.role);
   }
@@ -81,58 +61,47 @@ export class AuthService {
       return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
         map(data => {
           this.role = data.role;
-          console.log('Auth data : ' + JSON.stringify(data));
-          console.log('local role : '+this.role);
-          //console.log('Allowed Roles for page : ' + JSON.stringify(allowedRoles));
-          switch (data.status) {
-            case 'ACTIVATED':
-              if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
-                this.systemService.hideSpinner();
-                console.log('Auth checked..');
-                return true;
-              } else {
-                this.router.navigate(['/notfound']);
-                this.systemService.hideSpinner()
-                console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
-                return false;
-              };
-            case 'DEACTIVATED':
-            case 'DEPARTED':
-              console.log('This account has been deactivated!'); // default message for both case.
-              this.clearCache();
+          console.log('Response data : '+JSON.stringify(data));
+          if(data.status=='ACTIVATED'){
+            if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
               this.systemService.hideSpinner();
-              this.router.navigate(['/auth/login']);
+              console.log('Auth checked..');
+              return true;
+            } else {
+              this.router.navigate(['/notfound']);
+              this.systemService.hideSpinner()
+              console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
               return false;
-            default:
-              console.log('Session expired.')//show message
-              this.clearCache();
-              this.systemService.hideSpinner();
-              this.router.navigate(['/auth/login']);
-              return false;
+            };
+          }else{
+            console.log('This account has been deactivated!');
+            this.messageService.message('error','Account deactivated.','This account has been deactivated!');
+            this.clearCache();
+            this.systemService.hideSpinner();
+            this.router.navigate(['/auth/login']);
+            return false;
           }
         }),
         catchError((error) => {
           if(error.status==403){
-          console.log('Session expired..' + (error.status)); //Show message that session expired..
+          console.log('Session expired..' + (error.status)); 
+          this.messageService.message('error','Session expired.')
           this.systemService.hideSpinner();
           this.clearCache();
           this.router.navigate(['/auth/login']);
           }else{
-            console.log('Internal server error..' + (error.status)); //Need a page to show 500 error..
+            console.log('Internal server error..' + (error.status));
             this.systemService.hideSpinner();
-            this.router.navigate(['/notfound']);
+            this.router.navigate(['/error']);
           }
           return of(false);
         })
       );
     } else {
-      console.log('Session expired.')//show message
-      this.clearCache();
       this.systemService.hideSpinner();
       this.router.navigate(['/auth/login']);
       return false;
     }
-
   }
 
   logOut(): void {
