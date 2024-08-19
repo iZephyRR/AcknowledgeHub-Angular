@@ -1,0 +1,65 @@
+<div class="profile-card">
+    <div class="card-header">
+      <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
+
+    </div>
+    <div class="card-body">
+      <h2>{{ user?.name }}</h2>
+      <p>{{ user?.role }}</p>
+      <p><strong>Email:</strong> {{ user?.email }}</p>
+      <p><strong>Company:</strong> {{ user?.company.name }}</p>
+      <p><strong>Department:</strong> {{ user?.department.name }}</p>
+      
+  </div>
+  <style>.profile-card {
+    width: 350px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .profile-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .card-header {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .profile-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #007bff;
+  }
+  
+  .card-body {
+    text-align: center;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 10px 0;
+  }
+  
+  .role {
+    font-style: italic;
+    color: #007bff;
+    margin-bottom: 15px;
+  }
+  
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
+  
+  p strong {
+    color: #333;
+  }
+  </style>

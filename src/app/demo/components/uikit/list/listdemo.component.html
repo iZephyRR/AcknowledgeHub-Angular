@@ -1,7 +1,6 @@
 <div class="d-flex align-items-center gap-2">
     <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
       placeholder="Category" pTooltip="Enter Category">
-  
     <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
       {{ buttonLabel }}
     </button>
@@ -36,13 +35,11 @@
                   message="Are you sure you want to edit this category?" [style]="{width: '350px'}"
                   acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
                 </p-confirmDialog>
-  
-                <button type="button" (click)="editCategory(category, editConfirmDialog)" pButton pRipple icon="pi pi-pencil" label="Edit" class="p-button-warning p-button-text" style="width:auto;"></button>
+                <button type="button" (click)="editCategory(category)" pButton pRipple icon="pi pi-pencil" label="Edit" class="p-button-warning p-button-text" style="width:auto;"></button>
   
                 <p-confirmDialog #deleteConfirmDialog key="confirm1" [style]="{width: '350px'}"
                   acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
                 </p-confirmDialog>
-  
                 <button type="button" (click)="confirm1(category, deleteConfirmDialog)" pButton icon="pi pi-trash" label="Delete" class="p-button-danger" style="width:auto;"></button>
               </td>
             </tr>

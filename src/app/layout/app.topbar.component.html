@@ -50,6 +50,7 @@
     outline: none; /* Remove the outline on focus */
     text-decoration: none; /* Remove underline if any */
     box-shadow: none; /* Remove any box-shadow */
+
 }
 
 .layout-menu-wrapper {
@@ -66,18 +67,38 @@
     box-shadow: none; /* Remove any box-shadow on focus */
 }
 
+=======
+}
+
+.layout-menu-wrapper {
+    position: absolute; /* Position the menu wrapper absolutely */
+    right: 1rem; /* Position it to the right of the topbar */
+    top: 50%;
+    transform: translateY(-50%); /* Center it vertically */
+    display: flex;
+    align-items: center;
+}
+
+.layout-topbar-logo a:focus {
+    outline: none; /* Ensure the outline is removed on focus */
+    box-shadow: none; /* Remove any box-shadow on focus */
+}
+
+
 .layout-topbar-logo span {
     font-size: 1.2rem; /* Keep the font size consistent */
 }
 
 
 .layout-menu-button {
-    padding: 0.5rem;
-    margin-left: 0; /* Remove all margin to make it as close as possible */
-    border: none; /* Ensure no border adds space */
-    outline: none; /* Remove any outline space */
-    line-height: 1; /* Align the icon and text properly */
+    padding: 0.3rem; /* Reduce padding to make the button smaller */
+    margin-left: -0.3rem; /* Adjust margin to position it better */
+    border: none;
+    outline: none;
+    line-height: 1;
 }
+
+
 
 
 .layout-topbar-menu {
@@ -98,5 +119,11 @@
 .layout-topbar-button:last-child {
     margin-right: 0;
 }
+
+
+.layout-topbar-button span {
+    font-size: 0.875rem;
+}
+
 
  </style>

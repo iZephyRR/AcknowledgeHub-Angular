@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
+import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
 
 @NgModule({
     imports: [
@@ -20,8 +21,8 @@ import { AuthGuard } from './guards/auth.guard';
                     },
                     { path: 'utilities',
                         canActivate:[AuthGuard], loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
-                    { path: 'documentation',
-                        canActivate:[AuthGuard], loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule) },
+                    { path: 'profile',
+                        canActivate:[AuthGuard], loadChildren: () => import('./demo/components/profile/profile.module').then(m => m.ProfileModule) },
                     { path: 'blocks',
                         canActivate:[AuthGuard], loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },
                     { path: 'pages',
@@ -30,6 +31,7 @@ import { AuthGuard } from './guards/auth.guard';
             },
             { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
             { path: 'notfound', component: NotfoundComponent },
+            {path:'error',component:ServerErrorComponent},
             { path: '**', redirectTo: '/notfound' },
         ], { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })
     ],

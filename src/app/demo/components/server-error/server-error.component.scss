@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+.error-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.error-code {
+    font-size: 48px;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+.error-message {
+    font-size: 18px;
+    color: #718096;
+    margin-bottom: 20px;
+}
+
+.sad-face {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    position: relative;
+}
+
+.sad-face::before, .sad-face::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #2d3748;
+    border-radius: 50%;
+    top: 15px;
+}
+
+.sad-face::before {
+    left: 12px;
+}
+
+.sad-face::after {
+    right: 12px;
+}
+
+.sad-face .mouth {
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    border-radius: 50%;
+    border: 3px solid #2d3748;
+    border-top: none;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    transform: rotate(180deg);
+}
