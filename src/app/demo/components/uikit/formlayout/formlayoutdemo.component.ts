@@ -10,7 +10,7 @@ import { Category } from 'src/app/modules/category';
   templateUrl: './formlayoutdemo.component.html',
 })
 export class FormLayoutDemoComponent implements OnInit {
-  
+
   // Properties for form
   announcement : Announcement ;
   category : Category[] = [];
@@ -25,7 +25,7 @@ export class FormLayoutDemoComponent implements OnInit {
 
   fileType?: string;
   filePreview?: string;
-  
+
   // Properties for tree
   files1: TreeNode[] = [];
   selectedFiles1: TreeNode[] = [];
@@ -51,7 +51,7 @@ export class FormLayoutDemoComponent implements OnInit {
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    
+
     if (file) {
       this.announcement.filename = file.name;
       this.fileType = file.type;
