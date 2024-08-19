@@ -1,4 +1,3 @@
-
 <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
     <div class="flex flex-column align-items-center justify-content-center">
         <img src="assets/layout/images/{{layoutService.config().colorScheme === 'light' ? 'logo-dark' : 'logo-white'}}.svg" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0">                
@@ -24,7 +23,7 @@
                             <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
                             <label for="rememberme1">Remember me</label>
                         </div> -->
-                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" routerLink="/forgot" style="color: var(--primary-color)">Forgot password?</a>
+                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)" (click)="showForgotPasswordDialog()">Forgot password?</a>
                     </div>
                     <button pButton pRipple label="Sign In" class="w-full p-3 text-xl"></button>
                 </form>
@@ -32,3 +31,131 @@
         </div>
     </div>
 </div>
+
+<!-- Forgot Password Dialog -->
+<p-dialog header="Forgot Password" [(visible)]="displayForgotPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+    <div class="forgot-password-container">
+        <p>Please enter your email to receive an OTP code.</p>
+        <input type="email" placeholder="Enter your email" [(ngModel)]="email" class="p-inputtext p-component p-filled w-full mb-3">
+        <button pButton type="button" label="Get OTP" (click)="sendOtp()"></button>
+    </div>
+</p-dialog>
+
+<!-- OTP Verification Dialog -->
+<p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+    <div class="otp-container">
+        <p>Your code was sent to you via email</p>
+        <div class="otp-inputs">
+            <input type="number" maxlength="1" [(ngModel)]="otp1" (keyup)="onInputKeyup($event, input2)" #input1 class="no-arrows">
+            <input type="number" maxlength="1" [(ngModel)]="otp2" (keyup)="onInputKeyup($event, input3)" #input2 class="no-arrows">
+            <input type="number" maxlength="1" [(ngModel)]="otp3" (keyup)="onInputKeyup($event, input4)" #input3 class="no-arrows">
+            <input type="number" maxlength="1" [(ngModel)]="otp4" (keyup)="onInputKeyup($event, input5)" #input4 class="no-arrows">
+            <input type="number" maxlength="1" [(ngModel)]="otp5" (keyup)="onInputKeyup($event, input6)" #input5 class="no-arrows">
+            <input type="number" maxlength="1" [(ngModel)]="otp6" (keyup)="onInputKeyup($event, null)" #input6 class="no-arrows">
+        </div>
+        <button pButton type="button" label="Verify" (click)="verifyOtp()"></button>
+        <p class="resend">
+            Didn't receive the code? <a href="#" (click)="resendCode()">Request again</a>
+        </p>
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
+  </p-dialog>
+  
+  <!-- Reset Password Dialog -->
+  <p-dialog header="Reset Password" [(visible)]="displayResetPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+      <div class="reset-password-container">
+          <label for="newPassword" class="block text-900 text-xl font-medium mb-2">New Password</label>
+          <p-password id="newPassword" [(ngModel)]="newPassword" placeholder="Enter new password" styleClass="mb-5 w-full p-3"></p-password>
+  
+          <label for="confirmPassword" class="block text-900 text-xl font-medium mb-2">Confirm Password</label>
+          <p-password id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirm your password" styleClass="mb-5 w-full p-3"></p-password>
+  
+          <button pButton type="button" label="Submit" (click)="resetPassword()"></button>
+      </div>
+  </p-dialog>
+  <style>
+      
+  .no-arrows::-webkit-inner-spin-button,
+  .no-arrows::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  } 
+      .otp-container {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        text-align: center;
+        width: 100%;
+        max-width: 400px;
+      }
+    
+      .otp-container h2 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+    
+      .otp-container p {
+        color: #666;
+        margin-bottom: 30px;
+      }
+    
+      .otp-inputs {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+    
+      .otp-inputs input {
+        width: 45px;
+        height: 45px;
+        font-size: 24px;
+        text-align: center;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        outline: none;
+        background-color: #f9f9f9;
+      }
+    
+      .otp-inputs input:focus {
+        border-color: #007bff;
+        background-color: #fff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+    
+      button {
+        background-color: #007bff;
+        border: none;
+        color: white;
+        padding: 10px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+    
+      button:hover {
+        background-color: #0056b3;
+      }
+    
+      .resend {
+        font-size: 14px;
+        color: #666;
+      }
+    
+      .resend a {
+        color: #007bff;
+        text-decoration: none;
+      }
+    
+      .resend a:hover {
+        text-decoration: underline;
+      }
+    
+      .error-message {
+        color: red;
+        margin-top: 10px;
+      }
+    </style>

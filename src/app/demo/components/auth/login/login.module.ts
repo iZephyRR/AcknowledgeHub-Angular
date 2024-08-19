@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LoginRoutingModule } from './login-routing.module';
 import { LoginComponent } from './login.component';
@@ -12,6 +12,8 @@ import { ButtonDemoRoutingModule } from '../../uikit/button/buttondemo-routing.m
 import { RippleModule } from 'primeng/ripple';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { ToggleButtonModule } from 'primeng/togglebutton';
+import { PanelModule } from 'primeng/panel';
+import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
     imports: [
@@ -26,7 +28,10 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 		RippleModule,
 		SplitButtonModule,
 		ToggleButtonModule
+        PanelModule,
+        DialogModule
     ],
-    declarations: [LoginComponent]
+    declarations: [LoginComponent],
+    schemas: [NO_ERRORS_SCHEMA]  // Add this line if you are not sure about the component schema
 })
 export class LoginModule { }
