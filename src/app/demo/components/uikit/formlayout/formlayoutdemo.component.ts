@@ -2,9 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { NodeService } from 'src/app/demo/service/node.service';
 import { TreeNode } from 'primeng/api';
 import { Announcement } from 'src/app/modules/announcement';
-
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
-import { Category } from 'src/app/modules/categroy';
+import { Category } from 'src/app/modules/category';
 
 @Component({
   selector: 'app-form-layout-demo',
@@ -16,6 +15,8 @@ export class FormLayoutDemoComponent implements OnInit {
   announcement : Announcement ;
   category : Category[] = [];
   target : AnnouncementTarget;
+  title : string = '';
+  selectedCategory : any;
 
   scheduleOption: string = 'now';
   showDatePicker: boolean = false;
