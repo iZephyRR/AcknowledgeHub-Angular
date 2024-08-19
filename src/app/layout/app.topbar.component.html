@@ -50,6 +50,7 @@
     outline: none; /* Remove the outline on focus */
     text-decoration: none; /* Remove underline if any */
     box-shadow: none; /* Remove any box-shadow */
+
 }
 
 .layout-menu-wrapper {
@@ -66,6 +67,24 @@
     box-shadow: none; /* Remove any box-shadow on focus */
 }
 
+=======
+}
+
+.layout-menu-wrapper {
+    position: absolute; /* Position the menu wrapper absolutely */
+    right: 1rem; /* Position it to the right of the topbar */
+    top: 50%;
+    transform: translateY(-50%); /* Center it vertically */
+    display: flex;
+    align-items: center;
+}
+
+.layout-topbar-logo a:focus {
+    outline: none; /* Ensure the outline is removed on focus */
+    box-shadow: none; /* Remove any box-shadow on focus */
+}
+
+
 .layout-topbar-logo span {
     font-size: 1.2rem; /* Keep the font size consistent */
 }
@@ -79,9 +98,7 @@
     line-height: 1;
 }
 
-.layout-menu-button i {
-    font-size: 1rem; /* Reduce the icon size */
-}
+
 
 
 .layout-topbar-menu {
@@ -103,9 +120,6 @@
     margin-right: 0;
 }
 
-.layout-topbar-button i {
-    font-size: 1.2rem;
-}
 
 .layout-topbar-button span {
     font-size: 0.875rem;
