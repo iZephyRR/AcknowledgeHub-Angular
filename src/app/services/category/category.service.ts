@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { Category } from '../../modules/category';
 import { AuthService } from '../auth/auth.service';
+
 
 
 @Injectable({
@@ -16,8 +18,10 @@ export class CategoryService {
     private authService : AuthService
   ) { }
 
-  createCategory(name : string): Observable<Category> {
-    return this.http.post<Category>(`${this.baseUrl}/create-category`, name);
+
+  createCategory(category:Category): Observable<Category> {
+    return this.http.post<Category>(`${this.baseUrl}/create-category`, category);
+
   }
 
   getAllCategories(): Observable<Category[]> {

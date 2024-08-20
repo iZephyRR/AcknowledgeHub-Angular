@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TreeNode } from 'primeng/api';
+
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
 import { Department } from 'src/app/modules/department';
 import { CompanyService } from 'src/app/services/company/company.service';
@@ -11,12 +12,15 @@ import { AnnouncementService } from 'src/app/services/announcement/announcement.
 import { MessageDemoService } from 'src/app/services/message/message.service';
 
 
-
 @Component({
   selector: 'app-form-layout-demo',
   templateUrl: './formlayoutdemo.component.html',
 })
 export class FormLayoutDemoComponent implements OnInit {
+
+
+ 
+
 
   categories: Category[] = [];
   departments: Department[] = [];
@@ -28,12 +32,14 @@ export class FormLayoutDemoComponent implements OnInit {
   scheduleOption: string = 'now';
   showDatePicker: boolean = false;
   scheduleDate: Date = new Date();
+
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   file: File;
   //fileType?: string;
   selectedTargets: TreeNode[] = [];
   treeNodes: any[] = [];
+
 
   constructor(
     private announcementService: AnnouncementService,
@@ -75,6 +81,7 @@ export class FormLayoutDemoComponent implements OnInit {
     this.showDatePicker = show;
   }
 
+
   triggerFileInput(): void {
     const fileInput = document.getElementById('pdf-file') as HTMLInputElement;
     if (fileInput) {
@@ -94,6 +101,7 @@ export class FormLayoutDemoComponent implements OnInit {
     const selectedCompanyIds = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);
+
 
     const targetData = this.selectedTargets
       .filter(target => {

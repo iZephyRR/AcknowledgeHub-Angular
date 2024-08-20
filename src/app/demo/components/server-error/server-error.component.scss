@@ -1,41 +1,73 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    color: #333;
-    text-align: center;
-    padding: 50px;
-}
-.error-container {
-    max-width: 600px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-h1 {
-    font-size: 72px;
     margin: 0;
-    color: #e74c3c;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-h2 {
-    font-size: 24px;
-    margin: 20px 0;
+
+.container {
+    text-align: center;
 }
-p {
+
+.error-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.error-code {
+    font-size: 48px;
+    font-weight: bold;
+    color: #2d3748;
+}
+
+.error-message {
     font-size: 18px;
-    color: #666;
+    color: #718096;
+    margin-bottom: 20px;
 }
-.home-button {
+
+.sad-face {
     display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    position: relative;
 }
-.home-button:hover {
-    background-color: #2980b9;
+
+.sad-face::before, .sad-face::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #2d3748;
+    border-radius: 50%;
+    top: 15px;
+}
+
+.sad-face::before {
+    left: 12px;
+}
+
+.sad-face::after {
+    right: 12px;
+}
+
+.sad-face .mouth {
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    border-radius: 50%;
+    border: 3px solid #2d3748;
+    border-top: none;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    transform: rotate(180deg);
 }

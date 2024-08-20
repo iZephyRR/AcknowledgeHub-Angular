@@ -1,42 +1,41 @@
 .layout-config-button {
-    display: block;
-    position: fixed;
-    width: 3rem;
-    height: 3rem;
-    line-height: 3rem;
-    background: var(--primary-color);
-    color: var(--primary-color-text);
+    width: 2rem;
+    height: 2rem;
+    background: none;
+    color: #A9A9A9;
     text-align: center;
-    top: 50%;
-    right: 0;
-    margin-top: -1.5rem;
-    border-top-left-radius: var(--border-radius);
-    border-bottom-left-radius: var(--border-radius);
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    transition: background-color var(--transition-duration);
-    overflow: hidden;
+    border-radius: 50%;
     cursor: pointer;
-    z-index: 999;
-    box-shadow: -.25rem 0 1rem rgba(0,0,0,.15);
-
-    i {
-        font-size: 2rem;
-        line-height: inherit;
-        transform: rotate(0deg);
-        transition: transform 1s;
-    }
-    
-    &:hover {
-        background: var(--primary-400);
-    }
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, .15);
+    border: none;
+    display: flex; /* Align with other icons */
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 1rem; /* Add consistent spacing */
 }
 
-.layout-config-sidebar {
-    &.p-sidebar {
-        .p-sidebar-content {
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-    }
+.layout-config-button i {
+    font-size: 1.5rem; /* Ensure consistent icon size */
+}
+
+.layout-topbar-menu {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 1rem; /* Consistent gap between icons */
+}
+
+.layout-topbar-button,
+.layout-config-button {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1.5rem;
+    color: #757575;
 }

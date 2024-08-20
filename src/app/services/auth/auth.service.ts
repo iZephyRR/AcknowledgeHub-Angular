@@ -8,7 +8,13 @@ import { CheckAuth, Role } from 'src/app/modules/check-auth';
 import { SystemService } from '../system/system.service';
 import { Login } from 'src/app/modules/login';
 import { MessageDemoService } from '../message/message.service';
+import * as bcrypt from 'bcryptjs';
 
+class Email {
+  subject:string;
+  message:string;
+  address:string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -16,6 +22,7 @@ import { MessageDemoService } from '../message/message.service';
 export class AuthService {
   baseUrl: string;
   role: Role;
+  otp: number;
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -28,25 +35,7 @@ export class AuthService {
 
 
   login(credentials: Login) {
-    return this.http.post<{ jwt_TOKEN: string }>(`${this.baseUrl}/login`, credentials).pipe(
-      catchError(error => {
-        if (error.status == 401) {
-          this.messageService.message('error', 'Account deactivated.', 'This account has been deactivated!');
-        } else {
-          //Show invalid email or password in login form.
-        }
-        console.log('error : ' + error)
-        this.router.navigate(['/auth/login']);
-        return throwError(error);
-      })
-    )
-      .subscribe(response => {
-        this.session.add('token', response.jwt_TOKEN);
-        console.log('saved token : ' + this.session.get('token'));
-        this.messageService.toast('success', 'Login success', 'Successfully logged in!');
-        this.router.navigate(['/']);
-      })
-      ;
+    return this.http.post<{ jwt_TOKEN: string }>(`${this.baseUrl}/login`, credentials);
   }
 
   clearCache(): void {
@@ -58,6 +47,9 @@ export class AuthService {
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     if (this.isLogin()) {
+      // console.log('this.isLogin : '+this.isLogin());
+      // console.log('isLogin : '+((this.getToken() == null) || (this.getToken() == undefined)));
+      // console.log('token: '+this.getToken());
       return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
         map(data => {
           this.role = data.role;
@@ -112,7 +104,8 @@ export class AuthService {
   }
 
   isLogin(): boolean {
-    if ((this.getToken == null) || (this.getToken == undefined)) {
+    //console.log('isLogin : '+((this.getToken == null) || (this.getToken == undefined)))
+    if ((this.getToken() == null) || (this.getToken() == undefined)) {
       return false;
     } else {
       return true;
@@ -140,5 +133,23 @@ export class AuthService {
   getUserId(): string | undefined {
     const decodedToken = this.getDecodedToken();
     return decodedToken ? decodedToken['sub'] : undefined;
+  }
+
+  sendEmail(email:Email):Observable<void>{
+    console.log('Sending email'+JSON.stringify(email));
+    return this.http.post<void>(`${this.baseUrl}/send-email`,email);
+  }
+   
+  //Use this if necessary..
+  // Hash a password
+  hashPassword(password: string): string {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+  }
+
+  // Compare a password with a hashed password
+  comparePassword(password: string, hash: string): boolean {
+    
+    return bcrypt.compareSync(password, hash);
   }
 }

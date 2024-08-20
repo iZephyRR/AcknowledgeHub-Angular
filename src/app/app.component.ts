@@ -12,8 +12,10 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent implements OnInit {
 
 
-  constructor(private primengConfig: PrimeNGConfig,
-    public messageService: MessageDemoService
+  constructor(
+    private primengConfig: PrimeNGConfig,
+    public messageService: MessageDemoService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {

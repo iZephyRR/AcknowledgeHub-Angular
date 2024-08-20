@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { Category } from 'src/app/modules/category';
 import { CategoryService } from 'src/app/services/category/category.service';
+
 import { Category } from 'src/app/modules/category';
 
 
@@ -28,7 +30,7 @@ export class ListDemoComponent implements OnInit {
   add(categoryName: string): void {
     if (!categoryName.trim()) return; // Prevent empty category names
 
-    
+
 
     //console.log('Category:', newCategory);
     this.inputVisible = false;
@@ -73,6 +75,7 @@ export class ListDemoComponent implements OnInit {
 
   toggleInput(): void {
     if (this.inputValue.trim() && this.inputVisible) {
+      console.log('data here : '+this.inputValue);
       this.add(this.inputValue);
       this.inputValue = '';
     } else {

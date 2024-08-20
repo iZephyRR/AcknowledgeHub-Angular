@@ -8,7 +8,7 @@ import { User } from 'src/app/modules/user';
 })
 
 export class UserService {
-    private baseUrl1 = 'http://localhost:8080/api/v1/get-user';
+    private baseUrl = 'http://localhost:8080/api/v1/get-user';
 
     getRepresentatives() {
         throw new Error('Method not implemented.');
@@ -26,7 +26,7 @@ export class UserService {
     }
 
     getUserById(id: number): Observable<User> {
-        return this.http.get<User>(`${this.baseUrl1}/${id}`);
+        return this.http.get<User>(`${this.baseUrl}/${id}`);
       }
 }
 
