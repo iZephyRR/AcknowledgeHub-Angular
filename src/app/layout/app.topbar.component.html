@@ -6,15 +6,20 @@
         <i class="pi pi-bars"></i>
     </button>
 
+
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
         <button class="p-link layout-topbar-button" [routerLink]="'/notifications'">
             <i class="pi pi-bell"></i>
         </button>
+
         <button class="p-link layout-topbar-button">
             <i class="pi pi-calendar"></i>
         </button>
         <button class="p-link layout-topbar-button" [routerLink]="'/profile'">
             <i class="pi pi-user"></i>
+
+
+
         </button>
         <!-- Config Button -->
         <button class="layout-config-button layout-topbar-button p-link" type="button" (click)="onConfigButtonClick()">
@@ -22,6 +27,7 @@
         </button>
     </div>
 </div>
+
 
 <style>
 .layout-topbar {
@@ -91,3 +97,4 @@ body {
 }
 
 </style>
+

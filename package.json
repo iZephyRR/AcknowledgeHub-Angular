@@ -1,4 +1,5 @@
 {
+
     "name": "sakai-ng",
     "version": "17.0.0",
     "license": "MIT",
@@ -55,4 +56,5 @@
         "karma-jasmine-html-reporter": "~2.1.0",
         "typescript": "~5.2.2"
     }
+
 }

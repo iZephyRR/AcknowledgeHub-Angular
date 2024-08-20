@@ -46,6 +46,7 @@
     transition: background-color $transitionDuration;
 }
 
+
 .layout-topbar-button:hover {
     color: var(--text-color);
     background-color: var(--surface-hover);
@@ -73,8 +74,10 @@
     display: none;
     i {
         font-size: 1.25rem;
+
     }
 }
+
 
 .layout-topbar-menu {
     margin-left: auto;
@@ -96,6 +99,7 @@
     .layout-topbar-logo {
         width: auto;
         order: 2;
+
     }
 
     .layout-menu-button {
@@ -144,8 +148,10 @@
         margin-right: .5rem;
     }
 
+
     .layout-topbar-menu .layout-topbar-button span {
         font-weight: medium;
         display: block;
+
     }
 }
