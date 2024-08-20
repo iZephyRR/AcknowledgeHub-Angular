@@ -6,7 +6,8 @@
         <i class="pi pi-bars"></i>
     </button>
 
-    <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
+    <div #topbarmenu class="layout-topbar-menu"
+        [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
         <button class="p-link layout-topbar-button">
             <i class="pi pi-calendar"></i>
             <span>Calendar</span>
@@ -14,7 +15,7 @@
         <button class="p-link layout-topbar-button" [routerLink]="'/profile'">
             <i class="pi pi-user"></i>
             <span>Profile</span>
-            
+
         </button>
         <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
             <i class="pi pi-cog"></i>
@@ -24,41 +25,49 @@
 </div>
 
 
- <style>
- .layout-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 1rem;
-}
+<style>
+    .layout-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 0 1rem;
+    }
 
-.layout-topbar-logo {
-    display: flex;
-    align-items: center;
-    margin: 0;
-}
+    .layout-topbar-logo {
+        display: inline-flex;
+        /* Changed to inline-flex to adjust width to content */
+        align-items: center;
+        margin: 0;
+        padding: 0.25rem 0.5rem;
+        /* Adjust padding for top/bottom and left/right */
+        width: auto;
+        /* Auto width to fit the content */
+    }
 
-.layout-menu-button {
-    padding: 0.5rem;
-    margin-left: 0; /* Remove all margin to make it as close as possible */
-    border: none; /* Ensure no border adds space */
-    outline: none; /* Remove any outline space */
-    line-height: 1; /* Align the icon and text properly */
-}
+    .layout-menu-button {
+        padding: 0.rem;
+        margin-left: 0;
+        /* Remove all margin to make it as close as possible */
+        border: none;
+        /* Ensure no border adds space */
+        outline: none;
+        /* Remove any outline space */
+        line-height: 1;
+        /* Align the icon and text properly */
+    }
 
-.layout-topbar-menu {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-}
+    .layout-topbar-menu {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+    }
 
-.layout-topbar-button {
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
-}
+    .layout-topbar-button {
+        padding: 0.5rem 1rem;
+        margin-right: 0.5rem;
+    }
 
-.layout-topbar-button:last-child {
-    margin-right: 0;
-}
-
- </style>
+    .layout-topbar-button:last-child {
+        margin-right: 0;
+    }
+</style>

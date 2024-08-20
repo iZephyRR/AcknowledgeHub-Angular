@@ -27,7 +27,8 @@
         }
 
         &:focus {
-            @include focused();
+            outline: none;
+            box-shadow: none; /* Ensure any box-shadow is removed */
         }
     }
 
@@ -49,7 +50,8 @@
         }
 
         &:focus {
-            @include focused();
+            outline: none;
+            box-shadow: none; /* Ensure any box-shadow is removed */
         }
 
         i {
@@ -122,7 +124,7 @@
             animation: scalein 0.15s linear;
 
             &.layout-topbar-menu-mobile-active {
-                display: block
+                display: block;
             }
 
             .layout-topbar-button {
