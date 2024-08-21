@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { catchError, empty, map, Observable, of } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
 import { SystemService } from '../services/system/system.service';
-import { Role } from '../modules/check-auth';
 
 @Injectable({
   providedIn: 'root'

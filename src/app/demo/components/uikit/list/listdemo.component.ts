@@ -3,7 +3,6 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { Category } from 'src/app/modules/category';
 import { CategoryService } from 'src/app/services/category/category.service';
 
-import { Category } from 'src/app/modules/category';
 
 
 @Component({
@@ -22,8 +21,8 @@ export class ListDemoComponent implements OnInit {
   @ViewChild('editConfirmDialog') editConfirmDialog: any;
   @ViewChild('deleteConfirmDialog') deleteConfirmDialog: any;
 
-  constructor(private categoryService: CategoryService, 
-    private confirmationService: ConfirmationService, 
+  constructor(private categoryService: CategoryService,
+    private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) { }
 
