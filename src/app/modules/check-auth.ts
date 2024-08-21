@@ -1,5 +1,4 @@
-export type Role='ADMIN'|'MAIN_HR'|'MAIN_HR_ASSISTANCE'|'HR'|'HR_ASSISTANCE'|'STUFF';
-type Status='ACTIVATED'|'DEACTIVATED'|'DEPARTED';
+import { Role, Status } from "../constants";
 
 export interface CheckAuth{
     status:Status;
