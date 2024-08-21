@@ -53,8 +53,8 @@ export class AuthService {
       return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
         map(data => {
           this.role = data.role;
-          console.log('Response data : '+JSON.stringify(data));
-          if(data.status=='ACTIVATED'){
+          console.log('Response data : ' + JSON.stringify(data));
+          if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
               this.systemService.hideSpinner();
               console.log('Auth checked..');
@@ -65,9 +65,9 @@ export class AuthService {
               console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
               return false;
             };
-          }else{
+          } else {
             console.log('This account has been deactivated!');
-            this.messageService.message('error','Account deactivated.','This account has been deactivated!');
+            this.messageService.message('error', 'Account deactivated.', 'This account has been deactivated!');
             this.clearCache();
             this.systemService.hideSpinner();
             this.router.navigate(['/auth/login']);
@@ -75,13 +75,13 @@ export class AuthService {
           }
         }),
         catchError((error) => {
-          if(error.status==403){
-          console.log('Session expired..' + (error.status)); 
-          this.messageService.message('error','Session expired.')
-          this.systemService.hideSpinner();
-          this.clearCache();
-          this.router.navigate(['/auth/login']);
-          }else{
+          if (error.status == 403) {
+            console.log('Session expired..' + (error.status));
+            this.messageService.message('error', 'Session expired.')
+            this.systemService.hideSpinner();
+            this.clearCache();
+            this.router.navigate(['/auth/login']);
+          } else {
             console.log('Internal server error..' + (error.status));
             this.systemService.hideSpinner();
             this.router.navigate(['/error']);

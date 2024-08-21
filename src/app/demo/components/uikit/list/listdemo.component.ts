@@ -4,6 +4,7 @@ import { Category } from 'src/app/modules/category';
 import { CategoryService } from 'src/app/services/category/category.service';
 
 
+
 @Component({
   selector: 'app-categories',
   templateUrl: './listdemo.component.html',
@@ -19,21 +20,22 @@ export class ListDemoComponent implements OnInit {
   loading: boolean = false;
   @ViewChild('editConfirmDialog') editConfirmDialog: any;
   @ViewChild('deleteConfirmDialog') deleteConfirmDialog: any;
-  constructor(private categoryService: CategoryService, private confirmationService: ConfirmationService, private messageService: MessageService) { }
+
+  constructor(private categoryService: CategoryService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
+  ) { }
 
   add(categoryName: string): void {
     if (!categoryName.trim()) return; // Prevent empty category names
 
-    const newCategory: Category = {
-      id: 0, // Use appropriate default or generated values
-      name: categoryName
-    };
 
-    console.log('Category:', newCategory);
+
+    //console.log('Category:', newCategory);
     this.inputVisible = false;
     this.buttonLabel = 'Add Category';
 
-    this.categoryService.createCategory(newCategory).subscribe(
+    this.categoryService.createCategory(categoryName).subscribe(
       data => {
         this.findAll();
       },
@@ -88,57 +90,57 @@ export class ListDemoComponent implements OnInit {
   }
   confirm1(category: Category): void {
     this.confirmationService.confirm({
-        key: 'confirm1',
-        message: `Are you sure you want to delete the category "${category.name}"?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-            this.categoryService.softDeleteCategory(Number(category.id)).subscribe(
-                () => {
-                    this.findAll(); // Refresh the category list
-                    this.messageService.add({severity:'success', summary:'Deleted', detail:`Category "${category.name}" has been deleted.`});
-                },
-                error => {
-                    console.error('Error deleting category', error);
-                    this.messageService.add({severity:'error', summary:'Error', detail:'Failed to delete category.'});
-                }
-            );
-        },
-        reject: () => {
-            this.messageService.add({severity:'info', summary:'Cancelled', detail:`Deletion of category "${category.name}" was cancelled.`});
-        }
+      key: 'confirm1',
+      message: `Are you sure you want to delete the category "${category.name}"?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.categoryService.softDeleteCategory(Number(category.id)).subscribe(
+          () => {
+            this.findAll(); // Refresh the category list
+            this.messageService.add({ severity: 'success', summary: 'Deleted', detail: `Category "${category.name}" has been deleted.` });
+          },
+          error => {
+            console.error('Error deleting category', error);
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to delete category.' });
+          }
+        );
+      },
+      reject: () => {
+        this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: `Deletion of category "${category.name}" was cancelled.` });
+      }
     });
-}
-  
- 
+  }
+
+
   editCategory(category: Category): void {
     console.log('Edit category called for:', category); // Add this line for debugging
     this.confirmationService.confirm({
       key: 'editConfirm',
-      message:` Are you sure you want to edit the category "${category.name}"?`,
+      message: ` Are you sure you want to edit the category "${category.name}"?`,
       header: 'Edit Confirmation',
       icon: 'pi pi-pencil',
       accept: () => {
-        this.messageService.add({severity:'info', summary:'Edit Confirmed', detail:`Category "${category.name}" will be edited`});
+        this.messageService.add({ severity: 'info', summary: 'Edit Confirmed', detail: `Category "${category.name}" will be edited` });
       },
       reject: () => {
-        this.messageService.add({severity:'error', summary:'Edit Canceled', detail:`Editing category "${category.name}" was canceled`});
+        this.messageService.add({ severity: 'error', summary: 'Edit Canceled', detail: `Editing category "${category.name}" was canceled` });
       }
     });
   }
-  
-isValidCategoryName(name: string): boolean {
-  if (!name.trim()) {
-    this.messageService.add({severity:'error', summary:'Validation Error', detail:'Category name cannot be empty.'});
-    return false;
-  }
 
-  const isDuplicate = this.categories.some(category => category.name.toLowerCase() === name.trim().toLowerCase());
-  if (isDuplicate) {
-    this.messageService.add({severity:'error', summary:'Validation Error', detail:'Category name already exists.'});
-    return false;
-  }
+  isValidCategoryName(name: string): boolean {
+    if (!name.trim()) {
+      this.messageService.add({ severity: 'error', summary: 'Validation Error', detail: 'Category name cannot be empty.' });
+      return false;
+    }
 
-  return true;
-}
+    const isDuplicate = this.categories.some(category => category.name.toLowerCase() === name.trim().toLowerCase());
+    if (isDuplicate) {
+      this.messageService.add({ severity: 'error', summary: 'Validation Error', detail: 'Category name already exists.' });
+      return false;
+    }
+
+    return true;
+  }
 }
