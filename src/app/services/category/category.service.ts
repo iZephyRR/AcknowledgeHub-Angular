@@ -12,14 +12,14 @@ import { AuthService } from '../auth/auth.service';
 })
 export class CategoryService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/mr'; 
+  private baseUrl = 'http://localhost:8080/api/v1/mr';
 
   constructor(private http: HttpClient,
     private authService : AuthService
   ) { }
 
 
-  createCategory(category:Category): Observable<Category> {
+  createCategory(category:String): Observable<Category> {
     return this.http.post<Category>(`${this.baseUrl}/create-category`, category);
 
   }
