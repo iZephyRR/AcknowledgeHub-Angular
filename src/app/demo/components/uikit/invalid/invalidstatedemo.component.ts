@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CountryService } from 'src/app/demo/service/country.service';
 
 @Component({
     templateUrl: './invalidstatedemo.component.html'
 })
-export class InvalidStateDemoComponent implements OnInit {
+export class InvalidStateDemoComponent {
 
     countries: any[] = [];
 
@@ -32,21 +31,21 @@ export class InvalidStateDemoComponent implements OnInit {
 
     value10: any;
 
-    constructor(private countryService: CountryService) {
-        this.cities = [
-            { name: 'New York', code: 'NY' },
-            { name: 'Rome', code: 'RM' },
-            { name: 'London', code: 'LDN' },
-            { name: 'Istanbul', code: 'IST' },
-            { name: 'Paris', code: 'PRS' }
-        ];
-    }
+    // constructor(private countryService: CountryService) {
+    //     this.cities = [
+    //         { name: 'New York', code: 'NY' },
+    //         { name: 'Rome', code: 'RM' },
+    //         { name: 'London', code: 'LDN' },
+    //         { name: 'Istanbul', code: 'IST' },
+    //         { name: 'Paris', code: 'PRS' }
+    //     ];
+    // }
 
-    ngOnInit() {
-        this.countryService.getCountries().then(countries => {
-            this.countries = countries;
-        });
-    }
+    // ngOnInit() {
+    //     this.countryService.getCountries().then(countries => {
+    //         this.countries = countries;
+    //     });
+    // }
 
     searchCountry(event: any) {
         // in a real application, make a request to a remote url with the query and return filtered results,
@@ -62,5 +61,5 @@ export class InvalidStateDemoComponent implements OnInit {
 
         this.filteredCountries = filtered;
     }
-    
+
 }
