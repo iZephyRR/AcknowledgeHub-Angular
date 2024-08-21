@@ -7,7 +7,7 @@ export class SystemService {
 
   constructor() { }
 
-  spinner = document.getElementById('nb-global-spinner');
+  private spinner = document.getElementById('nb-global-spinner');
 
   hideSpinner() :void{
     if (this.spinner) {
