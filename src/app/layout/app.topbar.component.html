@@ -6,59 +6,95 @@
         <i class="pi pi-bars"></i>
     </button>
 
+
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
+        <button class="p-link layout-topbar-button" [routerLink]="'/notifications'">
+            <i class="pi pi-bell"></i>
+        </button>
+
         <button class="p-link layout-topbar-button">
             <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
         </button>
         <button class="p-link layout-topbar-button" [routerLink]="'/profile'">
             <i class="pi pi-user"></i>
-            <span>Profile</span>
-            
+
+
+
         </button>
-        <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
+        <!-- Config Button -->
+        <button class="layout-config-button layout-topbar-button p-link" type="button" (click)="onConfigButtonClick()">
             <i class="pi pi-cog"></i>
-            <span>Settings</span>
         </button>
     </div>
 </div>
 
 
- <style>
- .layout-topbar {
+<style>
+.layout-topbar {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 0 1rem;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: var(--surface-card);
+    z-index: 999;
 }
 
 .layout-topbar-logo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     margin: 0;
-}
-
-.layout-menu-button {
-    padding: 0.5rem;
-    margin-left: 0; /* Remove all margin to make it as close as possible */
-    border: none; /* Ensure no border adds space */
-    outline: none; /* Remove any outline space */
-    line-height: 1; /* Align the icon and text properly */
+    height: 1.5rem;
+    padding: 0.25rem 0.5rem;
+    width: auto;
 }
 
 .layout-topbar-menu {
     display: flex;
     align-items: center;
     margin-left: auto;
+    gap: 1.5rem; /* Increase the gap slightly */
 }
 
 .layout-topbar-button {
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 1.5rem; /* Ensure consistent icon size */
+    color: #757575;
 }
 
-.layout-topbar-button:last-child {
-    margin-right: 0;
+.layout-topbar-button i {
+    font-size: inherit; /* Use the inherited font size */
 }
 
- </style>
+.layout-topbar-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+}
+
+.layout-config-button {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-right: 10;
+    color: #757575;
+}
+
+body {
+    padding-top: 5rem;
+}
+
+</style>
+
