@@ -2,8 +2,6 @@ import { Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
 import { AuthService } from '../services/auth/auth.service';
-import { AppComponent } from '../app.component';
-import { Role } from '../modules/check-auth';
 
 @Component({
     selector: 'app-menu',

@@ -27,7 +27,7 @@ import { DialogModule } from 'primeng/dialog';
 		ButtonDemoRoutingModule,
 		RippleModule,
 		SplitButtonModule,
-		ToggleButtonModule
+		ToggleButtonModule,
         PanelModule,
         DialogModule
     ],

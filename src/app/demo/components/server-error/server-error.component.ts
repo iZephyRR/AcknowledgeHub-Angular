@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
   selector: 'app-server-error',
@@ -7,6 +8,9 @@ import { Component } from '@angular/core';
   templateUrl: './server-error.component.html',
   styleUrl: './server-error.component.scss'
 })
-export class ServerErrorComponent {
-
+export class ServerErrorComponent implements OnInit{
+constructor(private systemService:SystemService){}
+ngOnInit(): void {
+    this.systemService.hideSpinner();
+}
 }

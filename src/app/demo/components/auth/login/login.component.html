@@ -8,7 +8,7 @@
                     <div class="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
                     <span *ngIf="isValid">Sign in to continue.</span>
                     <span *ngIf="!isValid" class="p-error">Invalid email or password.</span>
-                    <button (click)="test()"> Test</button>
+                    <!-- <button (click)="test()">Test</button> -->
                 </div>
 
                 <form #loginForm="ngForm" (submit)="onSubmit()">
@@ -23,7 +23,7 @@
                             <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
                             <label for="rememberme1">Remember me</label>
                         </div> -->
-                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)" (click)="showForgotPasswordDialog()">Forgot password?</a>
+                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
                     </div>
                     <button pButton pRipple label="Sign In" class="w-full p-3 text-xl"></button>
                 </form>
@@ -32,34 +32,53 @@
     </div>
 </div>
 
-<!-- Forgot Password Dialog -->
+<!-- Forgot Password Dialog
 <p-dialog header="Forgot Password" [(visible)]="displayForgotPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
     <div class="forgot-password-container">
         <p>Please enter your email to receive an OTP code.</p>
-        <input type="email" placeholder="Enter your email" [(ngModel)]="email" class="p-inputtext p-component p-filled w-full mb-3">
-        <button pButton type="button" label="Get OTP" (click)="sendOtp()"></button>
+        <input type="email" placeholder="Enter your email" [(ngModel)]="login.email" class="p-inputtext p-component p-filled w-full mb-3">
+        <button pButton type="button" label="Get OTP" (click)="sendOtp()" ></button>
     </div>
-</p-dialog>
+</p-dialog> -->
 
 <!-- OTP Verification Dialog -->
 <p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
     <div class="otp-container">
-        <p>Your code was sent to you via email</p>
+        <p>{{otpDialogMessage}}</p>
         <div class="otp-inputs">
-            <input type="number" maxlength="1" [(ngModel)]="otp1" (keyup)="onInputKeyup($event, input2)" #input1 class="no-arrows">
-            <input type="number" maxlength="1" [(ngModel)]="otp2" (keyup)="onInputKeyup($event, input3)" #input2 class="no-arrows">
-            <input type="number" maxlength="1" [(ngModel)]="otp3" (keyup)="onInputKeyup($event, input4)" #input3 class="no-arrows">
-            <input type="number" maxlength="1" [(ngModel)]="otp4" (keyup)="onInputKeyup($event, input5)" #input4 class="no-arrows">
-            <input type="number" maxlength="1" [(ngModel)]="otp5" (keyup)="onInputKeyup($event, input6)" #input5 class="no-arrows">
-            <input type="number" maxlength="1" [(ngModel)]="otp6" (keyup)="onInputKeyup($event, null)" #input6 class="no-arrows">
+          <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp1" (keyup)="onInputKeyup($event, input2)" #input1 
+          class="otp-input no-arrows" style="caret-color: transparent;">
+   <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp2" (keyup)="onInputKeyup($event, input3)" #input2 
+          class="otp-input no-arrows" style="caret-color: transparent;">
+   <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp3" (keyup)="onInputKeyup($event, input4)" #input3 
+          class="otp-input no-arrows" style="caret-color: transparent;">
+   <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp4" (keyup)="onInputKeyup($event, input5)" #input4 
+          class="otp-input no-arrows" style="caret-color: transparent;">
+   <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp5" (keyup)="onInputKeyup($event, input6)" #input5 
+          class="otp-input no-arrows" style="caret-color: transparent;">
+   <input type="text" inputmode="numeric" maxlength="1" 
+          (keypress)="preventNonNumeric($event)" 
+          [(ngModel)]="otp6" (keyup)="onInputKeyup($event, null)" #input6 
+          class="otp-input no-arrows" style="caret-color: transparent;">
         </div>
         <button pButton type="button" label="Verify" (click)="verifyOtp()"></button>
         <p class="resend">
-            Didn't receive the code? <a href="#" (click)="resendCode()">Request again</a>
+            Didn't receive the code? <a (click)="resendCode(name)">Request again</a>
         </p>
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
   </p-dialog>
+  
   
   <!-- Reset Password Dialog -->
   <p-dialog header="Reset Password" [(visible)]="displayResetPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
@@ -69,12 +88,12 @@
   
           <label for="confirmPassword" class="block text-900 text-xl font-medium mb-2">Confirm Password</label>
           <p-password id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirm your password" styleClass="mb-5 w-full p-3"></p-password>
-  
+          <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
           <button pButton type="button" label="Submit" (click)="resetPassword()"></button>
       </div>
   </p-dialog>
+
   <style>
-      
   .no-arrows::-webkit-inner-spin-button,
   .no-arrows::-webkit-outer-spin-button {
     -webkit-appearance: none;

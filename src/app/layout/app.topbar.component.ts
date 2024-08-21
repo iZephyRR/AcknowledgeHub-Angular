@@ -1,8 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { LayoutService } from "./service/app.layout.service";
-import { AuthService } from '../services/auth/auth.service';
-import { Role } from '../modules/check-auth';
 import { AppComponent } from '../app.component';
 
 @Component({
