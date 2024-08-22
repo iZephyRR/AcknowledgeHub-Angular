@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, Input, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { LayoutService } from './service/app.layout.service';
+import { LayoutService } from "./service/app.layout.service";
+import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from '../services/notifications/notification service';
