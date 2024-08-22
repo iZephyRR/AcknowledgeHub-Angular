@@ -1,0 +1,29 @@
+<div *ngFor="let notification of notifications" class="notification">
+    <strong>{{ notification.creator }}</strong> created a new cheatsheet titled <em>{{ notification.cheatsheetTitle }}</em>
+</div>
+
+<style>
+.notification {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    background-color: #f9f9f9; /* Subtle background for contrast */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notification:hover {
+    background-color: #f0f0f0; /* Slightly darker on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add subtle shadow on hover */
+}
+
+@media (max-width: 768px) {
+    .notification {
+        padding: 8px;
+        font-size: 0.9rem; /* Adjust font size on smaller screens */
+    }
+}
+
+
+</style>
+
