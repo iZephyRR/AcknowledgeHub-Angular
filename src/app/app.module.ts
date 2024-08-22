@@ -9,38 +9,51 @@ import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app.component';
 
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
-
 import { AuthGuard } from './guards/auth.guard';
-
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
-import { AppLayoutModule } from './layout/app.layout.module';
+import { AppLayoutModule } from './layout/app.layout.module'; // Ensure this path is correct
 import { AppRoutingModule } from './app-routing.module';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
+import { NotificationModule } from './demo/components/notification/notification.module';
+import { environment } from './demo/enviroments/environment';
+import { WebSocketService } from './services/websocket/web-socket.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NotfoundComponent
+    NotfoundComponent,
+
+     // Declare NotificationComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    AppLayoutModule,
+    AppLayoutModule,  // Import your layout module
     ToastModule,
     MessagesModule,
-    TreeModule
+    TreeModule,
+    MatTreeModule, // Angular Material modules
+    MatCheckboxModule,
+    MatIconModule,
+    MatButtonModule,
+    NotificationModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
+    AngularFirestoreModule // Firestore module
   ],
   providers: [
     { provide: LocationStrategy, useClass: PathLocationStrategy },
     AuthGuard,
     MessageService,
+    WebSocketService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]

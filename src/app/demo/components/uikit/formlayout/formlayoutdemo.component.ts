@@ -10,6 +10,7 @@ import { CategoryService } from 'src/app/services/category/category.service';
 import { NgForm } from '@angular/forms';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
+import { NotificationService } from 'src/app/services/notifications/notification service';
 
 
 @Component({
@@ -19,7 +20,7 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 export class FormLayoutDemoComponent implements OnInit {
 
 
- 
+
 
 
   categories: Category[] = [];
@@ -46,7 +47,8 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private departmentService: DepartmentService,
     private categoryService: CategoryService,
-    private messageService: MessageDemoService
+    private messageService: MessageDemoService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -129,6 +131,7 @@ export class FormLayoutDemoComponent implements OnInit {
 
     this.announcementService.createAnnouncement(formData).subscribe(
       response => {
+        this.notificationService.incrementUnreadCount();
         this.messageService.message("success", "Announcement Created");
         this.resetForm(form);
         this.clearPreview();

@@ -1,100 +1,184 @@
 <div class="layout-topbar">
     <a class="layout-topbar-logo" routerLink="">
-        <span>ACE DataSystem</span>
+      <span>ACE DataSystem</span>
     </a>
-    <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
-        <i class="pi pi-bars"></i>
+    <button
+      #menubutton
+      class="p-link layout-menu-button layout-topbar-button"
+      (click)="layoutService.onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
     </button>
 
+    <div
+      #topbarmenu
+      class="layout-topbar-menu"
+      [ngClass]="{
+        'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
+      }"
+    >
+      <!-- Notification Bell Icon -->
+      <div class="notification-icon" (click)="toggleNotificationDropdown()">
+        <i class="pi pi-bell"></i>
+        <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </div>
 
-    <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
-        <button class="p-link layout-topbar-button" [routerLink]="'/notifications'">
-            <i class="pi pi-bell"></i>
-        </button>
+      <!-- Notification Dropdown -->
+      <div class="notification-dropdown" *ngIf="showNotifications">
+        <div class="notification-header">
+          <h4>Notifications</h4>
+          <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
+        </div>
+        <div class="notification-items">
+          <div
+            class="notification-item"
+            *ngFor="let notification of notifications"
+            (click)="markAsRead(notification)"
+            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
+          >
+            <p class="notification-message">{{ notification.message }}</p>
+            <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>
+          </div>
+        </div>
+      </div>
 
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-calendar"></i>
-        </button>
-        <button class="p-link layout-topbar-button" [routerLink]="'/profile'">
-            <i class="pi pi-user"></i>
+      <button class="p-link layout-topbar-button">
+        <i class="pi pi-calendar"></i>
+      </button>
+      <button class="p-link layout-topbar-button" [routerLink]="'/profile'">
+        <i class="pi pi-user"></i>
+      </button>
 
-
-
-        </button>
-        <!-- Config Button -->
-        <button class="layout-config-button layout-topbar-button p-link" type="button" (click)="onConfigButtonClick()">
-            <i class="pi pi-cog"></i>
-        </button>
+      <!-- Config Button -->
+      <button
+        class="layout-config-button layout-topbar-button p-link"
+        type="button"
+        (click)="onConfigButtonClick()"
+      >
+        <i class="pi pi-cog"></i>
+      </button>
     </div>
-</div>
+  </div>
+
+
+
+
 
 
 <style>
-.layout-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1rem;
-    position: fixed;
+.unread-notification {
+  background-color: #f0f0f0; /* Light background for unread notifications */
+}
+
+.read-notification {
+  background-color: #e0e0e0; /* Different background for read notifications */
+}
+
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  z-index: 1;
+}
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f0f0f0;
+}
+
+.notification-items {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  background-color: #f7f7f7;
+}
+
+.notification-message {
+  font-weight: bold;
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+.notification-timestamp {
+  font-size: 0.75rem;
+  color: gray;
+  white-space: nowrap;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.mark-as-read-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.mark-as-read-button:hover {
+  color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .notification-dropdown {
     width: 100%;
-    top: 0;
-    left: 0;
-    background-color: var(--surface-card);
-    z-index: 999;
-}
+    right: 0;
+  }
 
-.layout-topbar-logo {
-    display: inline-flex;
-    align-items: center;
-    margin: 0;
-    height: 1.5rem;
-    padding: 0.25rem 0.5rem;
-    width: auto;
-}
-
-.layout-topbar-menu {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    gap: 1.5rem; /* Increase the gap slightly */
-}
-
-.layout-topbar-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s;
-    font-size: 1.5rem; /* Ensure consistent icon size */
-    color: #757575;
-}
-
-.layout-topbar-button i {
-    font-size: inherit; /* Use the inherited font size */
-}
-
-.layout-topbar-button:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-}
-
-.layout-config-button {
-    width: 2rem;
-    height: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-right: 10;
-    color: #757575;
+  .layout-topbar-menu {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 
 body {
-    padding-top: 5rem;
+  padding-top: 5rem;
 }
 
-</style>
 
+</style>
