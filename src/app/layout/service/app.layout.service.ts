@@ -95,6 +95,7 @@ export class LayoutService {
             }
         }
     }
+    
 
     // Toggles profile sidebar visibility
     showProfileSidebar() {
@@ -174,4 +175,5 @@ export class LayoutService {
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
+    
 }

@@ -5,20 +5,18 @@ import { MatTreeModule } from '@angular/material/tree';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-
 import { AppComponent } from './app.component';
-
 import { LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AuthGuard } from './guards/auth.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
+import { ProfileModule } from './demo/components/profile/profile.module';
 import { AppLayoutModule } from './layout/app.layout.module'; // Ensure this path is correct
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
@@ -47,14 +45,27 @@ import { WebSocketService } from './services/websocket/web-socket.service';
     MatButtonModule,
     NotificationModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
-    AngularFirestoreModule // Firestore module
+    AngularFirestoreModule, // Firestore module
+    ProfileModule
   ],
   providers: [
-    { provide: LocationStrategy, useClass: PathLocationStrategy },
-    AuthGuard,
-    MessageService,
-    WebSocketService,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+    {
+      provide: LocationStrategy,
+      useClass: PathLocationStrategy },
+      CountryService,
+      EventService,
+      IconService,
+      NodeService,
+      PhotoService,
+      ProductService, 
+      AuthGuard,
+      MessageService,
+      WebSocketService,
+    { 
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true 
+    }
   ],
   bootstrap: [AppComponent]
 })
