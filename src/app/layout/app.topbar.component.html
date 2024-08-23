@@ -13,29 +13,66 @@
 
 <div class="layout-topbar">
     <a class="layout-topbar-logo" routerLink="">
-        <span>ACE DataSystem</span>
+      <span>ACE DataSystem</span>
     </a>
-    <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
-        <i class="pi pi-bars"></i>
+    <button
+      #menubutton
+      class="p-link layout-menu-button layout-topbar-button"
+      (click)="layoutService.onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
     </button>
 
-    <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
-        </button>
-        <button class="p-link layout-topbar-button" (click)="showProfileCard()" >
+    <div
+      #topbarmenu
+      class="layout-topbar-menu"
+      [ngClass]="{
+        'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
+      }"
+    >
+      <!-- Notification Bell Icon -->
+      <div class="notification-icon" (click)="toggleNotificationDropdown()">
+        <i class="pi pi-bell"></i>
+        <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+      </div>
+
+      <!-- Notification Dropdown -->
+      <div class="notification-dropdown" *ngIf="showNotifications">
+        <div class="notification-header">
+          <h4>Notifications</h4>
+          <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
+        </div>
+        <div class="notification-items">
+          <div
+            class="notification-item"
+            *ngFor="let notification of notifications"
+            (click)="markAsRead(notification)"
+            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
+          >
+            <p class="notification-message">{{ notification.message }}</p>
+            <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="p-link layout-topbar-button">
+        <i class="pi pi-calendar"></i>
+     <button class="p-link layout-topbar-button" (click)="showProfileCard()" >
             <i class="pi pi-user"></i>
             <span>Profile</span>
             
         </button>
-        <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
-            <i class="pi pi-cog"></i>
-            <span>Settings</span>
-        </button>
-    </div>
-</div>
 
+      <!-- Config Button -->
+      <button
+        class="layout-config-button layout-topbar-button p-link"
+        type="button"
+        (click)="onConfigButtonClick()"
+      >
+        <i class="pi pi-cog"></i>
+      </button>
+    </div>
+  </div>
 
 
 //to show profile-card from right side
@@ -57,6 +94,34 @@
       <p><strong>Department:</strong> {{ user?.department.name }}</p>
       
   </div>
+<style>
+.unread-notification {
+  background-color: #f0f0f0; /* Light background for unread notifications */
+}
+
+.read-notification {
+  background-color: #e0e0e0; /* Different background for read notifications */
+}
+
+.notification-icon {
+  position: relative;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.25rem;
+  font-size: 0.75rem;
+  z-index: 1;
+}
+
+
   <style>
         .profile-card {
             width: 350px;
@@ -104,46 +169,94 @@
             color: #333;
         }
 
+
+
+.notification-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
   
-  </style>
-
- <!-- <style>
-
-    
- .layout-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 1rem;
 }
 
-.layout-topbar-logo {
-    display: flex;
-    align-items: center;
-    margin: 0;
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  background-color: #f0f0f0;
 }
 
-.layout-menu-button {
-    padding: 0.5rem;
-    margin-left: 0; /* Remove all margin to make it as close as possible */
-    border: none; /* Ensure no border adds space */
-    outline: none; /* Remove any outline space */
-    line-height: 1; /* Align the icon and text properly */
+.notification-items {
+  flex: 1;
+  overflow-y: auto;
 }
 
-.layout-topbar-menu {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
-.layout-topbar-button {
-    padding: 0.5rem 1rem;
-    margin-right: 0.5rem;
+.notification-item:hover {
+  background-color: #f7f7f7;
 }
 
-.layout-topbar-button:last-child {
-    margin-right: 0;
+.notification-message {
+  font-weight: bold;
+  flex-grow: 1;
+  margin-right: 10px;
 }
 
- </style> -->
+.notification-timestamp {
+  font-size: 0.75rem;
+  color: gray;
+  white-space: nowrap;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.mark-as-read-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: #007bff;
+}
+
+.mark-as-read-button:hover {
+  color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .notification-dropdown {
+    width: 100%;
+    right: 0;
+  }
+
+  .layout-topbar-menu {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+body {
+  padding-top: 5rem;
+}
+</style>

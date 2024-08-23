@@ -6,7 +6,6 @@ import { Category, Status } from 'src/app/modules/category';
 import { CategoryService } from 'src/app/services/category/category.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 
-
 @Component({
   selector: 'app-categories',
   templateUrl: './listdemo.component.html',
@@ -20,35 +19,17 @@ export class ListDemoComponent implements OnInit {
   buttonLabel: string = 'Add Category';
   inputValue: string = '';
   loading: boolean = false;
+
   @ViewChild('filter') filter!: ElementRef;
-  constructor(private categoryService: CategoryService, private messagedemoService: MessageDemoService, private messageService: MessageService, private confirmationService: ConfirmationService,) { }
+  @ViewChild('editConfirmDialog') editConfirmDialog: any;
+  @ViewChild('deleteConfirmDialog') deleteConfirmDialog: any;
 
-  // add(categoryName: string): void {
-  //   if (!categoryName.trim()) return; 
-  //   const newCategory: Category = {
-  //     id: 0, 
-  //     name: categoryName,
-  //     status: 'ACTIVE'
-  //   };
-
-  //   console.log('Category:', newCategory);
-  //   this.inputVisible = false;
-  //   this.buttonLabel = 'Add Category';
-
-  //   this.categoryService.createCategory(newCategory).subscribe(
-  //     data => {
-  //       this.findAll();
-  //       this.messageService.add({
-  //         severity: 'success',
-  //         summary: 'Category Added',
-  //         detail: `${categoryName} has been added successfully!`
-  //       });
-  //     },
-  //     error => {
-  //       console.error('Error creating category', error);
-  //     }
-  //   );
-  // }
+  constructor(
+    private categoryService: CategoryService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private messagedemoService: MessageDemoService
+  ) { }
 
   add(categoryName: string): void {
     // Check if the category name is non-empty and trimmed
@@ -77,8 +58,7 @@ export class ListDemoComponent implements OnInit {
      })
      )
      .subscribe();
-
-    console.log('Category:', newCategory);
+    //console.log('Category:', newCategory);
     this.inputVisible = false;
     this.buttonLabel = 'Add Category';
 
@@ -142,7 +122,7 @@ export class ListDemoComponent implements OnInit {
       this.buttonLabel = 'Add Category';
     }
   }
-
+  
   onGlobalFilter(table: Table, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     table.filterGlobal(filterValue, 'contains');
@@ -229,3 +209,4 @@ export class ListDemoComponent implements OnInit {
 
   }
 }
+

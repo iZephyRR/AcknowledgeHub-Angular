@@ -5,10 +5,8 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
 import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
 import { ProfileComponent } from './demo/components/profile/profile.component';
-const routes: Routes = [
-   
-    { path: 'profile', component: ProfileComponent } // Define route for profile
-  ];
+import { NotificationComponent } from './demo/components/notification/notification.component';
+
 @NgModule({
     imports: [
         RouterModule.forRoot([
@@ -20,7 +18,7 @@ const routes: Routes = [
                     {
                         path: 'uikit',
                         canActivate: [AuthGuard],
-                        data:{roles:['MAIN_HR']},//Just for example. Anyone can change.
+                        data:{roles:['MAIN_HR','HR_ASSISTANCE']},//Just for example. Anyone can change.
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
                     { path: 'utilities',
@@ -30,7 +28,8 @@ const routes: Routes = [
                     { path: 'blocks',
                         canActivate:[AuthGuard], loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },
                     { path: 'pages',
-                        canActivate:[AuthGuard], loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) }
+                        canActivate:[AuthGuard], loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
+                        { path: 'notifications', component: NotificationComponent }, // Add this route for notifications
                 ]
             },
             { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },

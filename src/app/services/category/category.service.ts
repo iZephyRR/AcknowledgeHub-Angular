@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Category } from 'src/app/modules/category';
-
+import { Category } from '../../modules/category';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,10 @@ import { Category } from 'src/app/modules/category';
 export class CategoryService {
   private baseUrl = 'http://localhost:8080/api/v1/mr/category'; 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService : AuthService
+  ) { }
+
 
   createCategory(category:Category): Observable<Category> {
     return this.http.post<Category>(`${this.baseUrl}/create`, category);

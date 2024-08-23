@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Product } from 'src/app/demo/api/product';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { ProductService } from 'src/app/demo/service/product.service';
 
 @Component({
     templateUrl: './crud.component.html',
     providers: [MessageService]
 })
-export class CrudComponent implements OnInit {
+export class CrudComponent  {
 
     productDialog: boolean = false;
 
@@ -30,25 +29,25 @@ export class CrudComponent implements OnInit {
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private productService: ProductService, private messageService: MessageService) { }
+    constructor( private messageService: MessageService) { }
 
-    ngOnInit() {
-        this.productService.getProducts().then(data => this.products = data);
+    // ngOnInit() {
+    //     this.productService.getProducts().then(data => this.products = data);
 
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
-        ];
+    //     this.cols = [
+    //         { field: 'product', header: 'Product' },
+    //         { field: 'price', header: 'Price' },
+    //         { field: 'category', header: 'Category' },
+    //         { field: 'rating', header: 'Reviews' },
+    //         { field: 'inventoryStatus', header: 'Status' }
+    //     ];
 
-        this.statuses = [
-            { label: 'INSTOCK', value: 'instock' },
-            { label: 'LOWSTOCK', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
-    }
+    //     this.statuses = [
+    //         { label: 'INSTOCK', value: 'instock' },
+    //         { label: 'LOWSTOCK', value: 'lowstock' },
+    //         { label: 'OUTOFSTOCK', value: 'outofstock' }
+    //     ];
+    // }
 
     openNew() {
         this.product = {};

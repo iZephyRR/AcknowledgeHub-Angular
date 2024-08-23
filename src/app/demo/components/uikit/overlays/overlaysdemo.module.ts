@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { OverlaysDemoComponent } from './overlaysdemo.component';
 import { OverlaysDemoRoutingModule } from './overlaysdemo-routing.module';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
@@ -31,6 +30,5 @@ import { InputTextModule } from 'primeng/inputtext';
 		RippleModule,
 		ConfirmPopupModule
 	],
-	declarations: [OverlaysDemoComponent]
 })
 export class OverlaysDemoModule { }
