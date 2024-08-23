@@ -23,7 +23,7 @@ export class AuthService {
     private messageService: MessageDemoService,
     private systemService: SystemService
   ) {
-    this.baseUrl = "http://localhost:8080/api/v1/auth"
+    this.baseUrl = "http://localhost:8080/api/v1"
   }
 
 

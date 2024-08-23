@@ -8,19 +8,22 @@ import { Category } from 'src/app/modules/category';
   providedIn: 'root'
 })
 export class CategoryService {
-  private baseUrl = 'http://localhost:8080/api/v1/mr'; 
+  private baseUrl = 'http://localhost:8080/api/v1/mr/category'; 
 
   constructor(private http: HttpClient) { }
 
   createCategory(category:Category): Observable<Category> {
-    return this.http.post<Category>(`${this.baseUrl}/create-category`, category);
+    return this.http.post<Category>(`${this.baseUrl}/create`, category);
   }
 
   getAllCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.baseUrl}/get-categories`);
+    return this.http.get<Category[]>(`${this.baseUrl}/get-all`);
   }
 
   softDeleteCategory(id: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/soft-delete/${id}`, {});
+    return this.http.put<void>(`${this.baseUrl}/disable/${id}`, {});
+  }
+  softUndeleteCategory(categoryId: number): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/enable/${categoryId}`, {});
   }
 }

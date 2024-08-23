@@ -13,29 +13,36 @@ type Status = 'ACTIVATED' | 'DEACTIVATED' | 'DEPARTED';
     providers: [UserService, MessageService, ConfirmationService] // Add UserService here
 })
 export class TableDemoComponent implements OnInit {
-    users1: User[] = [];
+    users: User;
     statuses: { label: string; value: Status }[] = [];
     activityValues: number[] = [0, 100];
-    loading: boolean = true;
+    selectedUser?:User;
+    loading: boolean = false;
 
     @ViewChild('filter') filter!: ElementRef;
 
     constructor(private userService: UserService) { }
 
-    ngOnInit() {
-        this.userService.getUsersLarge().then(users => {
-            this.users1 = users;
-            this.loading = false;
-            this.users1.forEach(user => user.workentrydate = new Date(user.workentrydate));
-        });
-
-        this.statuses = [
-            { label: 'Activated', value: 'ACTIVATED' },
-            { label: 'Deactivated', value: 'DEACTIVATED' },
-            { label: 'Departed', value: 'DEPARTED' }
-        ];
-        console.log(this.users1);
-    }
+    ngOnInit(): void {
+        this.retrieveAllUsers();
+      }
+    
+      retrieveAllUsers(): void {
+        this.userService.getAllUsers().subscribe(
+          (data) => {
+            this.users = data;
+            console.log('Users retrieved:', this.users);
+          },
+          (error) => {
+            console.error('Error retrieving users:', error);
+          });
+        }
+        showDetails(user:User){
+          this.selectedUser=user;
+        }
+        closeDetails(){
+          this.selectedUser=null;
+        }
 
     onGlobalFilter(table: Table, event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;

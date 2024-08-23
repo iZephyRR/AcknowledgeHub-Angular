@@ -16,9 +16,10 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
+import { ProfileModule } from './demo/components/profile/profile.module';
 @NgModule({
     declarations: [AppComponent, NotfoundComponent],
-    imports: [AppRoutingModule, AppLayoutModule,ToastModule,MessagesModule
+    imports: [AppRoutingModule, AppLayoutModule,ToastModule,MessagesModule,ProfileModule
 		],
     providers: [
         { provide: LocationStrategy, useClass: PathLocationStrategy },

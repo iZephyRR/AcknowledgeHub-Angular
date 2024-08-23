@@ -15,7 +15,7 @@ export interface User {
     dateofbirth:Date;
     nrc:string;
     role:Role;
-    company:bigint;
+    company:number;
     department:bigint;
     workentrydate:Date;
     staffid:string;

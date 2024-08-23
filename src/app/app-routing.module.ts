@@ -1,10 +1,14 @@
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
 import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
-
+import { ProfileComponent } from './demo/components/profile/profile.component';
+const routes: Routes = [
+   
+    { path: 'profile', component: ProfileComponent } // Define route for profile
+  ];
 @NgModule({
     imports: [
         RouterModule.forRoot([

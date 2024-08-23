@@ -1,65 +1,66 @@
 <div class="d-flex align-items-center gap-2">
-    <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
-      placeholder="Category" pTooltip="Enter Category">
-    <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
-      {{ buttonLabel }}
-    </button>
-  </div>
-  
-  <div class="grid">
-    <div class="col-12">
-      <div class="card">
-        <h5>Category List</h5>
-        <p-table #dt2 [value]="categories" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name']" responsiveLayout="scroll">
-          <ng-template pTemplate="caption">
-            <div class="flex justify-content-between flex-column sm:flex-row">
-              <span class="p-input-icon-left mb-2">
-                <i class="pi pi-search"></i>
-                <input pInputText type="text" #filter (input)="onGlobalFilter(dt2, $event)" placeholder="Search Keyword" class="w-full"/>
-              </span>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="header">
-            <tr>
-              <th style="min-width: 4rem">No</th>
-              <th style="min-width: 12rem">Name<p-columnFilter type="text" field="name" display="menu" placeholder="Search by name"></p-columnFilter></th>
-              <th style="min-width: 8rem">Actions</th>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="body" let-category let-i="rowIndex">
-            <tr>
-              <td>{{i + 1}}</td>
-              <td>{{category.name}}</td>
-              <td>
-                <p-confirmDialog #editConfirmDialog header="Edit Confirmation" key="editConfirm" icon="pi pi-pencil"
-                  message="Are you sure you want to edit this category?" [style]="{width: '350px'}"
-                  acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
-                </p-confirmDialog>
-                <button type="button" (click)="editCategory(category)" pButton pRipple icon="pi pi-pencil" label="Edit" class="p-button-warning p-button-text" style="width:auto;"></button>
-  
-                <p-confirmDialog #deleteConfirmDialog key="confirm1" [style]="{width: '350px'}"
-                  acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text">
-                </p-confirmDialog>
-                <button type="button" (click)="confirm1(category, deleteConfirmDialog)" pButton icon="pi pi-trash" label="Delete" class="p-button-danger" style="width:auto;"></button>
-              </td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="emptymessage">
-            <tr>
-              <td colspan="3">No categories found.</td>
-            </tr>
-          </ng-template>
-          <ng-template pTemplate="loadingbody">
-            <tr>
-              <td colspan="3">Loading category data. Please wait.</td>
-            </tr>
-          </ng-template>
-        </p-table>
-      </div>
+  <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
+    placeholder="Category" pTooltip="Enter Category">
+  <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
+    {{ buttonLabel }}
+  </button>
+</div>
+
+<div class="grid">
+  <div class="col-12">
+    <div class="card">
+      <h5>Category List</h5>
+      <p-confirmDialog></p-confirmDialog>
+      <p-table #dt2 [value]="categories" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
+        styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name']" responsiveLayout="scroll">
+        <ng-template pTemplate="caption">
+          <div class="flex justify-content-between flex-column sm:flex-row">
+            <span class="p-input-icon-left mb-2">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" #filter (input)="onGlobalFilter(dt2, $event)" placeholder="Search Keyword"
+                class="w-full" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="min-width: 4rem">No</th>
+            <th style="min-width: 12rem">Name<p-columnFilter type="text" field="name" display="menu"
+                placeholder="Search by name"></p-columnFilter></th>
+            <th style="min-width: 8rem">Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-category let-i="rowIndex">
+          <tr>
+            <td>{{i + 1}}</td>
+            <td>{{category.name}}</td>
+            <td>
+              <button type="button" (click)="delete(category.id,category.status)" pButton
+                [icon]="category.status === 'SOFT_DELETE' ? 'pi pi-check' : 'pi pi-trash'"
+                [label]="category.status === 'SOFT_DELETE' ? 'Enable' : 'Disable'"
+                [class.p-button-success]="category.status === 'SOFT_DELETE'"
+                [class.p-button-danger]="category.status !== 'SOFT_DELETE'" style="width:auto;"></button>
+            </td>
+          </tr>
+        </ng-template>
+        
+        
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="3">No categories found.</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="loadingbody">
+          <tr>
+            <td colspan="3">Loading category data. Please wait.</td>
+          </tr>
+        </ng-template>
+      </p-table>
     </div>
   </div>
-  
-  
+</div>
+
+
 
 
 <style>

@@ -89,6 +89,7 @@ export class LayoutService {
             }
         }
     }
+    
 
     showProfileSidebar() {
         this.state.profileSidebarVisible = !this.state.profileSidebarVisible;
@@ -156,4 +157,5 @@ export class LayoutService {
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
+    
 }

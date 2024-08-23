@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth/auth.service';
     templateUrl: './app.sidebar.component.html'
 })
 export class AppSidebarComponent {
+    
     constructor(public layoutService: LayoutService, public el: ElementRef,public authService:AuthService) { }
 }
 
