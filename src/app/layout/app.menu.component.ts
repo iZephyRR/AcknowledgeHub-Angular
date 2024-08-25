@@ -1,3 +1,4 @@
+
 import { Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
@@ -34,10 +35,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
-
-  
                     ...(this.authService.canActivateFor(['MAIN_HR','MAIN_HR_ASSISTANCE','HR','HR_ASSISTANCE']) ? [
-
                         {
                             label: 'Announcement',
                             icon: 'pi pi-fw pi-megaphone',
@@ -56,8 +54,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/uikit/charts']
-                                },
-
+                                }
                             ]
                         }
                     ] : []

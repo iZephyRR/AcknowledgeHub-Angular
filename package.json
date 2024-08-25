@@ -68,6 +68,8 @@
 
         "chart.js": "^3.9.1",
 
+        "firebase": "^10.13.0",
+
         "global": "^4.4.0",
 
         "jwt-decode": "^4.0.0",
@@ -83,6 +85,8 @@
         "quill": "^2.0.2",
 
         "rxjs": "~7.8.1",
+
+        "sakai-ng": "file:",
 
         "sockjs-client": "^1.6.1",
 

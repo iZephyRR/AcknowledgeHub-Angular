@@ -13,13 +13,11 @@ import { AppLayoutModule } from './layout/app.layout.module'; // Ensure this pat
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
-
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
-//import { NotificationModule } from './demo/components/notification/notification.module';
+import { LoadingComponent } from './demo/components/uikit/loading/loading.component';';
 import { environment } from './demo/enviroments/environment';
-//import { WebSocketService } from './services/websocket/web-socket.service';
 
 @NgModule({
   declarations: [
@@ -36,6 +34,7 @@ import { environment } from './demo/enviroments/environment';
     ToastModule,
     MessagesModule,
     TreeModule,
+    LoadingComponent,
     MatTreeModule, // Angular Material modules
     MatCheckboxModule,
     MatIconModule,

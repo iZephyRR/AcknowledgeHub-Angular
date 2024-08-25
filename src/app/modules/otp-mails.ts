@@ -3,9 +3,19 @@ import { Email } from "./email";
 export class OTPMail {
 
     private static _otp: number;
+    private static _action: 'FIRST_LOGIN' | 'FORGOT_PASSWORD';
+    //private static _email:string;
 
     static get otp(): number {
         return OTPMail._otp;
+    }
+
+    static get action(): 'FIRST_LOGIN' | 'FORGOT_PASSWORD' {
+        return OTPMail._action;
+    }
+
+    static set action(action) {
+        OTPMail._action = action;
     }
 
     private static configOTP() {
@@ -22,10 +32,11 @@ export class OTPMail {
     }
 
     static forgotPassword(address: string, name: string): Email {
+        OTPMail.configOTP();
         return {
             address: address,
             subject: 'Acknowledge-Hub: Reset Your Password',
-            message: 'Dear ' + name + ',\n\nWe received a request to reset your password for Acknowledge-Hub.\n\nTo reset your password, please use the One-Time Password (OTP) below:\n\nOTP: '+OTPMail.otp+'\n(Valid for 10 minutes)\n\nAfter entering the OTP, you’ll be prompted to create a new password.\n\nIf you did not request this change, please contact IT Support immediately.\n\nThank you for using Acknowledge-Hub.\n\nBest regards,\nThe Acknowledge-Hub Team\nace@123.ai'
+            message: 'Dear ' + name + ',\n\nWe received a request to reset your password for Acknowledge-Hub.\n\nTo reset your password, please use the One-Time Password (OTP) below:\n\nOTP: ' + OTPMail.otp + '\n(Valid for 5 minutes)\n\nAfter entering the OTP, you’ll be prompted to create a new password.\n\nIf you did not request this change, please contact IT Support immediately.\n\nThank you for using Acknowledge-Hub.\n\nBest regards,\nThe Acknowledge-Hub Team\nace@123.ai'
         };
     }
 

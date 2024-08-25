@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit, signal, Signal } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -11,19 +11,27 @@ import { Router } from '@angular/router';
 import { Login } from 'src/app/modules/login';
 
 @Injectable({
-
-  export class AuthService {
-    private _baseUrl: string;
-    private _role: Role;
   providedIn: 'root'
 })
 
 export class AuthService {
   private _baseUrl: string;
-  private _role: Role;
-
+  private _role :Role;
   private _companyId: number;
-
+  private static readonly ALLOWED_DOMAINS: Set<string> = new Set<string>([
+    "@gmail.com",
+    "@yahoo.com",
+    "@outlook.com",
+    "@hotmail.com",
+    "@aol.com",
+    "@icloud.com",
+    "@protonmail.com",
+    "@yandex.com",
+    "@mail.com",
+    "@zoho.com",
+    "@aceinspiration.com"
+  ]);
+  
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -33,20 +41,10 @@ export class AuthService {
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
-    constructor(
-      private http: HttpClient,
-      private session: LocalStorageService,
-      private router: Router,
-      private messageService: MessageDemoService,
-      private systemService: SystemService
-    ) {
-      this.baseUrl = "http://localhost:8080/api/v1/auth";
-    }
-
-    private set role(role: Role) {
-      this._role = role;
-    }
-
+   
+ private set role(role: Role) {
+    this._role = role;
+  }
     get role(): Role {
       return this._role;
     }
@@ -54,7 +52,6 @@ export class AuthService {
   get companyId() : number{
     return this._companyId;
   }
-
   get baseUrl(): string {
     return this._baseUrl;
   }
@@ -86,7 +83,7 @@ export class AuthService {
   } 
   
   login(credentials: Login) {
-    return this.http.post<{ login_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
+    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
 
 
@@ -99,12 +96,7 @@ export class AuthService {
       return roles.includes(this.role);
     }
 
-    // Other methods remain unchanged
-
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
-    // console.log('this.isLogin : '+this.isLogin());
-    // console.log('isLogin : '+((this.getToken() == null) || (this.getToken() == undefined)));
-    // console.log('token: '+this.getToken());
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
       map(data => {
         if (this.isLogin()) {
@@ -113,12 +105,11 @@ export class AuthService {
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
-              this.systemService.hideSpinner();
-              console.log('Auth checked..');
+              this.systemService.hideLoading();
               return true;
             } else {
               this.router.navigate(['/']);
-              this.systemService.hideSpinner()
+              this.systemService.hideLoading();
               this.messageService.toast('warn', 'Invalid rout', 'You cannot access this rout.')
               console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
               return false;
@@ -127,12 +118,12 @@ export class AuthService {
             console.log('This account has been deactivated!');
             this.messageService.toast('error', 'Account deactivation.', 'This account has been deactivated!');
             this.session.clear();
-            this.systemService.hideSpinner();
+            this.systemService.hideLoading();
             this.router.navigate(['/auth/login']);
             return false;
           }
         } else {
-          this.systemService.hideSpinner();
+          this.systemService.hideLoading();
           this.router.navigate(['/auth/login']);
           return false;
         }
@@ -141,12 +132,12 @@ export class AuthService {
         if (error.status == 403) {
           console.log('Session expired..' + (error.status));
           this.messageService.message('error', 'Session expired.')
-          this.systemService.hideSpinner();
+          this.systemService.hideLoading();
           this.session.clear();
           this.router.navigate(['/auth/login']);
         } else {
           console.log('Internal server error..' + (error.status));
-          this.systemService.hideSpinner();
+          this.systemService.hideLoading();
           this.router.navigate(['/error']);
         }
         return of(false);
@@ -154,12 +145,23 @@ export class AuthService {
     );
   }
 
-  changePassword(password:string,id:string):Observable<void>{
-    return this.http.put<void>(`${this.baseUrl}/change-password`,{password:password,id:id});
+  changePassword(password:string,email:string):Observable<void>{
+    return this.http.put<void>(`${this.baseUrl}/change-password`,{password:password,email:email});
   }
 
-  logOut(): void {
-    if (this.messageService.comfirmed('Are you sure to log out?')) {
+  isExistEmail(email:string):Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/check-email`);
+  }
+  findNameByEmail(email:string){
+    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`,email);
+  }
+  isPasswordDefault(email:string){
+    return this.http.post<{ boolean_RESPONSE: boolean}>(`${this.baseUrl}/is-password-default`,email);
+  }
+  
+ async logOut(): Promise<void> {
+    if (await this.messageService.confirmed('Logout Confimation','Are you sure to log out?','Yes', 'No', 'WHITE', 'BLACK')) {
+      this.messageService.toast('info', 'Logged out.');
       this.session.clear();
       this.session.restartPage();
     }
@@ -172,5 +174,9 @@ export class AuthService {
     } else {
       return true;
     }
+  }
+  
+   static isDomainAvailable(domain: string): boolean {
+    return Array.from(this.ALLOWED_DOMAINS).some(allowedDomain => domain.endsWith(allowedDomain));
   }
 }

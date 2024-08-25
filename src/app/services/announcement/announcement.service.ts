@@ -21,7 +21,7 @@ export class AnnouncementService {
       'CONTENT_TYPE' : 'application/json',
       'Authorization':  `Bearer ${token}`
     });
-    return this.http.post<Announcement>(`${this.baseUrl}/create`, announcement , {headers});
+    return this.http.post<void>(`${this.baseUrl}/create`, announcement , {headers});
   }
 
   // Fetch announcements for August to October 2024

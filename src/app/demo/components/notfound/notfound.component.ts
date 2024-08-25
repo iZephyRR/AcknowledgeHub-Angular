@@ -10,7 +10,7 @@ export class NotfoundComponent implements OnInit{
 constructor(private systemService:SystemService,private messageService:MessageDemoService){}
 
     ngOnInit(): void {
-        this.systemService.hideSpinner();
+        this.systemService.hideLoading();
         //this.messageService.sentWindowNotification('Hi there!',{body:'ur welcome from not found page!'});
     }
 }
