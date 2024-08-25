@@ -11,6 +11,10 @@ import { Router } from '@angular/router';
 import { Login } from 'src/app/modules/login';
 
 @Injectable({
+
+  export class AuthService {
+    private _baseUrl: string;
+    private _role: Role;
   providedIn: 'root'
 })
 
@@ -29,14 +33,23 @@ export class AuthService {
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
+    constructor(
+      private http: HttpClient,
+      private session: LocalStorageService,
+      private router: Router,
+      private messageService: MessageDemoService,
+      private systemService: SystemService
+    ) {
+      this.baseUrl = "http://localhost:8080/api/v1/auth";
+    }
 
-  private set role(role: Role) {
-    this._role = role;
-  }
+    private set role(role: Role) {
+      this._role = role;
+    }
 
-  get role(): Role {
-    return this._role;
-  }
+    get role(): Role {
+      return this._role;
+    }
 
   get companyId() : number{
     return this._companyId;
@@ -46,41 +59,47 @@ export class AuthService {
     return this._baseUrl;
   }
 
-  private set baseUrl(baseUrl: string) {
-    this._baseUrl = baseUrl;
-  }
-
-  get token(): string {
-    return this.session.get('token');
-  }
-
-  get decodedToken(): JwtPayload | null {
-    const token = this.token;
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        return decodedToken;
-      } catch (error) {
-        return null;
-      }
+    private set baseUrl(baseUrl: string) {
+      this._baseUrl = baseUrl;
     }
-    return null;
-  }
+
+    get token(): string {
+      return this.session.get('token');
+    }
+
+    get decodedToken(): JwtPayload | null {
+      const token = this.token;
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          return decodedToken;
+        } catch (error) {
+          return null;
+        }
+      }
+      return null;
+    }
 
   get userId(): string | undefined {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
-  }
-
-  
+  } 
   
   login(credentials: Login) {
     return this.http.post<{ login_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
 
-  canActivateFor(roles: Role[]) {
-    return roles.includes(this.role);
-  }
+
+    login(credentials: Login) {
+      return this.http.post<{ login_RESPONSE: string, role: Role }>(`${this.baseUrl}/login`, credentials)
+
+    }
+
+    canActivateFor(roles: Role[]) {
+      return roles.includes(this.role);
+    }
+
+    // Other methods remain unchanged
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     // console.log('this.isLogin : '+this.isLogin());

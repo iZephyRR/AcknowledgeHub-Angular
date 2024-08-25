@@ -9,6 +9,9 @@ import { Email } from 'src/app/modules/email';
   providedIn: 'root'
 })
 export class MessageDemoService {
+  confirmed(arg0: string) {
+      throw new Error('Method not implemented.');
+  }
 
   msgs: Message[] = [];
   constructor(
@@ -88,13 +91,13 @@ export class MessageDemoService {
   toast(type: MessageType, summary: string, detail?: string) {
     this.service.add({ key: 'tst', severity: type, summary: summary, detail: detail });
   }
-  
+
   message(type: MessageType, summary: string, detail?: string): void {
     this.msgs = [];
     this.msgs.push({ severity: type, summary: summary, detail: detail });
   }
 
-  
+
   sendEmail(email:Email):Observable<void>{
     console.log('Sending email'+JSON.stringify(email));
     return this.http.post<void>(`http://localhost:8080/api/v1/auth/send-email`,email);
