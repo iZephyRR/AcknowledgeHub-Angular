@@ -38,47 +38,47 @@
         <input type="email" placeholder="Enter your email" [(ngModel)]="email" class="p-inputtext p-component p-filled w-full mb-3">
         <button pButton type="button" label="Get OTP" [disabled]="email==''" (click)="sendPasswordChangeOTP()"></button>
     </div>
+
+</p-dialog> -->
+<!-- OTP Verification Dialog -->
+<p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+  <div class="otp-container">
+      <p>{{otpDialogMessage}}</p>
+      <div class="otp-inputs">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp1" (input)="onInput($event, input2)" (keydown)="onInputKeydown($event, input1, null)" #input1 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp2" (input)="onInput($event, input3)" (keydown)="onInputKeydown($event, input2, input1)" #input2 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp3" (input)="onInput($event, input4)" (keydown)="onInputKeydown($event, input3, input2)" #input3 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp4" (input)="onInput($event, input5)" (keydown)="onInputKeydown($event, input4, input3)" #input4 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp5" (input)="onInput($event, input6)" (keydown)="onInputKeydown($event, input5, input4)" #input5 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+          <input type="text" inputmode="numeric" maxlength="1" 
+                 (keypress)="preventNonNumeric($event)" 
+                 [(ngModel)]="otp6" (input)="onInput($event, null)" (keydown)="onInputKeydown($event, input6, input5)" #input6 
+                 class="otp-input no-arrows" style="caret-color: transparent;">
+      </div>
+      <button pButton type="button" label="Verify" [disabled]="!canClickOTP()" (click)="verifyOtp()"></button>
+      <p class="resend">
+         Didn't receive the code? <a (click)="resendCode(name)" style="cursor: pointer;">Request again</a>
+      </p>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  </div>
 </p-dialog>
 
-<!-- OTP Verification Dialog -->
-<p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
-    <div class="otp-container">
-        <p>{{otpDialogMessage}}</p>
-        <div class="otp-inputs">
-          <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp1" (keyup)="onInputKeyup($event, input2)" #input1 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-   <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp2" (keyup)="onInputKeyup($event, input3)" #input2 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-   <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp3" (keyup)="onInputKeyup($event, input4)" #input3 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-   <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp4" (keyup)="onInputKeyup($event, input5)" #input4 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-   <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp5" (keyup)="onInputKeyup($event, input6)" #input5 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-   <input type="text" inputmode="numeric" maxlength="1" 
-          (keypress)="preventNonNumeric($event)" 
-          [(ngModel)]="otp6" (keyup)="onInputKeyup($event, null)" #input6 
-          class="otp-input no-arrows" style="caret-color: transparent;">
-        </div>
-        <button pButton type="button" label="Verify" [disabled]="!canClickOTP()" (click)="verifyOtp()"></button>
-        <p class="resend">
-            Didn't receive the code? <a (click)="resendCode(name)" style="cursor: pointer;">Request again</a>
-        </p>
-        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
-    </div>
-  </p-dialog>
-  
-  
+
   <!-- Reset Password Dialog -->
   <p-dialog header="Reset Password" [(visible)]="displayResetPasswordDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
       <div class="reset-password-container">
@@ -97,6 +97,13 @@
     -webkit-appearance: none;
     margin: 0;
   } 
+  /* Hide the caret for all input fields with class 'otp-input' */
+.otp-input {
+  caret-color: transparent;
+  /* Optionally, you can also disable selection for a cleaner look */
+  user-select: none;
+}
+
       .otp-container {
         background-color: #ffffff;
         border-radius: 10px;

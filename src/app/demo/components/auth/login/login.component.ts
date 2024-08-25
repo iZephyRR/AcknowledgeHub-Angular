@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
 import { OTPMail } from 'src/app/modules/otp-mails';
@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit {
   isFirstTime: boolean = false;
   forgotPasswordMessage = '';
   name: string = '';
+  id: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
   displayForgotPasswordDialog: boolean = false;
@@ -52,9 +53,14 @@ export class LoginComponent implements OnInit {
     public messageService: MessageDemoService,
     private session: LocalStorageService
   ) { }
+  
   canClickOTP(): boolean {
     this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
     return (this.combinedOTP.length > 5);
+  }
+
+  showOTPDialog() {
+    this.displayOtpDialog = true;
   }
 
   hideOTPDialog(): void {
@@ -64,18 +70,30 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.systemService.hideLoading();
   }
-
-  onInputKeyup(event: KeyboardEvent, nextInput: HTMLInputElement | null): void {
+  
+  onInput(event: Event, nextInput: HTMLInputElement | null) {
     const input = event.target as HTMLInputElement;
+
+    // Move to the next input if the current input has a value
+    if (input.value && nextInput) {
+        nextInput.focus();
+    }
+}
+
+onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: HTMLInputElement | null) {
     const key = event.key;
 
-    if (key === 'Backspace' && input.value === '') {
-      const prevInput = input.previousElementSibling as HTMLInputElement;
-      if (prevInput) {
-        prevInput.focus();
-      }
-    } else if (input.value && nextInput) {
-      nextInput.focus();
+    if (key === 'Backspace') {
+        if (currentInput.value === '') {
+            // Move to the previous input if the current input is empty and backspace is pressed
+            if (prevInput) {
+                prevInput.focus();
+            }
+        } else {
+            // Clear the current input and keep focus on it
+            currentInput.value = '';
+            event.preventDefault(); // Prevent the cursor from moving backward
+        }
     }
   }
 
@@ -138,10 +156,6 @@ export class LoginComponent implements OnInit {
       console.log('required.')
       this.isValid = false;
     }
-  }
-
-  showOTPDialog(): void {
-    this.displayOtpDialog = true;
   }
 
   verifyOtp(): void {
@@ -268,7 +282,6 @@ export class LoginComponent implements OnInit {
   hideForgotPasswordDialog() {
     this.displayForgotPasswordDialog = false;
   }
-
   resetPassword(): void {
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';

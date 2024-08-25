@@ -18,14 +18,6 @@ export class OTPMail {
         OTPMail._action = action;
     }
 
-    // static get email():string{
-    //     return OTPMail._email;
-    // }
-
-    // static set email(email){
-    //     this._email=email;
-    // }
-
     private static configOTP() {
         OTPMail._otp = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
     }

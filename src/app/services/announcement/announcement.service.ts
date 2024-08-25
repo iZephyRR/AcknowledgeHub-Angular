@@ -9,17 +9,17 @@ import { Announcement } from 'src/app/modules/announcement';
 })
 export class AnnouncementService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/announcement'; 
+  private baseUrl = 'http://localhost:8080/api/v1/announcement';
 
   constructor(private http : HttpClient,
     private authService : AuthService
   ) { }
 
-  createAnnouncement (announcement : FormData) : Observable<void> {
+  createAnnouncement (announcement : FormData) : Observable<Announcement> {
     const token  = this.authService.token;
     const headers = new HttpHeaders({
       'CONTENT_TYPE' : 'application/json',
-      'Authorization':  `Bearer ${token}` 
+      'Authorization':  `Bearer ${token}`
     });
     return this.http.post<void>(`${this.baseUrl}/create`, announcement , {headers});
   }

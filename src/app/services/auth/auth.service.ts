@@ -17,6 +17,7 @@ import { Login } from 'src/app/modules/login';
 export class AuthService {
   private _baseUrl: string;
   private _role :Role;
+  private _companyId: number;
   private static readonly ALLOWED_DOMAINS: Set<string> = new Set<string>([
     "@gmail.com",
     "@yahoo.com",
@@ -40,57 +41,67 @@ export class AuthService {
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
-
+   
  private set role(role: Role) {
     this._role = role;
   }
+    get role(): Role {
+      return this._role;
+    }
 
-  get role(): Role {
-    return this._role;
+  get companyId() : number{
+    return this._companyId;
   }
   get baseUrl(): string {
     return this._baseUrl;
   }
 
-  private set baseUrl(baseUrl: string) {
-    this._baseUrl = baseUrl;
-  }
-
-  get token(): string {
-    return this.session.get('token');
-  }
-
-  get decodedToken(): JwtPayload | null {
-    const token = this.token;
-    if (token) {
-      try {
-        const decodedToken = jwtDecode(token);
-        return decodedToken;
-      } catch (error) {
-        return null;
-      }
+    private set baseUrl(baseUrl: string) {
+      this._baseUrl = baseUrl;
     }
-    return null;
-  }
+
+    get token(): string {
+      return this.session.get('token');
+    }
+
+    get decodedToken(): JwtPayload | null {
+      const token = this.token;
+      if (token) {
+        try {
+          const decodedToken = jwtDecode(token);
+          return decodedToken;
+        } catch (error) {
+          return null;
+        }
+      }
+      return null;
+    }
 
   get userId(): string | undefined {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
-  }
+  } 
   
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
 
-  canActivateFor(roles: Role[]) {
-    return roles.includes(this.role);
-  }
+
+    login(credentials: Login) {
+      return this.http.post<{ login_RESPONSE: string, role: Role }>(`${this.baseUrl}/login`, credentials)
+
+    }
+
+    canActivateFor(roles: Role[]) {
+      return roles.includes(this.role);
+    }
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
       map(data => {
         if (this.isLogin()) {
           this.role = data.role;
+          this._companyId=data.companyId;
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
@@ -147,6 +158,7 @@ export class AuthService {
   isPasswordDefault(email:string){
     return this.http.post<{ boolean_RESPONSE: boolean}>(`${this.baseUrl}/is-password-default`,email);
   }
+  
  async logOut(): Promise<void> {
     if (await this.messageService.confirmed('Logout Confimation','Are you sure to log out?','Yes', 'No', 'WHITE', 'BLACK')) {
       this.messageService.toast('info', 'Logged out.');
