@@ -34,6 +34,7 @@ export class LocalStorageService {
     }
   }
   add(key: string, value: any): void {
+    this.remove(key);
     LocalStorageService.sessions.push({ key: key, value: value });
     this.saveToStorage();
   }
@@ -63,7 +64,6 @@ export class LocalStorageService {
   }
   
   restartPage(): void {
-    window.location.reload();
     this.router.navigate(['/']);
   }
 }

@@ -1,10 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 
 import { AppComponent } from './app.component';
 
@@ -22,6 +18,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
+import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +32,8 @@ import { TreeModule } from 'primeng/tree';
     AppLayoutModule,
     ToastModule,
     MessagesModule,
-    TreeModule
+    TreeModule,
+    LoadingComponent
   ],
   providers: [
     { provide: LocationStrategy, useClass: PathLocationStrategy },

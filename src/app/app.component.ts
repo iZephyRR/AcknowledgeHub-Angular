@@ -1,9 +1,10 @@
-import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone, HostListener } from '@angular/core';
 import { Message, PrimeNGConfig } from 'primeng/api';
 import { MessageDemoService } from './services/message/message.service';
 import { AuthService } from './services/auth/auth.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { SystemService } from './services/system/system.service';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +16,31 @@ export class AppComponent implements OnInit {
   constructor(
     private primengConfig: PrimeNGConfig,
     public messageService: MessageDemoService,
-    private authService: AuthService
+    public systemService: SystemService
   ) { }
 
   ngOnInit() {
-    this.primengConfig.ripple = true;
-    this.messageService.requestWindowNotiPermit();
+      this.systemService.showLoading('');
+      this.primengConfig.ripple = true;
+      this.messageService.requestWindowNotiPermit();
+
   }
+  // @HostListener('window:beforeunload', ['$event'])
+  // unloadNotification($event: BeforeUnloadEvent): void {
+
+  // }
+  // @HostListener('window:visibilitychange', [])
+  // onVisibilityChange() {
+  //   if (document.hidden) {
+  //     this.systemService.isActiveInOtherTab=true;
+  //     console.log('Tab is inactive');
+  //   } else {
+  //     this.systemService.isActiveInOtherTab=false;
+  //     console.log('Tab is active');
+  //   }
+  // }
+
+
 
   // initializeEventSource() {
   //   const eventSource = new EventSource(`${this.authService.baseUrl}/checking`);

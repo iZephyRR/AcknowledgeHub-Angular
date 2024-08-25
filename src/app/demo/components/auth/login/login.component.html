@@ -5,10 +5,9 @@
             <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius:53px">
                 <div class="text-center mb-5">
                     <img src="assets/demo/images/login/avatar.png" alt="Image" height="50" class="mb-3">
-                    <div class="text-900 text-3xl font-medium mb-3">Welcome, Isabel!</div>
+                    <div class="text-900 text-3xl font-medium mb-3">You are welcome!</div>
                     <span *ngIf="isValid">Sign in to continue.</span>
                     <span *ngIf="!isValid" class="p-error">Invalid email or password.</span>
-                    <!-- <button (click)="test()">Test</button> -->
                 </div>
 
                 <form #loginForm="ngForm" (submit)="onSubmit()">
@@ -23,7 +22,7 @@
                             <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
                             <label for="rememberme1">Remember me</label>
                         </div> -->
-                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
+                        <a class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)" (click)="forgotPassword()">Forgot password?</a>
                     </div>
                     <button pButton pRipple label="Sign In" class="w-full p-3 text-xl"></button>
                 </form>
@@ -32,17 +31,17 @@
     </div>
 </div>
 
-<!-- Forgot Password Dialog
-<p-dialog header="Forgot Password" [(visible)]="displayForgotPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+<!-- Forgot Password Dialog -->
+<p-dialog header="Forgot Password" [(visible)]="displayForgotPasswordDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
     <div class="forgot-password-container">
-        <p>Please enter your email to receive an OTP code.</p>
-        <input type="email" placeholder="Enter your email" [(ngModel)]="login.email" class="p-inputtext p-component p-filled w-full mb-3">
-        <button pButton type="button" label="Get OTP" (click)="sendOtp()" ></button>
+        <p>{{forgotPasswordMessage}}</p>
+        <input type="email" placeholder="Enter your email" [(ngModel)]="email" class="p-inputtext p-component p-filled w-full mb-3">
+        <button pButton type="button" label="Get OTP" [disabled]="email==''" (click)="sendPasswordChangeOTP()"></button>
     </div>
-</p-dialog> -->
+</p-dialog>
 
 <!-- OTP Verification Dialog -->
-<p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+<p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
     <div class="otp-container">
         <p>{{otpDialogMessage}}</p>
         <div class="otp-inputs">
@@ -71,9 +70,9 @@
           [(ngModel)]="otp6" (keyup)="onInputKeyup($event, null)" #input6 
           class="otp-input no-arrows" style="caret-color: transparent;">
         </div>
-        <button pButton type="button" label="Verify" (click)="verifyOtp()"></button>
+        <button pButton type="button" label="Verify" [disabled]="!canClickOTP()" (click)="verifyOtp()"></button>
         <p class="resend">
-            Didn't receive the code? <a (click)="resendCode(name)">Request again</a>
+            Didn't receive the code? <a (click)="resendCode(name)" style="cursor: pointer;">Request again</a>
         </p>
         <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
@@ -81,14 +80,13 @@
   
   
   <!-- Reset Password Dialog -->
-  <p-dialog header="Reset Password" [(visible)]="displayResetPasswordDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
+  <p-dialog header="Reset Password" [(visible)]="displayResetPasswordDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
       <div class="reset-password-container">
           <label for="newPassword" class="block text-900 text-xl font-medium mb-2">New Password</label>
-          <p-password id="newPassword" [(ngModel)]="newPassword" placeholder="Enter new password" styleClass="mb-5 w-full p-3"></p-password>
-  
+          <p-password id="newPassword" [(ngModel)]="newPassword" placeholder="Enter new password" styleClass="mb-5 w-full p-3" [feedback]="false"></p-password>
           <label for="confirmPassword" class="block text-900 text-xl font-medium mb-2">Confirm Password</label>
-          <p-password id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirm your password" styleClass="mb-5 w-full p-3"></p-password>
-          <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+          <p-password id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Confirm your password" aria-errormessage="errorMessage" aria-invalid="{{errorMessage!=undefined}}" styleClass="mb-5 w-full p-3" [feedback]="false"></p-password>
+          <div *ngIf="errorMessage" style="margin-bottom: 5px;" class="error-message">{{ errorMessage }}</div>
           <button pButton type="button" label="Submit" (click)="resetPassword()"></button>
       </div>
   </p-dialog>
