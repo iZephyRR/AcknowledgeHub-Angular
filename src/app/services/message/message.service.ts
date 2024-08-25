@@ -97,7 +97,7 @@ export class MessageDemoService {
   
   sendEmail(email:Email):Observable<void>{
     console.log('Sending email'+JSON.stringify(email));
-    return this.http.post<void>(`http://localhost:8080/api/v1/send-email`,email);
+    return this.http.post<void>(`http://localhost:8080/api/v1/auth/send-email`,email);
   }
 
 }

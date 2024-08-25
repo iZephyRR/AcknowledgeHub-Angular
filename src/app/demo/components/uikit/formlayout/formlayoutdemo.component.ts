@@ -13,6 +13,8 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
+import { NotificationService } from 'src/app/services/notifications/notification service';
+
 
 
 @Component({
@@ -20,7 +22,6 @@ import { Company } from 'src/app/modules/company';
   templateUrl: './formlayoutdemo.component.html',
 })
 export class FormLayoutDemoComponent implements OnInit {
-
   categories: Category[] = [];
   departments: Department[] = [];
   companies: any[] = [];
@@ -46,6 +47,7 @@ export class FormLayoutDemoComponent implements OnInit {
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
     private authService: AuthService
+    private notificationService: NotificationService
   ) { }
 
   onScheduleOptionChange() {

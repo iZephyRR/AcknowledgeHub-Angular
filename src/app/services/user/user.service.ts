@@ -8,26 +8,22 @@ import { User } from 'src/app/modules/user';
 })
 
 export class UserService {
-    private baseUrl = 'http://localhost:8080/api/v1/get-user';
+  private baseUrl = 'http://localhost:8080/api/v1';
 
-    getRepresentatives() {
-        throw new Error('Method not implemented.');
-    }
+  getRepresentatives() {
+    throw new Error('Method not implemented.');
+  }
 
-    constructor(private http: HttpClient) {
-        
-     }
+  constructor(private http: HttpClient) {
 
-    getUsersLarge() {
-        return this.http.get<any>('assets/demo/data/users-large.json')
-            .toPromise()
-            .then(res => res.data as User[])
-            .then(data => data);
-    }
+  }
+  getAllUsers(): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/mr/users`);
+  }
 
-    getUserById(id: number): Observable<User> {
-        return this.http.get<User>(`${this.baseUrl}/${id}`);
-      }
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/user/get-user/${id}`);
+  }
 }
 
 

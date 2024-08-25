@@ -9,6 +9,7 @@ import { UserService } from 'src/app/services/user/user.service';
         CommonModule,
         ProfileRoutingModule
     ],
+    exports: [ProfileComponent],
     declarations: [ProfileComponent],
     providers: [UserService]  
 

@@ -1,107 +1,152 @@
-import { Component, ElementRef, ViewChild, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { LayoutService } from "./service/app.layout.service";
 import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
+import { ChangeDetectorRef } from '@angular/core';
+import { NotificationService } from '../services/notifications/notification service';
+import { ProfileComponent } from '../demo/components/profile/profile.component';
+import { UserService } from '../services/user/user.service';
+import { User } from '../modules/user';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
-    selector: 'app-topbar',
-    templateUrl: './app.topbar.component.html'
+  selector: 'app-topbar',
+  templateUrl: './app.topbar.component.html'
 })
-export class AppTopBarComponent {
-    items!: MenuItem[];
+export class AppTopBarComponent implements OnInit {
+  user: User;
+  items!: MenuItem[];
+  unreadCount: number = 0; // Unread notification count
+  notifications: any[] = []; // Notifications array
+  showNotifications: boolean = false; // Toggle for notification dropdown
 
-    @ViewChild('menubutton') menuButton!: ElementRef;
-    @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
-    @ViewChild('topbarmenu') menu!: ElementRef;
+  @ViewChild('menubutton') menuButton!: ElementRef;
+  @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
+  @ViewChild('topbarmenu') menu!: ElementRef;
 
-    @Input() minimal: boolean = false;
+  @Input() minimal: boolean = false;
 
-    scales: number[] = [12, 13, 14, 15, 16];
+  scales: number[] = [12, 13, 14, 15, 16];
 
-    constructor(
-        public layoutService: LayoutService,
-        public menuService: MenuService
-    ) {}
+  visibleSidebar: boolean = false;
 
-    get visible(): boolean {
-        return this.layoutService.state.configSidebarVisible;
-    }
-    set visible(_val: boolean) {
-        this.layoutService.state.configSidebarVisible = _val;
-    }
+  isProfileCardVisible = false;
 
-    get scale(): number {
-        return this.layoutService.config().scale;
-    }
-    set scale(_val: number) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            scale: _val,
-        }));
-    }
+  showProfileCard() {
+    this.isProfileCardVisible = !this.isProfileCardVisible;
+  }
 
-    get menuMode(): string {
-        return this.layoutService.config().menuMode;
-    }
-    set menuMode(_val: string) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            menuMode: _val,
-        }));
-    }
+  closeProfileCard() {
+    this.isProfileCardVisible = false;
+}
 
-    get inputStyle(): string {
-        return this.layoutService.config().inputStyle;
-    }
-    set inputStyle(_val: string) {
-        this.layoutService.config().inputStyle = _val;
-    }
+  constructor(
+    public layoutService: LayoutService,
+    private userService: UserService,
+    public menuService: MenuService,
+    private notificationService: NotificationService, // Inject NotificationService
+    private cd: ChangeDetectorRef, // Inject ChangeDetectorRef
+    public authService:AuthService
+  ) { }
 
-    get ripple(): boolean {
-        return this.layoutService.config().ripple;
-    }
-    set ripple(_val: boolean) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            ripple: _val,
-        }));
-    }
 
-    set theme(val: string) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            theme: val,
-        }));
-    }
-    get theme(): string {
-        return this.layoutService.config().theme;
-    }
+  ngOnInit() {
+  const userId = 1;
+    this.userService.getUserById(userId).subscribe(data => {
+      this.user = data;
+    });
+    // Subscribe to unread count
+    this.notificationService.unreadCount$.subscribe(count => {
+      this.unreadCount = count;
+      this.cd.detectChanges(); // Detect changes to update view
+    });
 
-    set colorScheme(val: string) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            colorScheme: val,
-        }));
-    }
-    get colorScheme(): string {
-        return this.layoutService.config().colorScheme;
-    }
+    // Subscribe to notifications
+    this.notificationService.notifications$.subscribe(notifications => {
+      this.notifications = notifications.map(notification => ({
+        ...notification,
+        message: `Announcement #${notification.announcementId} titled "${notification.title}" was sent on ${new Date(notification.noticeAt).toLocaleDateString()} to category #${notification.category} by user #${notification.createdBy}. Status: ${notification.status}, Type: ${notification.type}.`,
+      }));
+      this.cd.detectChanges();
+    });
+  }
 
-    onConfigButtonClick() {
-        this.layoutService.showConfigSidebar();
-    }
+  toggleNotificationDropdown(): void {
+    this.showNotifications = !this.showNotifications;
+    this.cd.detectChanges(); // Detect changes to update view
+  }
 
-    changeTheme(theme: string, colorScheme: string) {
-        this.theme = theme;
-        this.colorScheme = colorScheme;
+  markAsRead(notification: any): void {
+    if (!notification.isRead) {
+      this.notificationService.markAsRead(notification.id); // Mark notification as read in service
+      notification.isRead = true; // Update notification status in the component
+      this.unreadCount--; // Decrement unread count
+      this.cd.detectChanges(); // Detect changes to update view
     }
+  }
 
-    decrementScale() {
-        this.scale--;
-    }
+  markAllAsRead(): void {
+    // Mark all notifications as read in the service
+    this.notificationService.markAllAsRead();
 
-    incrementScale() {
-        this.scale++;
-    }
+    // Immediately update all notifications in the component
+    this.notifications.forEach(notification => (notification.isRead = true));
+
+    // Reset unread count to 0
+    this.unreadCount = 0;
+
+    // Close the notification dropdown
+    this.showNotifications = false;
+
+    // Trigger change detection to update the view
+    this.cd.detectChanges();
+  }
+
+  // Getters and setters for layout configuration
+  get visible(): boolean {
+    return this.layoutService.state.configSidebarVisible;
+  }
+
+  set visible(_val: boolean) {
+    this.layoutService.state.configSidebarVisible = _val;
+  }
+
+  get scale(): number {
+    return this.layoutService.config().scale;
+  }
+
+  set scale(_val: number) {
+    this.layoutService.config.update((config) => ({
+      ...config,
+      scale: _val,
+    }));
+  }
+
+  get menuMode(): string {
+    return this.layoutService.config().menuMode;
+  }
+
+  set menuMode(_val: string) {
+    this.layoutService.config.update((config) => ({
+      ...config,
+      menuMode: _val,
+    }));
+  }
+
+  get inputStyle(): string {
+    return this.layoutService.config().inputStyle;
+  }
+
+  set inputStyle(_val: string) {
+    this.layoutService.config().inputStyle = _val;
+  }
+
+  get ripple(): boolean {
+    return this.layoutService.config().ripple;
+  }
+
+  onConfigButtonClick() {
+    this.layoutService.showConfigSidebar();
+  }
 }
