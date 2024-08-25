@@ -50,32 +50,41 @@ export class AppTopBarComponent implements OnInit {
     public authService:AuthService
   ) { }
 
-
-  ngOnInit() {
+  ngOnInit():void{
   const userId = 1;
     this.userService.getUserById(userId).subscribe(data => {
       this.user = data;
     });
-    // Subscribe to unread count
-    this.notificationService.unreadCount$.subscribe(count => {
-      this.unreadCount = count;
-      this.cd.detectChanges(); // Detect changes to update view
+    this.notificationService.loadNotifications(); 
+    this.notificationService.unreadCount$.subscribe({
+      next: (count) => {
+        this.unreadCount = count;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Failed to fetch unread count:', err),
     });
 
     // Subscribe to notifications
-    this.notificationService.notifications$.subscribe(notifications => {
-      this.notifications = notifications.map(notification => ({
-        ...notification,
-        message: `Announcement #${notification.announcementId} titled "${notification.title}" was sent on ${new Date(notification.noticeAt).toLocaleDateString()} to category #${notification.category} by user #${notification.createdBy}. Status: ${notification.status}, Type: ${notification.type}.`,
-      }));
-      this.cd.detectChanges();
+    this.notificationService.notifications$.subscribe({
+      next: (notifications) => {
+        console.log('Fetched Notifications:', notifications);
+        this.notifications = notifications.map((notification) => ({
+          ...notification,
+          message: `Announcement ${notification.announcementId} was sent on ${new Date(
+            notification.noticeAt
+          ).toLocaleDateString()}  "${notification.category}" by "${notification.SenderName}(${notification.Sender})"  Status: ${notification.status}, Type: ${notification.type}.`,
+        }));
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Failed to fetch notifications:', err),
     });
   }
 
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
-    this.cd.detectChanges(); // Detect changes to update view
+    this.cd.detectChanges();
   }
+
 
   markAsRead(notification: any): void {
     if (!notification.isRead) {

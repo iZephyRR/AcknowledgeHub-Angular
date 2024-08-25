@@ -1,3 +1,4 @@
+
 import { Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
@@ -53,13 +54,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/uikit/charts']
-                                },
-                                {
-                                    label: 'Test',
-                                    icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/button']
-                                },
-                                
+                                }
                             ]
                         }
                     ] : []
