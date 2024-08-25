@@ -18,6 +18,8 @@ export class AuthService {
   private _baseUrl: string;
   private _role: Role;
 
+  private _companyId: number;
+
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -34,6 +36,10 @@ export class AuthService {
 
   get role(): Role {
     return this._role;
+  }
+
+  get companyId() : number{
+    return this._companyId;
   }
 
   get baseUrl(): string {
@@ -65,6 +71,8 @@ export class AuthService {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
   }
+
+  
   
   login(credentials: Login) {
     return this.http.post<{ login_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
@@ -82,6 +90,7 @@ export class AuthService {
       map(data => {
         if (this.isLogin()) {
           this.role = data.role;
+          this._companyId=data.companyId;
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {

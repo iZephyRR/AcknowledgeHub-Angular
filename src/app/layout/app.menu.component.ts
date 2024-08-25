@@ -34,7 +34,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
-                    ...(this.authService.canActivateFor(['MAIN_HR','HR_ASSISTANCE']) ? [
+                    ...(this.authService.canActivateFor(['MAIN_HR','MAIN_HR_ASSISTANCE','HR','HR_ASSISTANCE']) ? [
                         {
                             label: 'Announcement',
                             icon: 'pi pi-fw pi-megaphone',
