@@ -5,12 +5,17 @@ import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from '../services/notifications/notification service';
+import { ProfileComponent } from '../demo/components/profile/profile.component';
+import { UserService } from '../services/user/user.service';
+import { User } from '../modules/user';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-topbar',
-  templateUrl: './app.topbar.component.html',
+  templateUrl: './app.topbar.component.html'
 })
 export class AppTopBarComponent implements OnInit {
+  user: User;
   items!: MenuItem[];
   unreadCount: number = 0; // Unread notification count
   notifications: any[] = []; // Notifications array
@@ -24,17 +29,33 @@ export class AppTopBarComponent implements OnInit {
 
   scales: number[] = [12, 13, 14, 15, 16];
 
+  visibleSidebar: boolean = false;
+
+  isProfileCardVisible = false;
+
+  showProfileCard() {
+    this.isProfileCardVisible = !this.isProfileCardVisible;
+  }
+
+  closeProfileCard() {
+    this.isProfileCardVisible = false;
+}
+
   constructor(
     public layoutService: LayoutService,
+    private userService: UserService,
     public menuService: MenuService,
     private notificationService: NotificationService, // Inject NotificationService
-    private cd: ChangeDetectorRef // Inject ChangeDetectorRef
-  ) {}
+    private cd: ChangeDetectorRef, // Inject ChangeDetectorRef
+    public authService:AuthService
+  ) { }
 
-  ngOnInit(): void {
-    this.notificationService.loadNotifications();  // Load notifications on component init
-
-    // Subscribe to unread count
+  ngOnInit():void{
+  const userId = 1;
+    this.userService.getUserById(userId).subscribe(data => {
+      this.user = data;
+    });
+    this.notificationService.loadNotifications(); 
     this.notificationService.unreadCount$.subscribe({
       next: (count) => {
         this.unreadCount = count;

@@ -21,7 +21,7 @@ export class OTPMail {
         };
     }
 
-    static forgotPassword(address: string, otp: number, name: string): Email {
+    static forgotPassword(address: string, name: string): Email {
         return {
             address: address,
             subject: 'Acknowledge-Hub: Reset Your Password',

@@ -1,11 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
 import { Observable } from 'rxjs';
-
-
 import { AuthService } from '../auth/auth.service';
-
 import { Announcement } from 'src/app/modules/announcement';
 
 @Injectable({

@@ -11,12 +11,28 @@ import { Router } from '@angular/router';
 import { Login } from 'src/app/modules/login';
 
 @Injectable({
-    providedIn: 'root'
-  })
+
   export class AuthService {
     private _baseUrl: string;
     private _role: Role;
+  providedIn: 'root'
+})
 
+export class AuthService {
+  private _baseUrl: string;
+  private _role: Role;
+
+  private _companyId: number;
+
+  constructor(
+    private http: HttpClient,
+    private session: LocalStorageService,
+    private router: Router,
+    private messageService: MessageDemoService,
+    private systemService: SystemService
+  ) {
+    this.baseUrl = "http://localhost:8080/api/v1/auth";
+  }
     constructor(
       private http: HttpClient,
       private session: LocalStorageService,
@@ -35,9 +51,13 @@ import { Login } from 'src/app/modules/login';
       return this._role;
     }
 
-    get baseUrl(): string {
-      return this._baseUrl;
-    }
+  get companyId() : number{
+    return this._companyId;
+  }
+
+  get baseUrl(): string {
+    return this._baseUrl;
+  }
 
     private set baseUrl(baseUrl: string) {
       this._baseUrl = baseUrl;
@@ -60,10 +80,15 @@ import { Login } from 'src/app/modules/login';
       return null;
     }
 
-    get userId(): string | undefined {
-      const decodedToken = this.decodedToken;
-      return decodedToken ? decodedToken['sub'] : undefined;
-    }
+  get userId(): string | undefined {
+    const decodedToken = this.decodedToken;
+    return decodedToken ? decodedToken['sub'] : undefined;
+  } 
+  
+  login(credentials: Login) {
+    return this.http.post<{ login_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
+  }
+
 
     login(credentials: Login) {
       return this.http.post<{ login_RESPONSE: string, role: Role }>(`${this.baseUrl}/login`, credentials)
@@ -84,6 +109,7 @@ import { Login } from 'src/app/modules/login';
       map(data => {
         if (this.isLogin()) {
           this.role = data.role;
+          this._companyId=data.companyId;
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
