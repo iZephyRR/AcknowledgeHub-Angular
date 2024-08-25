@@ -18,7 +18,7 @@ import { ProfileComponent } from './demo/components/profile/profile.component';
                     {
                         path: 'uikit',
                         canActivate: [AuthGuard],
-                        data:{roles:['MAIN_HR','HR_ASSISTANCE']},//Just for example. Anyone can change.
+                        data:{roles:['MAIN_HR','MAIN_HR_ASSISTANCE','HR','HR_ASSISTANCE']},//Just for example. Anyone can change.
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
                     { path: 'utilities',
