@@ -34,7 +34,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                 label: 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
-                    ...(this.authService.canActivateFor(['MAIN_HR','HR_ASSISTANCE']) ? [
+                    ...(this.authService.canActivateFor(['MAIN_HR','HR_ASSISTANCE','HR']) ? [
                         {
                             label: 'Announcement',
                             icon: 'pi pi-fw pi-megaphone',
@@ -54,7 +54,7 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/uikit/charts']
                                 },
-                                
+
                             ]
                         }
                     ] : []

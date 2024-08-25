@@ -12,7 +12,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class CategoryService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/mr';
+  private baseUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http: HttpClient,
     private authService : AuthService
@@ -20,7 +20,7 @@ export class CategoryService {
 
 
   createCategory(category:String): Observable<Category> {
-    return this.http.post<Category>(`${this.baseUrl}/create-category`, category);
+    return this.http.post<Category>(`${this.baseUrl}/mr/create-category`, category);
 
   }
 
@@ -29,7 +29,7 @@ export class CategoryService {
   }
 
   softDeleteCategory(id: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/soft-delete/${id}`, {});
+    return this.http.put<void>(`${this.baseUrl}/mr/soft-delete/${id}`, {});
   }
 
 

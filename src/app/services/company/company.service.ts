@@ -8,7 +8,7 @@ import { Company } from 'src/app/modules/company';
 })
 export class CompanyService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/mr'; 
+  private baseUrl = 'http://localhost:8080/api/v1';
 
   constructor(private http : HttpClient) { }
 
