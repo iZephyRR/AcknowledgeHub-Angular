@@ -20,9 +20,9 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
-import { NotificationModule } from './demo/components/notification/notification.module';
+//import { NotificationModule } from './demo/components/notification/notification.module';
 import { environment } from './demo/enviroments/environment';
-import { WebSocketService } from './services/websocket/web-socket.service';
+//import { WebSocketService } from './services/websocket/web-socket.service';
 
 @NgModule({
   declarations: [
@@ -43,7 +43,7 @@ import { WebSocketService } from './services/websocket/web-socket.service';
     MatCheckboxModule,
     MatIconModule,
     MatButtonModule,
-    NotificationModule,
+   
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
     ProfileModule
@@ -52,15 +52,15 @@ import { WebSocketService } from './services/websocket/web-socket.service';
     {
       provide: LocationStrategy,
       useClass: PathLocationStrategy },
-      CountryService,
-      EventService,
-      IconService,
-      NodeService,
-      PhotoService,
-      ProductService, 
+      // CountryService,
+      // EventService,
+      // IconService,
+      // NodeService,
+      // PhotoService,
+      // ProductService, 
       AuthGuard,
       MessageService,
-      WebSocketService,
+     // WebSocketService,
     { 
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

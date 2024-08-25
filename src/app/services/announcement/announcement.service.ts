@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { HttpClient } from '@angular/common/http';
+
 import { Observable } from 'rxjs';
 
 
@@ -21,7 +21,7 @@ export class AnnouncementService {
   ) { }
 
   createAnnouncement (announcement : FormData) : Observable<Announcement> {
-    const token  = this.authService.getToken();
+    const token  = this.authService.token;
     const headers = new HttpHeaders({
       'CONTENT_TYPE' : 'application/json',
       'Authorization':  `Bearer ${token}` 

@@ -8,6 +8,7 @@ import { NotificationService } from '../services/notifications/notification serv
 import { ProfileComponent } from '../demo/components/profile/profile.component';
 import { UserService } from '../services/user/user.service';
 import { User } from '../modules/user';
+import { AuthService } from '../services/auth/auth.service';
 
 @Component({
   selector: 'app-topbar',
@@ -45,7 +46,8 @@ export class AppTopBarComponent implements OnInit {
     private userService: UserService,
     public menuService: MenuService,
     private notificationService: NotificationService, // Inject NotificationService
-    private cd: ChangeDetectorRef // Inject ChangeDetectorRef
+    private cd: ChangeDetectorRef, // Inject ChangeDetectorRef
+    public authService:AuthService
   ) { }
 
 

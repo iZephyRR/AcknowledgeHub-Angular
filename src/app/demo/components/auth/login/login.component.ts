@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
 import { OTPMail } from 'src/app/modules/otp-mails';
@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
   isValid: boolean = true;
   isFirstTime: boolean = false;
   name: string = '';
-  id:string = '';
+  id: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
   displayForgotPasswordDialog: boolean = false;
@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit {
   otp4: string = '';
   otp5: string = '';
   otp6: string = '';
-  //otpLength: number=this.otp1.length+this.otp2.length+this.otp3.length+this.otp4.length+this.otp5.length+this.otp6.length;
   errorMessage: string | null = null;
 
   constructor(
@@ -52,9 +51,6 @@ export class LoginComponent implements OnInit {
     private session: LocalStorageService
   ) { }
 
-  // test(){
-  //   this.messageService.showCustomConfirm('barnya brnya');
-  // }
   onSubmit(): void {
     this.authService.login(this.login).pipe(
       catchError(error => {
@@ -72,9 +68,9 @@ export class LoginComponent implements OnInit {
       .subscribe(response => {
         if (response.login_RESPONSE.startsWith('NAME_')) {
           this.isFirstTime = true;
-          const responseArray=response.login_RESPONSE.split('_');
+          const responseArray = response.login_RESPONSE.split('_');
           this.name = responseArray[1];
-          this.id=responseArray[3];
+          this.id = responseArray[3];
           if (this.messageService.comfirmed('"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."')) {
             this.messageService.sendEmail(OTPMail.firstLogin(this.login.email, this.name)).subscribe({
               complete: () => {
@@ -95,50 +91,62 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.systemService.hideSpinner();
-
   }
+
   showOTPDialog() {
     this.displayOtpDialog = true;
   }
+
   hideOTPDialog() {
     this.displayOtpDialog = false;
   }
 
-
   verifyOtp(): void {
     let otp = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    console.log('Storaged otp : '+OTPMail.otp);
-    console.log('Input otp : '+otp);
-    console.log(otp == (OTPMail.otp+''));
-    if (otp == (OTPMail.otp+'')) {
+    console.log('Storaged otp : ' + OTPMail.otp);
+    console.log('Input otp : ' + otp);
+    console.log(otp == (OTPMail.otp + ''));
+    if (otp == (OTPMail.otp + '')) {
       this.hideOTPDialog();
-      this.displayResetPasswordDialog=true;
-      this.errorMessage='';
-      otp='';
-      this.otp1='';
-      this.otp2='';
-      this.otp3='';
-      this.otp4='';
-      this.otp5='';
-      this.otp6='';
+      this.displayResetPasswordDialog = true;
+      this.errorMessage = '';
+      otp = '';
+      this.otp1 = '';
+      this.otp2 = '';
+      this.otp3 = '';
+      this.otp4 = '';
+      this.otp5 = '';
+      this.otp6 = '';
     } else {
       this.errorMessage = 'Incorrect OTP.';
     }
   }
-
-  onInputKeyup(event: KeyboardEvent, nextInput: HTMLInputElement | null): void {
+  onInput(event: Event, nextInput: HTMLInputElement | null) {
     const input = event.target as HTMLInputElement;
+
+    // Move to the next input if the current input has a value
+    if (input.value && nextInput) {
+        nextInput.focus();
+    }
+}
+
+onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: HTMLInputElement | null) {
     const key = event.key;
 
-    if (key === 'Backspace' && input.value === '') {
-      const prevInput = input.previousElementSibling as HTMLInputElement;
-      if (prevInput) {
-        prevInput.focus();
-      }
-    } else if (input.value && nextInput) {
-      nextInput.focus();
+    if (key === 'Backspace') {
+        if (currentInput.value === '') {
+            // Move to the previous input if the current input is empty and backspace is pressed
+            if (prevInput) {
+                prevInput.focus();
+            }
+        } else {
+            // Clear the current input and keep focus on it
+            currentInput.value = '';
+            event.preventDefault(); // Prevent the cursor from moving backward
+        }
     }
-  }
+}
+
   maskEmail(email: string): string {
     const atIndex = email.indexOf('@');
     if (atIndex > 2) {
@@ -149,6 +157,7 @@ export class LoginComponent implements OnInit {
     }
     return email; // Return the original email if it's too short to mask
   }
+
   resendCode(name: string): void {
     this.hideOTPDialog();
     console.log('Resending otp..');
@@ -159,31 +168,30 @@ export class LoginComponent implements OnInit {
       }
     });
   }
-  sendOtp(){
 
-}
-preventNonNumeric(event: KeyboardEvent): void {
-  const charCode = event.which ? event.which : event.keyCode;
-  if (charCode < 48 || charCode > 57) {
-    event.preventDefault();
+  preventNonNumeric(event: KeyboardEvent): void {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
   }
-}
-  resetPassword():void {
+
+  resetPassword(): void {
     if (this.newPassword !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match.';
     } else {
       this.errorMessage = '';
       this.displayResetPasswordDialog = false;
-      this.authService.changePassword(this.newPassword,this.id).subscribe({
-        complete:()=>{
-          this.messageService.toast('success','Change password success.');
+      this.authService.changePassword(this.newPassword, this.id).subscribe({
+        complete: () => {
+          this.messageService.toast('success', 'Change password success.');
         },
-        error:()=>{
-          this.messageService.toast('error','Failed to change password.');
+        error: () => {
+          this.messageService.toast('error', 'Failed to change password.');
         }
       });
-      this.newPassword='';
-      this.confirmPassword='';
+      this.newPassword = '';
+      this.confirmPassword = '';
     }
   }
 }

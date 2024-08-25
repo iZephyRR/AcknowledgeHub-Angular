@@ -5,7 +5,7 @@ import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
 import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
 import { ProfileComponent } from './demo/components/profile/profile.component';
-import { NotificationComponent } from './demo/components/notification/notification.component';
+//import { NotificationComponent } from './demo/components/notification/notification.component';
 
 @NgModule({
     imports: [
@@ -29,7 +29,7 @@ import { NotificationComponent } from './demo/components/notification/notificati
                         canActivate:[AuthGuard], loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },
                     { path: 'pages',
                         canActivate:[AuthGuard], loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
-                        { path: 'notifications', component: NotificationComponent }, // Add this route for notifications
+                       // { path: 'notifications', component: NotificationComponent }, // Add this route for notifications
                 ]
             },
             { path: 'auth', loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
