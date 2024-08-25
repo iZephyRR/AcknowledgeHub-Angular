@@ -47,7 +47,6 @@ export class FormLayoutDemoComponent implements OnInit {
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
     private authService: AuthService
-    private notificationService: NotificationService
   ) { }
 
   onScheduleOptionChange() {

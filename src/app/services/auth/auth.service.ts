@@ -16,7 +16,7 @@ import { Login } from 'src/app/modules/login';
 
 export class AuthService {
   private _baseUrl: string;
-  private _role :Role;
+  private _role: Role;
   private _companyId: number;
   private static readonly ALLOWED_DOMAINS: Set<string> = new Set<string>([
     "@gmail.com",
@@ -31,7 +31,7 @@ export class AuthService {
     "@zoho.com",
     "@aceinspiration.com"
   ]);
-  
+
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -41,67 +41,61 @@ export class AuthService {
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
-   
- private set role(role: Role) {
+
+  private set role(role: Role) {
     this._role = role;
   }
-    get role(): Role {
-      return this._role;
-    }
+  get role(): Role {
+    return this._role;
+  }
 
-  get companyId() : number{
+  get companyId(): number {
     return this._companyId;
   }
   get baseUrl(): string {
     return this._baseUrl;
   }
 
-    private set baseUrl(baseUrl: string) {
-      this._baseUrl = baseUrl;
-    }
+  private set baseUrl(baseUrl: string) {
+    this._baseUrl = baseUrl;
+  }
 
-    get token(): string {
-      return this.session.get('token');
-    }
+  get token(): string {
+    return this.session.get('token');
+  }
 
-    get decodedToken(): JwtPayload | null {
-      const token = this.token;
-      if (token) {
-        try {
-          const decodedToken = jwtDecode(token);
-          return decodedToken;
-        } catch (error) {
-          return null;
-        }
+  get decodedToken(): JwtPayload | null {
+    const token = this.token;
+    if (token) {
+      try {
+        const decodedToken = jwtDecode(token);
+        return decodedToken;
+      } catch (error) {
+        return null;
       }
-      return null;
     }
+    return null;
+  }
 
   get userId(): string | undefined {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
-  } 
-  
+  }
+
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
-
-
-    login(credentials: Login) {
-      return this.http.post<{ login_RESPONSE: string, role: Role }>(`${this.baseUrl}/login`, credentials)
-
-    }
-
-    canActivateFor(roles: Role[]) {
-      return roles.includes(this.role);
-    }
+  
+  canActivateFor(roles: Role[]) {
+    return roles.includes(this.role);
+  }
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
       map(data => {
         if (this.isLogin()) {
           this.role = data.role;
-          this._companyId=data.companyId;
+          this._companyId = data.companyId;
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (allowedRoles.length == 0 || allowedRoles.includes(data.role)) {
@@ -145,22 +139,22 @@ export class AuthService {
     );
   }
 
-  changePassword(password:string,email:string):Observable<void>{
-    return this.http.put<void>(`${this.baseUrl}/change-password`,{password:password,email:email});
+  changePassword(password: string, email: string): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email: email });
   }
 
-  isExistEmail(email:string):Observable<boolean>{
+  isExistEmail(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check-email`);
   }
-  findNameByEmail(email:string){
-    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`,email);
+  findNameByEmail(email: string) {
+    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`, email);
   }
-  isPasswordDefault(email:string){
-    return this.http.post<{ boolean_RESPONSE: boolean}>(`${this.baseUrl}/is-password-default`,email);
+  isPasswordDefault(email: string) {
+    return this.http.post<{ boolean_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
   }
-  
- async logOut(): Promise<void> {
-    if (await this.messageService.confirmed('Logout Confimation','Are you sure to log out?','Yes', 'No', 'WHITE', 'BLACK')) {
+
+  async logOut(): Promise<void> {
+    if (await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
       this.messageService.toast('info', 'Logged out.');
       this.session.clear();
       this.session.restartPage();
@@ -175,8 +169,8 @@ export class AuthService {
       return true;
     }
   }
-  
-   static isDomainAvailable(domain: string): boolean {
+
+  static isDomainAvailable(domain: string): boolean {
     return Array.from(this.ALLOWED_DOMAINS).some(allowedDomain => domain.endsWith(allowedDomain));
   }
 }

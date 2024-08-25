@@ -9,9 +9,6 @@ import { Email } from 'src/app/modules/email';
   providedIn: 'root'
 })
 export class MessageDemoService {
-  confirmed(arg0: string) {
-      throw new Error('Method not implemented.');
-  }
 
   msgs: Message[] = [];
   constructor(
