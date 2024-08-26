@@ -36,11 +36,6 @@ import { environment } from './demo/enviroments/environment';
     ToastModule,
     MessagesModule,
     TreeModule,
-    MatTreeModule, // Angular Material modules
-    MatCheckboxModule,
-    MatIconModule,
-    MatButtonModule,
-   
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
     ProfileModule
@@ -54,14 +49,14 @@ import { environment } from './demo/enviroments/environment';
       // IconService,
       // NodeService,
       // PhotoService,
-      // ProductService, 
+      // ProductService,
       AuthGuard,
       MessageService,
      // WebSocketService,
-    { 
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true 
+      multi: true
     }
   ],
   bootstrap: [AppComponent]

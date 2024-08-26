@@ -46,7 +46,7 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
-    private authService: AuthService
+    private authService: AuthService,
     private notificationService: NotificationService
   ) { }
 
@@ -134,11 +134,11 @@ export class FormLayoutDemoComponent implements OnInit {
     if (this.scheduleOption === 'later') {
       // Adjust the date for the correct time zone if necessary
       const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000); 
+      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
       console.log("scheduleOption : later " + correctedDate.toISOString());
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
-    } else {   
+    } else {
       // Adjust the current date for the correct time zone if necessary
       const now = new Date();
       const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
@@ -147,7 +147,7 @@ export class FormLayoutDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
     }
-    
+
     const selectedCompanyIds = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);

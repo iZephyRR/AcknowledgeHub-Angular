@@ -11,10 +11,6 @@ import { Router } from '@angular/router';
 import { Login } from 'src/app/modules/login';
 
 @Injectable({
-
-  export class AuthService {
-    private _baseUrl: string;
-    private _role: Role;
   providedIn: 'root'
 })
 
@@ -24,15 +20,6 @@ export class AuthService {
 
   private _companyId: number;
 
-  constructor(
-    private http: HttpClient,
-    private session: LocalStorageService,
-    private router: Router,
-    private messageService: MessageDemoService,
-    private systemService: SystemService
-  ) {
-    this.baseUrl = "http://localhost:8080/api/v1/auth";
-  }
     constructor(
       private http: HttpClient,
       private session: LocalStorageService,
@@ -83,17 +70,12 @@ export class AuthService {
   get userId(): string | undefined {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
-  } 
-  
+  }
+
   login(credentials: Login) {
     return this.http.post<{ login_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
 
-
-    login(credentials: Login) {
-      return this.http.post<{ login_RESPONSE: string, role: Role }>(`${this.baseUrl}/login`, credentials)
-
-    }
 
     canActivateFor(roles: Role[]) {
       return roles.includes(this.role);
