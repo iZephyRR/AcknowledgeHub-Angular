@@ -9,6 +9,9 @@ interface Session {
   providedIn: 'root'
 })
 export class LocalStorageService {
+//   set(arg0: string, role: string) {
+//       throw new Error('Method not implemented.');
+//   }
   private static readonly STORAGE_KEY = 'sessions';
   private static sessions: Session[] = [];
 
@@ -34,10 +37,11 @@ export class LocalStorageService {
     }
   }
   add(key: string, value: any): void {
+    this.remove(key);
     LocalStorageService.sessions.push({ key: key, value: value });
     this.saveToStorage();
   }
-  
+
   removeMany(keys: string[]): void {
     keys.forEach(element => {
       this.remove(element);
@@ -61,9 +65,8 @@ export class LocalStorageService {
     LocalStorageService.sessions = [];
     this.saveToStorage();
   }
-  
+
   restartPage(): void {
-    window.location.reload();
     this.router.navigate(['/']);
   }
 }

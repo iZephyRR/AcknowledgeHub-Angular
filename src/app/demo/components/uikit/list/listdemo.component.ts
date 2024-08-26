@@ -51,7 +51,7 @@ export class ListDemoComponent implements OnInit {
     this.categoryService.createCategory(newCategory).pipe(
       catchError(error => {
         if (error.status === 400) { 
-          this.messagedemoService.message('error', 'Duplicate Entry', 'This category already exists!');
+          this.messagedemoService.message('error', 'This category already exists!');
          
         } 
         return throwError(error);

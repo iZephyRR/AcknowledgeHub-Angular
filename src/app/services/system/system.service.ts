@@ -1,23 +1,40 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
+import { LocalStorageService } from '../local-storage/local-storage.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SystemService {
 
-  constructor() { }
+  constructor(private localStorageService: LocalStorageService) { }
 
-  private spinner = document.getElementById('nb-global-spinner');
+  private loading = signal(false);
+  private loadingMessage = signal('');
+//  private activeInOtherTab = signal(false);
 
-  hideSpinner() :void{
-    if (this.spinner) {
-      this.spinner.style.display = 'none';
-    }
+  showLoading(message: string): void {
+    this.loading.set(true);
+    this.loadingMessage.set(message);
   }
 
-  // showSpinner() {
-  //   if (this.spinner) {
-  //     this.spinner.style.display = 'block';
-  //   }
+  hideLoading(): void {
+    this.loading.set(false);
+    this.loadingMessage.set('');
+  }
+
+  isLoading() {
+    return this.loading();
+  }
+
+  getLoadingMessage() {
+    return this.loadingMessage();
+  }
+
+  // get isActiveInOtherTab(): boolean {
+  //   return this.activeInOtherTab();
+  // }
+
+  // set isActiveInOtherTab(isActive: boolean) {
+  //   this.activeInOtherTab.set(isActive);
   // }
 }
