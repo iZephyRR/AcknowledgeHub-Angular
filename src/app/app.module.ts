@@ -1,12 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTreeModule } from '@angular/material/tree';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { AppComponent } from './app.component';
-import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import { CommonModule, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AuthGuard } from './guards/auth.guard';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
@@ -20,16 +16,14 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { MessageService } from 'primeng/api';
 import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
-import { NotificationModule } from './demo/components/notification/notification.module';
+import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
-import { WebSocketService } from './services/websocket/web-socket.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
-
-     // Declare NotificationComponent
+    LoadingComponent
   ],
   imports: [
     BrowserModule,
@@ -39,11 +33,6 @@ import { WebSocketService } from './services/websocket/web-socket.service';
     ToastModule,
     MessagesModule,
     TreeModule,
-    MatTreeModule, // Angular Material modules
-    MatCheckboxModule,
-    MatIconModule,
-    MatButtonModule,
-    NotificationModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
     ProfileModule
@@ -51,20 +40,14 @@ import { WebSocketService } from './services/websocket/web-socket.service';
   providers: [
     {
       provide: LocationStrategy,
-      useClass: PathLocationStrategy },
-      CountryService,
-      EventService,
-      IconService,
-      NodeService,
-      PhotoService,
-      ProductService, 
-      AuthGuard,
-      MessageService,
-      WebSocketService,
-    { 
+      useClass: PathLocationStrategy
+    },
+    AuthGuard,
+    MessageService,
+    {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true 
+      multi: true
     }
   ],
   bootstrap: [AppComponent]

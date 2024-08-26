@@ -11,6 +11,6 @@ import { SystemService } from 'src/app/services/system/system.service';
 export class ServerErrorComponent implements OnInit{
 constructor(private systemService:SystemService){}
 ngOnInit(): void {
-    this.systemService.hideSpinner();
+  this.systemService.hideLoading();
 }
 }

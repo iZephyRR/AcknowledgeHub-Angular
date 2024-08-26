@@ -18,7 +18,7 @@ export class WebSocketService {
   constructor(private authService: AuthService) {}
 
   connect() {
-    const token = this.authService.getToken(); // Get the JWT token from your AuthService
+    const token = this.authService.token; // Get the JWT token from your AuthService
 
     // Initialize the STOMP client
     this.stompClient = new Client({

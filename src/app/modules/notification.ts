@@ -4,10 +4,13 @@ interface Notification {
     noticeAt: string;
     isRead: boolean;
     announcementId: number;
+    Sender:string;
+    SenderName:string;
     category: string;
-    createdBy: string;
     sentTo: string;
     status: string;
-    userId: string;
     type: string;
+    userId:string;
+
+
   }
