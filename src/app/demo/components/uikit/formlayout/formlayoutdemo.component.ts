@@ -14,6 +14,7 @@ import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
 import { NotificationService } from 'src/app/services/notifications/notification service';
+import { SystemService } from 'src/app/services/system/system.service';
 
 
 
@@ -46,8 +47,9 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
-    private authService: AuthService
-
+    private authService: AuthService,
+    private systemService: SystemService
+  ) { }
 
   onScheduleOptionChange() {
     if (this.scheduleOption === 'later') {
@@ -122,7 +124,6 @@ export class FormLayoutDemoComponent implements OnInit {
       fileInput.click();
     }
   }
-
   onSubmit(form: NgForm): void {
     // this.scheduleDate = this.scheduleOption === 'later' ? this.scheduleDate : new Date();
     const formData = new FormData();
