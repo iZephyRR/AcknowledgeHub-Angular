@@ -46,6 +46,7 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     },
     AuthGuard,
     MessageService,
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
