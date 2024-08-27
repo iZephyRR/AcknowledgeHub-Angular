@@ -46,9 +46,8 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
-    private authService: AuthService,
-    private notificationService: NotificationService
-  ) { }
+    private authService: AuthService
+
 
   onScheduleOptionChange() {
     if (this.scheduleOption === 'later') {

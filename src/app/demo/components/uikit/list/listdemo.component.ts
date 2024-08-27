@@ -47,13 +47,13 @@ export class ListDemoComponent implements OnInit {
         name: categoryName.trim(),
         status: 'ACTIVE'
     };
-    
+
     this.categoryService.createCategory(newCategory).pipe(
       catchError(error => {
-        if (error.status === 400) { 
-          this.messagedemoService.message('error', 'Duplicate Entry', 'This category already exists!');
-         
-        } 
+        if (error.status === 400) {
+          this.messagedemoService.message('error', 'This category already exists!');
+
+        }
         return throwError(error);
      })
      )
@@ -73,14 +73,14 @@ export class ListDemoComponent implements OnInit {
         },
         error => {
             console.error('Error creating category', error);
-           
+
         }
     );
 }
 
 
   findAll(): void {
-    this.categoryService.getAllCategories().subscribe(
+    this.categoryService.getAllCategoriesDESC().subscribe(
       data => {
         if (data !== this.categories) {
           this.check = true;
@@ -122,7 +122,7 @@ export class ListDemoComponent implements OnInit {
       this.buttonLabel = 'Add Category';
     }
   }
-  
+
   onGlobalFilter(table: Table, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     table.filterGlobal(filterValue, 'contains');
@@ -142,9 +142,9 @@ export class ListDemoComponent implements OnInit {
                 severity: 'success',
                 summary: 'Success',
                 detail: 'Category has been deleted successfully!'
-              }); 
+              });
            },
-              
+
             error:(err) => {
              {
               console.error('Error deleting category',err);
@@ -176,36 +176,36 @@ export class ListDemoComponent implements OnInit {
           this.categoryService.softUndeleteCategory(categoryId).subscribe({
           complete:()=>{
             this.findAll();
-            this.messageService.add({ 
-              severity: 'success', 
-              summary: 'Success', 
-              detail: 'Category has been restored successfully!' 
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Category has been restored successfully!'
             });
           },
           error:(err)=>{
             {
               console.error('Error restoring category', err);
-              this.messageService.add({ 
-                severity: 'error', 
-                summary: 'Error', 
-                detail: 'Failed to restore the category.' 
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to restore the category.'
               });
             }
           }
           });
-            
+
         },
         reject: () => {
           console.log('Restore action cancelled');
-          this.messageService.add({ 
-            severity: 'info', 
-            summary: 'Cancelled', 
-            detail: 'Restore action cancelled.' 
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Cancelled',
+            detail: 'Restore action cancelled.'
           });
         }
       });
     }
-  
+
 
   }
 }

@@ -4,11 +4,11 @@ import { LayoutService } from "./service/app.layout.service";
 import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { NotificationService } from '../services/notifications/notification service';
 import { ProfileComponent } from '../demo/components/profile/profile.component';
 import { UserService } from '../services/user/user.service';
 import { User } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
+import { NotificationService } from '../services/notifications/notification service';
 
 @Component({
   selector: 'app-topbar',
@@ -39,7 +39,7 @@ export class AppTopBarComponent implements OnInit {
 
   closeProfileCard() {
     this.isProfileCardVisible = false;
-}
+  }
 
   constructor(
     public layoutService: LayoutService,
@@ -47,15 +47,13 @@ export class AppTopBarComponent implements OnInit {
     public menuService: MenuService,
     private notificationService: NotificationService, // Inject NotificationService
     private cd: ChangeDetectorRef, // Inject ChangeDetectorRef
-    public authService:AuthService
+    public authService: AuthService
   ) { }
 
-  ngOnInit():void{
-  const userId = 1;
-    this.userService.getUserById(userId).subscribe(data => {
-      this.user = data;
-    });
-    this.notificationService.loadNotifications(); 
+  ngOnInit(): void {
+    this.profile();
+
+    this.notificationService.loadNotifications();
     this.notificationService.unreadCount$.subscribe({
       next: (count) => {
         this.unreadCount = count;
@@ -80,30 +78,42 @@ export class AppTopBarComponent implements OnInit {
     });
   }
 
+  profile() {
+    this.userService.getUserById().subscribe(data => {
+      this.user = data;
+    });
+  }
+
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
     this.cd.detectChanges();
   }
-
 
   markAsRead(notification: any): void {
     if (!notification.isRead) {
       this.notificationService.markAsRead(notification.id); // Mark notification as read in service
       notification.isRead = true; // Update notification status in the component
       this.unreadCount--; // Decrement unread count
+
+      // Remove read notifications from the list to prevent them from reappearing
+      this.notifications = this.notifications.filter(noti => noti.id !== notification.id);
+
       this.cd.detectChanges(); // Detect changes to update view
     }
   }
 
   markAllAsRead(): void {
-    // Mark all notifications as read in the service
+    // Call service method to mark all notifications as read
     this.notificationService.markAllAsRead();
 
-    // Immediately update all notifications in the component
-    this.notifications.forEach(notification => (notification.isRead = true));
-
-    // Reset unread count to 0
+    // Reset unread count and local notifications after marking all as read
     this.unreadCount = 0;
+
+    // Update the component's notifications state
+    this.notifications = this.notifications.map(notification => ({
+      ...notification,
+      isRead: true
+    }));
 
     // Close the notification dropdown
     this.showNotifications = false;
@@ -111,6 +121,22 @@ export class AppTopBarComponent implements OnInit {
     // Trigger change detection to update the view
     this.cd.detectChanges();
   }
+
+  approveNotification(notification: any, event: Event): void {
+    event.stopPropagation();
+
+    if (notification.status === 'PENDING' && notification.sender === 'HR_ASSISTANCE') {
+      this.notificationService.approveNotification(notification.id).subscribe({
+        next: () => {
+          console.log(`Notification ${notification.id} approved.`);
+          notification.status = 'APPROVED';
+          this.cd.detectChanges();
+        },
+        error: (err) => console.error(`Error approving notification ${notification.id}:`, err),
+      });
+    }
+  }
+
 
   // Getters and setters for layout configuration
   get visible(): boolean {
