@@ -80,6 +80,7 @@ export class AuthService {
   get userId(): string | undefined {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
+  }
 
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
