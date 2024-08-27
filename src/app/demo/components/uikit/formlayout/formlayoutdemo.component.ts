@@ -124,7 +124,6 @@ export class FormLayoutDemoComponent implements OnInit {
       fileInput.click();
     }
   }
-
   onSubmit(form: NgForm): void {
     // this.scheduleDate = this.scheduleOption === 'later' ? this.scheduleDate : new Date();
     const formData = new FormData();
