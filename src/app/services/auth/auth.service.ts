@@ -85,7 +85,7 @@ export class AuthService {
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
-  
+
   canActivateFor(roles: Role[]) {
     return roles.includes(this.role);
   }
@@ -157,7 +157,7 @@ export class AuthService {
     if (await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
       this.messageService.toast('info', 'Logged out.');
       this.session.clear();
-      this.session.restartPage();
+      this.router.navigate(['/auth/login']);
     }
   }
 
