@@ -4,15 +4,16 @@ import { LayoutService } from "./service/app.layout.service";
 import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { NotificationService } from '../services/notifications/notification service';
 import { ProfileComponent } from '../demo/components/profile/profile.component';
 import { UserService } from '../services/user/user.service';
 import { User } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
-import { NotificationService } from '../services/notifications/notification service';
 
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
+
 })
 export class AppTopBarComponent implements OnInit {
   user: User;
@@ -39,7 +40,7 @@ export class AppTopBarComponent implements OnInit {
 
   closeProfileCard() {
     this.isProfileCardVisible = false;
-  }
+}
 
   constructor(
     public layoutService: LayoutService,
@@ -47,10 +48,10 @@ export class AppTopBarComponent implements OnInit {
     public menuService: MenuService,
     private notificationService: NotificationService, // Inject NotificationService
     private cd: ChangeDetectorRef, // Inject ChangeDetectorRef
-    public authService: AuthService
+    public authService:AuthService
   ) { }
 
-  ngOnInit(): void {
+  ngOnInit():void{
     this.profile();
 
     this.notificationService.loadNotifications();
@@ -80,8 +81,8 @@ export class AppTopBarComponent implements OnInit {
 
   profile() {
     this.userService.getUserById().subscribe(data => {
-      this.user = data;
-    });
+        this.user = data;
+      });
   }
 
   toggleNotificationDropdown(): void {
@@ -101,6 +102,7 @@ export class AppTopBarComponent implements OnInit {
       this.cd.detectChanges(); // Detect changes to update view
     }
   }
+
 
   markAllAsRead(): void {
     // Call service method to mark all notifications as read
@@ -122,20 +124,6 @@ export class AppTopBarComponent implements OnInit {
     this.cd.detectChanges();
   }
 
-  approveNotification(notification: any, event: Event): void {
-    event.stopPropagation();
-
-    if (notification.status === 'PENDING' && notification.sender === 'HR_ASSISTANCE') {
-      this.notificationService.approveNotification(notification.id).subscribe({
-        next: () => {
-          console.log(`Notification ${notification.id} approved.`);
-          notification.status = 'APPROVED';
-          this.cd.detectChanges();
-        },
-        error: (err) => console.error(`Error approving notification ${notification.id}:`, err),
-      });
-    }
-  }
 
 
   // Getters and setters for layout configuration
