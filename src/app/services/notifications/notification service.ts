@@ -1,4 +1,3 @@
-import { Status } from 'src/app/modules/category';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
@@ -7,23 +6,6 @@ import { AuthService } from '../auth/auth.service';
 import { catchError, take } from 'rxjs/operators';
 import { environment } from 'src/app/demo/enviroments/environment';
 import { map, filter } from 'rxjs/operators';
-export interface Notification {
-    id: string;
-    message?: string;
-    noticeAt: string;
-    isRead: boolean;
-    announcementId?: number; // Add this property
-    sender: string; // Correct the property name from 'Sender' to 'sender'
-    senderName: string; // Correct the property name from 'SenderName' to 'senderName'
-    category: string;
-    sentTo: string;
-    status: 'REQUESTED' | 'APPROVED' | 'DECLINED'; // Add this property
-    type: string;
-    userId: string;
-    targetId: string;
-    timestamp?: any;
-  }
-
 
 @Injectable({
   providedIn: 'root',
@@ -216,105 +198,6 @@ export class NotificationService {
       console.log('Creator notification already exists:', creatorNotification.targetId);
     }
   }
-
-  updateNotificationStatusForApproval(notificationId: string, targetUserIds: string[]): void {
-    const userId = this.authService.userId;
-
-    if (!userId) {
-      console.warn('User ID is undefined. Cannot update notification status.');
-      return;
-    }
-
-    // Update the status for the creator (requester)
-    this.firestore.collection('notifications').doc(notificationId).get().subscribe(doc => {
-      if (doc.exists) {
-        const notif = doc.data() as Notification;
-
-        if (notif.status === 'REQUESTED') {
-          this.firestore.collection('notifications').doc(notificationId).update({ status: 'APPROVED' })
-            .then(() => {
-              console.log('Creator notification status updated to APPROVED.');
-
-              // Update local state
-              const notifications = this.notificationsSubject.getValue();
-              const updatedNotifications = notifications.map(n =>
-                n.id === notificationId ? { ...n, status: 'APPROVED' } : n
-              );
-              this.notificationsSubject.next(updatedNotifications);
-
-              // Update the status for MAIN_HR and HR
-              this.updateStatusForTargets(notif.announcementId.toString(), targetUserIds);
-            })
-            .catch(error => {
-              console.error('Error updating creator notification status:', error);
-            });
-        }
-      } else {
-        console.error('Notification not found.');
-      }
-    });
-  }
-
-
-  private updateStatusForTargets(announcementId: string, targetUserIds: string[]): void {
-    targetUserIds.forEach(targetId => {
-      this.firestore.collection('notifications', ref =>
-        ref.where('announcementId', '==', announcementId).where('targetId', '==', targetId)
-      ).get().subscribe(querySnapshot => {
-        querySnapshot.forEach(doc => {
-          const notification = doc.data() as Notification;
-
-          if (notification.status === 'REQUESTED') {
-            this.firestore.collection('notifications').doc(doc.id).update({ status: 'APPROVED' })
-              .then(() => {
-                console.log(`Notification for target ${targetId} updated to APPROVED.`);
-
-                // Update local state
-                const notifications = this.notificationsSubject.getValue();
-                const updatedNotifications = notifications.map(n =>
-                  n.id === doc.id ? { ...n, status: 'APPROVED' } : n
-                );
-                this.notificationsSubject.next(updatedNotifications);
-              })
-              .catch(error => {
-                console.error(`Error updating notification for target ${targetId}:`, error);
-              });
-          }
-        });
-      });
-    });
-  }
-  approveNotification(notificationId: string): Observable<void> {
-    return new Observable(observer => {
-      this.firestore.collection('notifications').doc(notificationId).get().subscribe(doc => {
-        if (doc.exists) {
-          const notif = doc.data() as Notification;
-
-          if (notif.status === 'REQUESTED') {
-            this.firestore.collection('notifications').doc(notificationId).update({ status: 'APPROVED' })
-              .then(() => {
-                console.log(`Notification ${notificationId} status updated to APPROVED.`);
-                observer.next();
-                observer.complete();
-              })
-              .catch(error => {
-                console.error(`Error updating notification ${notificationId} status:`, error);
-                observer.error(error);
-              });
-          } else {
-            console.warn(`Notification ${notificationId} status is not REQUESTED.`);
-            observer.next();
-            observer.complete();
-          }
-        } else {
-          console.error(`Notification ${notificationId} not found.`);
-          observer.error('Notification not found');
-        }
-      });
-    });
-  }
-
-
 
   incrementUnreadCount(): void {
     this.unreadCountSubject.next(this.unreadCountSubject.value + 1);
