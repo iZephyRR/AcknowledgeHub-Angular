@@ -2,117 +2,55 @@
     <div class="col-12">
         <div class="card">
             <h5>Announcement List</h5>
-            <p-carousel [value]="products" [numVisible]="2" [numScroll]="2" [circular]="false" [responsiveOptions]="carouselResponsiveOptions">
-                <ng-template let-product pTemplate="item">
-                    <div class="product-card">
-                        <img src="assets/demo/images/product/{{product.image}}" [alt]="product.name" class="product-image"/>
-                        <div class="product-details">
-                            <h5 class="product-name">{{product.name}}</h5>
-                            <h6 class="product-price">${{product.price}}</h6>
-                            <span class="product-status status-{{product.inventoryStatus.toLowerCase()}}">{{product.inventoryStatus}}</span>
-                            <button (click)="display=true" pButton icon="pi pi-external-link" label="Show" class="show-button"></button>
-                        </div>
-                    </div>
+            <p-table #dt3 [value]="announcements" dataKey="id" [rows]="10" [rowHover]="true"
+                styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['title', 'createdBy', 'categoryName', 'role']" responsiveLayout="scroll">
+        
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="min-width: 4rem">No</th>
+                        <th style="min-width: 12rem">Title
+                            <p-columnFilter type="text" field="title" display="menu" placeholder="Search by title"></p-columnFilter>
+                        </th>
+                        <th style="min-width: 8rem">Created By<p-columnFilter type="text" field="creater" display="menu" placeholder="Search by name"></p-columnFilter>
+                        </th>
+                        <th style="min-width: 12rem">Created At</th>
+                        <th style="min-width: 8rem">Status</th>
+                        <th style="min-width: 8rem">Category</th>
+                        <th style="min-width: 8rem">Role<p-columnFilter type="text" field="role" display="menu" placeholder="Search by name"></p-columnFilter></th>
+                        <th style="min-width: 10rem">Actions</th>
+                    </tr>
                 </ng-template>
-            </p-carousel>
+                
+                <ng-template pTemplate="body" let-announcement let-i="rowIndex">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td>{{announcement.title}}</td>
+                        <td>{{announcement.createdBy}}</td>
+                        <td>{{announcement.createdAt | date:'MMM d,y'}}</td>
+                        <td>{{announcement.status}}</td>
+                        <td>{{announcement.categoryName}}</td>
+                        <td>{{announcement.role}}</td>
+                        <td>
+                            <a [href]="announcement.fileUrl" target="_blank" rel="noopener noreferrer">
+                                <button pButton icon="pi pi-external-link" label="Show" style="width: 100px;"></button>
+                            </a>
+                        </td>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="8">No announcements found.</td>
+                    </tr>
+                </ng-template>
+                
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="8">Loading announcement data. Please wait.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
         </div>
     </div>
 </div>
-
-<style>
-    .card {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        padding: 30px;
-    }
-
-    .product-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        border-radius: 8px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        background-color: #f9f9f9;
-        margin: 10px;
-    }
-
-    .product-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .product-image {
-        width: 100%;
-        height: auto;
-        max-width: 200px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-
-    .product-details {
-        text-align: center;
-    }
-
-    .product-name {
-        font-size: 1.5em;
-        margin-bottom: 10px;
-    }
-
-    .product-price {
-        font-size: 1.3em;
-        color: #007bff;
-        margin-bottom: 15px;
-    }
-
-    .product-status {
-        display: inline-block;
-        padding: 7px 14px;
-        border-radius: 12px;
-        font-size: 1em;
-        font-weight: bold;
-        margin-bottom: 15px;
-    }
-
-    .status-in-stock {
-        background-color: #28a745;
-        color: #fff;
-    }
-
-    .status-out-of-stock {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    .status-limited-stock {
-        background-color: #ffc107;
-        color: #212529;
-    }
-
-    .show-button {
-        background-color: #007bff;
-        color: #fff;
-        border-radius: 20px;
-        font-size: 1em;
-        padding: 8px 25px;
-    }
-
-    .show-button:hover {
-        background-color: #0056b3;
-    }
-
-    /* Carousel Styles */
-    ::ng-deep .p-carousel .p-carousel-content .p-carousel-item {
-        padding: 20px;
-    }
-
-    ::ng-deep .p-carousel-indicator {
-        background-color: #007bff !important;
-    }
-
-    ::ng-deep .p-carousel-indicator.p-highlight {
-        background-color: #0056b3 !important;
-    }
-</style>

@@ -9,17 +9,20 @@ import { UserService } from 'src/app/services/user/user.service';
 })
 export class ProfileComponent implements OnInit {
   user: User;
-  
+
 
   constructor(private userService: UserService, public layoutService: LayoutService) { }
 
-  ngOnInit(): void {
-    const userId = 1; 
-    this.userService.getUserById(userId).subscribe(data => {
-      this.user = data;
-    });
+
+  ngOnInit():void{
+    this.profile();
   }
- 
+  profile(){
+    this.userService.getUserById().subscribe(data => {
+      this.user = data;
+    });  
+  }
+
 
 
 }

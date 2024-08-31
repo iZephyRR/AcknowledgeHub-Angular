@@ -33,7 +33,7 @@ import { TreeTableModule } from 'primeng/treetable';
 		MultiSelectModule,
 		InputTextareaModule,
 		InputTextModule,
-		ToolbarModule ,
+		ToolbarModule,
 		TreeTableModule,
 		TreeModule  // Add TreeModule to imports
 	],

@@ -17,8 +17,7 @@ import { NotificationService } from 'src/app/services/notifications/notification
 import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
 import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 import { SystemService } from 'src/app/services/system/system.service';
-
-
+import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 
 @Component({
   selector: 'app-form-layout-demo',
@@ -50,35 +49,10 @@ export class FormLayoutDemoComponent implements OnInit {
     private messageService: MessageDemoService,
     private authService: AuthService,
     private customTargetGroupService: CustomTargetGroupService,
-    private systemService: SystemService
+    private systemService: SystemService,
+    private maptotreeService : MaptotreeService
   ) { }
 
-  private mapTargetsToTreeNodes(targets: AnnouncementTarget[], companies: TreeNode<any>[]): TreeNode<any>[] {
-    const selectedNodes: TreeNode<any>[] = [];
-
-    if (!Array.isArray(targets) || !Array.isArray(companies)) {
-      console.error("Invalid input data. Targets or Companies is not an array.");
-      return selectedNodes;
-    }
-
-    targets.forEach(target => {
-      companies.forEach(companyNode => {
-        if (target.receiverType === "COMPANY" && target.sendTo === companyNode.data.id) {
-            selectedNodes.push(companyNode);
-            companyNode.children?.forEach(departmentNode => {
-              selectedNodes.push(departmentNode);
-            });
-        }
-        
-        companyNode.children?.forEach(departmentNode => {
-          if (target.receiverType == "DEPARTMENT" && target.sendTo === departmentNode.data.id) {
-              selectedNodes.push(departmentNode);
-            }
-        });
-      });
-    });
-    return selectedNodes;
-  }
 
   onScheduleOptionChange() {
     if (this.scheduleOption === 'later') {
@@ -105,7 +79,8 @@ export class FormLayoutDemoComponent implements OnInit {
 
   getAllCompanies(): void {
     this.companyService.getAllCompanies().subscribe(data => {
-      this.companies = data.map(company => this.mapCompanyToTreeNode(company));
+      this.companies = data.map(company => this.maptotreeService.mapCompanyToTreeNode(company));
+      console.log('Mapped TreeNode Structure:', this.companies);
     }, error => {
       console.error('Error fetching companies data:', error);
     });
@@ -113,7 +88,7 @@ export class FormLayoutDemoComponent implements OnInit {
 
   getCompanyById(companyId: number): void {
     this.companyService.getCompanyById(companyId).pipe(
-      map((company) => this.mapCompanyToTreeNode(company))
+      map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
         this.companies = [treeNode];
@@ -122,25 +97,6 @@ export class FormLayoutDemoComponent implements OnInit {
         console.error('Error fetching company data:', error);
       }
     );
-  }
-
-  private mapCompanyToTreeNode(company: Company): TreeNode<any> {
-    return {
-      label: company.name,
-      data: {
-        ...company,
-        type: "COMPANY"
-      },
-      expanded: false,
-      children: company.departments.map(department => ({
-        label: department.name,
-        data: {
-          ...department,
-          companyId: company.id,
-          type: "DEPARTMENT"
-        }
-      }))
-    } as TreeNode<any>;
   }
 
   toggleDatePicker(show: boolean): void {
@@ -154,31 +110,10 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
+  // on submit
   onSubmit(form: NgForm): void {
-    // this.scheduleDate = this.scheduleOption === 'later' ? this.scheduleDate : new Date();
-    const formData = new FormData();
-    formData.append('title', this.title);
-    formData.append('categoryId', this.selectedCategory);
-    formData.append('file', this.file);
-    formData.append('filename', this.filename);
-    if (this.scheduleOption === 'later') {
-      // Adjust the date for the correct time zone if necessary
-      const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
-      console.log("scheduleOption : later " + correctedDate.toISOString());
-      formData.append('scheduleOption', 'later');
-      formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
-    } else {
-      // Adjust the current date for the correct time zone if necessary
-      const now = new Date();
-      const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedNow = new Date(now.getTime() - offset * 60000);
-      console.log("scheduleOption : now " + correctedNow.toISOString());
-      formData.append('scheduleOption', 'now');
-      formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
-    }
-
-    formData.append('target', JSON.stringify(this.targetData));
+    this.systemService.showLoading('Processing...');
+    const formData = this.prepareFormData();
 
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
@@ -188,27 +123,84 @@ export class FormLayoutDemoComponent implements OnInit {
     ).subscribe(
       {
         complete: () => {
-          this.messageService.message("success", "Announcement Created");
+          this.messageService.toast("success", "Announcement Created");
           this.resetForm(form);
           this.clearPreview();
-        }, error: (err) => {
-          this.messageService.message("error", "Can't Create");
+        },
+        error: (err) => {
+          this.messageService.toast("error", "Can't Create");
+        }
+      }
+    );
+    this.systemService.hideLoading();
+  }
+
+  // save to draft
+  saveToDraft(form: NgForm): void {
+    console.log("in save to draft");
+    const formData = this.prepareFormData();
+    const formDataObj = {};
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        formDataObj[key] = value.name; // Save just the filename
+      } else {
+        formDataObj[key] = value;
+      }
+    });
+    this.announcementService.saveDraft(formData).pipe(
+      catchError(error => {
+        console.log('error status ' + error.status);
+        return throwError(error);
+      })
+    ).subscribe(
+      {
+        complete: () => {
+          this.messageService.toast("success", "Announcement Saved");
+          this.resetForm(form);
+          this.clearPreview();
+        },
+        error :(err) =>{
+          this.messageService.toast("error", "Can't Save");
         }
       }
     );
   }
 
-  get targetData(): AnnouncementTarget[] {
+  prepareFormData(): FormData {
+    const formData = new FormData();
+    formData.append('title', this.title);
+    formData.append('categoryId', this.selectedCategory);
+    formData.append('file', this.file);
+    formData.append('filename', this.filename);
+    if (this.scheduleOption === 'later') {
+      const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
+      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
+      console.log("scheduleOption : later " + correctedDate.toISOString());
+      formData.append('scheduleOption', 'later');
+      formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
+    } else {
+      const now = new Date();
+      const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
+      const correctedNow = new Date(now.getTime() - offset * 60000);
+      console.log("scheduleOption : now " + correctedNow.toISOString());
+      formData.append('scheduleOption', 'now');
+      formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
+    }
+    const targetJSON = JSON.stringify(this.targetData);
+    formData.append('target', targetJSON);
+
+    return formData;
+  }
+
+  get targetData():AnnouncementTarget[] {
     const selectedCompanyIds: number[] = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);
-
     const targetData: AnnouncementTarget[] = this.selectedTargets
       .filter(target => {
         if (target.data.type === "COMPANY") {
           return true; // Always include the company
         }
-
         if (target.data.type === "DEPARTMENT") {
           const parentCompanyId: number = target.data.companyId;
           // Exclude the department if its parent company is selected
@@ -242,18 +234,8 @@ export class FormLayoutDemoComponent implements OnInit {
         }
       });
     }
+
   }
-  //       response => {
-
-  //         this.messageService.message("success", "Announcement Created");
-  //         this.resetForm(form);
-  //         this.clearPreview();
-  //       },
-  //       error => {
-  // console.log('error status : '+error.status);
-  //         this.messageService.message("error", "Can't Create");
-  //       }
-
 
   onFileChange(event: any): void {
     const file = event.target.files[0];
@@ -271,6 +253,7 @@ export class FormLayoutDemoComponent implements OnInit {
   clearPreview(): void {
     this.filePreview = undefined;
     this.filename = undefined;
+    this.selectedTargets= null;
   }
 
   resetForm(form: NgForm) {

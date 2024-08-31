@@ -1,37 +1,86 @@
-<div class="grid">
-	<div class="col-12">
-		<div class="card">
-			<h5>Tree</h5>
-			<p-tree [value]="files1" selectionMode="checkbox" [(selection)]="selectedFiles1"></p-tree>
-		</div>
-	</div>
-	<div class="col-12">
-		<div class="card">
-			<h5>TreeTable</h5>
-			<p-treeTable [value]="files2" [columns]="cols" selectionMode="checkbox" [(selection)]="selectedFiles2">
-				<ng-template pTemplate="header" let-columns>
-					<tr>
-						<th *ngFor="let col of columns">
-							{{col.header}}
-						</th>
-					</tr>
-				</ng-template>
-				<ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
-					<tr>
-						<td *ngFor="let col of columns; let i = index">
-							<p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0"></p-treeTableToggler>
-							<p-treeTableCheckbox [value]="rowNode" *ngIf="i === 0"></p-treeTableCheckbox>
-							{{rowData[col.field]}}
-						</td>
-					</tr>
-				</ng-template>
-			</p-treeTable>
-		</div>
-	</div>
-	<div class="col-12">
-		<div class="card">
-			<h5>Horizontal Tree</h5>
-			<p-tree [value]="files3" layout="horizontal" selectionMode="single" [(selection)]="selectedFiles3"></p-tree>
-		</div>
-	</div>
+<!-- create-announcement.component.html -->
+<div class="container">
+  <h2>Create Announcement</h2>
+  <form #announcementForm="ngForm" (ngSubmit)="onSubmit(announcementForm)">
+
+    <!-- Announcement Details -->
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input id="title" type="text" class="form-control" name="title" ngModel required #title="ngModel"
+        placeholder="Enter the announcement title" />
+      <div *ngIf="title.invalid && title.touched">
+        <small class="text-danger">Title is required.</small>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" class="form-control" name="content" ngModel rows="5"
+        placeholder="Enter the announcement content"></textarea>
+    </div>
+
+    <!-- Recipients -->
+    <div class="form-group">
+      <label for="audience">Audience</label>
+      <select id="audience" class="form-control" name="audience" [(ngModel)]="selectedAudience">
+        <option value="company">Company</option>
+        <option value="department">Department</option>
+        <option value="individual">Individual</option>
+      </select>
+    </div>
+
+    <div *ngIf="selectedAudience === 'department' || selectedAudience === 'individual'">
+      <label *ngIf="selectedAudience === 'department'">Select Department</label>
+      <label *ngIf="selectedAudience === 'individual'">Select Employees</label>
+      <select multiple class="form-control" name="recipients" ngModel>
+        <option *ngFor="let recipient of recipientsList" [value]="recipient.id">{{ recipient.name }}</option>
+      </select>
+    </div>
+
+    <!-- Scheduling -->
+    <div class="form-group">
+      <label>Schedule</label>
+      <div>
+        <label>
+          <input type="radio" name="schedule" [(ngModel)]="selectedSchedule" value="now" />
+          Publish Now
+        </label>
+        <label>
+          <input type="radio" name="schedule" [(ngModel)]="selectedSchedule" value="later" />
+          Schedule for Later
+        </label>
+      </div>
+      <div *ngIf="selectedSchedule === 'later'">
+        <label for="scheduledDate">Choose Date and Time</label>
+        <input id="scheduledDate" type="datetime-local" class="form-control" name="scheduledDate" ngModel />
+      </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="form-group">
+      <label>Notifications</label>
+      <div>
+        <label>
+          <input type="checkbox" name="emailNotification" ngModel />
+          Email Notification
+        </label>
+        <label>
+          <input type="checkbox" name="smsNotification" ngModel />
+          SMS Notification
+        </label>
+        <label>
+          <input type="checkbox" name="pushNotification" ngModel />
+          Push Notification
+        </label>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-group">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+      <button type="submit" class="btn btn-primary" [disabled]="announcementForm.invalid">
+        Submit
+      </button>
+    </div>
+  </form>
 </div>

@@ -21,14 +21,18 @@ export class CategoryService {
   }
 
   getAllCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.baseUrl}/get-all`);
+    return this.http.get<Category[]>(`${this.baseUrl}/get-categories`);
+  }
+
+  getAllCategoriesDESC(): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.baseUrl}/mr/category/get-all`);
   }
 
   softDeleteCategory(id: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/disable/${id}`, {});
+    return this.http.put<void>(`${this.baseUrl}/mr/category/disable/${id}`, {});
 
   }
   softUndeleteCategory(categoryId: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/enable/${categoryId}`, {});
+    return this.http.put<void>(`${this.baseUrl}/mr/category/enable/${categoryId}`, {});
   }
 }

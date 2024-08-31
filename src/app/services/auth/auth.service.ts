@@ -32,7 +32,6 @@ export class AuthService {
     "@zoho.com",
     "@aceinspiration.com"
   ]);
-
   constructor(
     private http: HttpClient,
     private session: LocalStorageService,
@@ -42,6 +41,7 @@ export class AuthService {
   ) {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
+
 
   private set role(role: Role) {
     this._role = role;
@@ -86,10 +86,10 @@ export class AuthService {
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
-  
-  canActivateFor(roles: Role[]) {
-    return roles.includes(this.role);
-  }
+
+   canActivateFor(roles: Role[]) {
+      return roles.includes(this.role);
+    }
 
   severConnectionTest():void{
     this.systemService.showLoading('',true);

@@ -41,7 +41,7 @@ import { ProfileModule } from "../demo/components/profile/profile.module";
     RippleModule,
     RouterModule,
     AppConfigModule,
-    ProfileModule
+   
 ],
     exports: [AppLayoutComponent]
 })

@@ -10,7 +10,6 @@ import { ProgressBarModule } from 'primeng/progressbar';
 		ProgressBarModule,
 		CommonModule,
 		UIkitRoutingModule
-		//BrowserModule
 	]
 })
 export class UIkitModule {

@@ -9,7 +9,7 @@ import { NotfoundComponent } from './demo/components/notfound/notfound.component
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
 import { ProfileModule } from './demo/components/profile/profile.module';
-import { AppLayoutModule } from './layout/app.layout.module'; // Ensure this path is correct
+import { AppLayoutModule } from './layout/app.layout.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -22,16 +22,22 @@ import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { ReversePipe } from './reverse.pipe';  // Ensure correct import
+
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
     ProgressBarComponent
-   // ProgressBarComponent
   ],
   imports: [
     ProgressBarModule,
+    ReversePipe  // Declare ReversePipe here
+  ],
+  imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -42,7 +48,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule
+    ProfileModule,
+    NgxExtendedPdfViewerModule,
+    PdfViewerModule
   ],
   providers: [
     {
@@ -51,6 +59,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
     },
     AuthGuard,
     MessageService,
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
