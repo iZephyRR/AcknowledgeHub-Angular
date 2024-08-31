@@ -32,12 +32,12 @@
       <div class="notification-items">
         <div
           class="notification-item"
-          *ngFor="let notification of notifications"
+          *ngFor="let notification of notifications "
           (click)="markAsRead(notification)"
           [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
         >
           <p class="notification-message">{{ notification.message }}</p>
-          <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>
+        <!-- <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>  -->
         </div>
       </div>
     </div>
@@ -61,11 +61,11 @@
     <button
       class="layout-topbar-button p-link"
       type="button" (click)="authService.logOut()"
-      
+
     >
       <i class="pi pi-sign-out"></i>
     </button>
-    
+
   </div>
 </div>
 
@@ -86,20 +86,22 @@
     <p><strong>Email:</strong> {{ user?.email }}</p>
     <p><strong>Company:</strong> {{ user?.company.name }}</p>
     <p><strong>Department:</strong> {{ user?.department.name }}</p>
-   
+
   </div>
 </div>
 </div>
 
 <style>
 .unread-notification {
-background-color: #f0f0f0; /* Light background for unread notifications */
+background-color:#00BFFF;
+color: white;
+ /* Light background for unread notifications */
 }
 
 .read-notification {
-background-color: #e0e0e0; /* Different background for read notifications */
+  background-color: transparent; /* No background for read notifications */
+  color: inherit; /* Keep text color consistent */
 }
-
 .notification-icon {
 position: relative;
 cursor: pointer;

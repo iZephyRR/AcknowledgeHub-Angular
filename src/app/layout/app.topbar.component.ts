@@ -13,6 +13,7 @@ import { AuthService } from '../services/auth/auth.service';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
+
 })
 export class AppTopBarComponent implements OnInit {
   user: User;
@@ -51,11 +52,9 @@ export class AppTopBarComponent implements OnInit {
   ) { }
 
   ngOnInit():void{
-  const userId = 1;
-    this.userService.getUserById(userId).subscribe(data => {
-      this.user = data;
-    });
-    this.notificationService.loadNotifications(); 
+    this.profile();
+
+    this.notificationService.loadNotifications();
     this.notificationService.unreadCount$.subscribe({
       next: (count) => {
         this.unreadCount = count;
@@ -80,30 +79,43 @@ export class AppTopBarComponent implements OnInit {
     });
   }
 
+  profile() {
+    this.userService.getUserById().subscribe(data => {
+        this.user = data;
+      });
+  }
+
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
     this.cd.detectChanges();
   }
-
 
   markAsRead(notification: any): void {
     if (!notification.isRead) {
       this.notificationService.markAsRead(notification.id); // Mark notification as read in service
       notification.isRead = true; // Update notification status in the component
       this.unreadCount--; // Decrement unread count
+
+      // Remove read notifications from the list to prevent them from reappearing
+      this.notifications = this.notifications.filter(noti => noti.id !== notification.id);
+
       this.cd.detectChanges(); // Detect changes to update view
     }
   }
 
+
   markAllAsRead(): void {
-    // Mark all notifications as read in the service
+    // Call service method to mark all notifications as read
     this.notificationService.markAllAsRead();
 
-    // Immediately update all notifications in the component
-    this.notifications.forEach(notification => (notification.isRead = true));
-
-    // Reset unread count to 0
+    // Reset unread count and local notifications after marking all as read
     this.unreadCount = 0;
+
+    // Update the component's notifications state
+    this.notifications = this.notifications.map(notification => ({
+      ...notification,
+      isRead: true
+    }));
 
     // Close the notification dropdown
     this.showNotifications = false;
@@ -111,6 +123,8 @@ export class AppTopBarComponent implements OnInit {
     // Trigger change detection to update the view
     this.cd.detectChanges();
   }
+
+
 
   // Getters and setters for layout configuration
   get visible(): boolean {

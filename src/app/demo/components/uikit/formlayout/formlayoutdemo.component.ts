@@ -14,6 +14,7 @@ import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
 import { NotificationService } from 'src/app/services/notifications/notification service';
+import { SystemService } from 'src/app/services/system/system.service';
 
 
 
@@ -46,7 +47,8 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private systemService: SystemService
   ) { }
 
   onScheduleOptionChange() {
@@ -122,7 +124,6 @@ export class FormLayoutDemoComponent implements OnInit {
       fileInput.click();
     }
   }
-
   onSubmit(form: NgForm): void {
     // this.scheduleDate = this.scheduleOption === 'later' ? this.scheduleDate : new Date();
     const formData = new FormData();
@@ -133,11 +134,11 @@ export class FormLayoutDemoComponent implements OnInit {
     if (this.scheduleOption === 'later') {
       // Adjust the date for the correct time zone if necessary
       const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000); 
+      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
       console.log("scheduleOption : later " + correctedDate.toISOString());
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
-    } else {   
+    } else {
       // Adjust the current date for the correct time zone if necessary
       const now = new Date();
       const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
@@ -146,7 +147,7 @@ export class FormLayoutDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
     }
-    
+
     const selectedCompanyIds = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);
