@@ -51,6 +51,16 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                     routerLink: ['/uikit/media']
                                 },
                                 {
+                                    label: 'Test2',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/uikit/file']
+                                },
+                                {
+                                    label: 'Test1',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/uikit/button']
+                                },
+                                {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/uikit/charts']
