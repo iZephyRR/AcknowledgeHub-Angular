@@ -23,4 +23,7 @@ export class AnnouncementService {
   getAnnouncementsForAugToOct2024(): Observable<Map<string, Announcement[]>> {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/aug-to-oct-2024`);
   }
+
+  // Custom group data...
+
 }

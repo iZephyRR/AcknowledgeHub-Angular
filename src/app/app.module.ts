@@ -18,14 +18,21 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
-    LoadingComponent
+    LoadingComponent,
+    ProgressBarComponent
+   // ProgressBarComponent
   ],
   imports: [
+    ProgressBarModule,
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,

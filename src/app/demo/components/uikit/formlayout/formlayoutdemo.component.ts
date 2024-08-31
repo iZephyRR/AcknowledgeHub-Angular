@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { TreeNode } from 'primeng/api';
 
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
@@ -14,6 +14,9 @@ import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
 import { NotificationService } from 'src/app/services/notifications/notification service';
+import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
+import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
+import { SystemService } from 'src/app/services/system/system.service';
 
 
 
@@ -22,11 +25,11 @@ import { NotificationService } from 'src/app/services/notifications/notification
   templateUrl: './formlayoutdemo.component.html',
 })
 export class FormLayoutDemoComponent implements OnInit {
+
   categories: Category[] = [];
   departments: Department[] = [];
   companies: any[] = [];
   target: AnnouncementTarget;
-
   title: string = '';
   selectedCategory: any;
   showDatePicker: boolean = false;
@@ -35,8 +38,7 @@ export class FormLayoutDemoComponent implements OnInit {
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   file: File;
-  //fileType?: string;
-  selectedTargets: TreeNode[] = [];
+  selectedTargets:TreeNode[]=[];
   treeNodes: any[] = [];
   role: string;
   companyId: number;
@@ -46,8 +48,37 @@ export class FormLayoutDemoComponent implements OnInit {
     private companyService: CompanyService,
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
-    private authService: AuthService
+    private authService: AuthService,
+    private customTargetGroupService: CustomTargetGroupService,
+    private systemService: SystemService
   ) { }
+
+  private mapTargetsToTreeNodes(targets: AnnouncementTarget[], companies: TreeNode<any>[]): TreeNode<any>[] {
+    const selectedNodes: TreeNode<any>[] = [];
+
+    if (!Array.isArray(targets) || !Array.isArray(companies)) {
+      console.error("Invalid input data. Targets or Companies is not an array.");
+      return selectedNodes;
+    }
+
+    targets.forEach(target => {
+      companies.forEach(companyNode => {
+        if (target.receiverType === "COMPANY" && target.sendTo === companyNode.data.id) {
+            selectedNodes.push(companyNode);
+            companyNode.children?.forEach(departmentNode => {
+              selectedNodes.push(departmentNode);
+            });
+        }
+        
+        companyNode.children?.forEach(departmentNode => {
+          if (target.receiverType == "DEPARTMENT" && target.sendTo === departmentNode.data.id) {
+              selectedNodes.push(departmentNode);
+            }
+        });
+      });
+    });
+    return selectedNodes;
+  }
 
   onScheduleOptionChange() {
     if (this.scheduleOption === 'later') {
@@ -133,11 +164,11 @@ export class FormLayoutDemoComponent implements OnInit {
     if (this.scheduleOption === 'later') {
       // Adjust the date for the correct time zone if necessary
       const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000); 
+      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
       console.log("scheduleOption : later " + correctedDate.toISOString());
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
-    } else {   
+    } else {
       // Adjust the current date for the correct time zone if necessary
       const now = new Date();
       const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
@@ -146,32 +177,8 @@ export class FormLayoutDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
     }
-    
-    const selectedCompanyIds = this.selectedTargets
-      .filter(target => target.data.type === "COMPANY")
-      .map(target => target.data.id);
 
-    const targetData = this.selectedTargets
-      .filter(target => {
-        if (target.data.type === "COMPANY") {
-          return true; // Always include the company
-        }
-
-        if (target.data.type === "DEPARTMENT") {
-          const parentCompanyId = target.data.companyId;
-          // Exclude the department if its parent company is selected
-          return !selectedCompanyIds.includes(parentCompanyId);
-        }
-        return false; // Exclude any other type (safety net)
-      })
-      .map(target => ({
-        sendTo: target.data.id,
-        receiverType: target.data.type
-      }));
-
-    console.log("Final Target Data:", targetData);
-    const targetJSON = JSON.stringify(targetData);
-    formData.append('target', targetJSON);
+    formData.append('target', JSON.stringify(this.targetData));
 
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
@@ -189,6 +196,52 @@ export class FormLayoutDemoComponent implements OnInit {
         }
       }
     );
+  }
+
+  get targetData(): AnnouncementTarget[] {
+    const selectedCompanyIds: number[] = this.selectedTargets
+      .filter(target => target.data.type === "COMPANY")
+      .map(target => target.data.id);
+
+    const targetData: AnnouncementTarget[] = this.selectedTargets
+      .filter(target => {
+        if (target.data.type === "COMPANY") {
+          return true; // Always include the company
+        }
+
+        if (target.data.type === "DEPARTMENT") {
+          const parentCompanyId: number = target.data.companyId;
+          // Exclude the department if its parent company is selected
+          return !selectedCompanyIds.includes(parentCompanyId);
+        }
+        return false; // Exclude any other type (safety net)
+      })
+      .map(target => ({
+        sendTo: target.data.id,
+        receiverType: target.data.type
+      }));
+    return targetData;
+  }
+
+  async saveTarget(): Promise<void> {
+    const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
+    if (confirmed.confirmed) {
+      this.systemService.showProgress('Saving custom target...', true, false, 3);
+      const title: string = confirmed.inputValue;
+      this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
+        next: () => {
+          this.systemService.stopProgress().then(() => {
+            this.messageService.toast('success', 'Saved a custom target.');
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this.systemService.stopProgress('ERROR').then(() => {
+            this.messageService.toast('error', 'An unknown error occured, please contect to IT Support.');
+          });
+        }
+      });
+    }
   }
   //       response => {
 
@@ -222,10 +275,23 @@ export class FormLayoutDemoComponent implements OnInit {
 
   resetForm(form: NgForm) {
     form.reset();
-    this.selectedTargets = [];
+    this.selectedTargets=[];
     this.showDatePicker = false;  // Hide the date picker
     this.scheduleOption = 'now';  // Reset schedule option to 'now'
     this.scheduleDate = new Date(); // Reset the schedule date
+  }
+
+  test(): void {
+    this.customTargetGroupService.findAll().subscribe({
+      next: (data) => {
+        console.log(JSON.stringify(data));
+        console.log('data 1 '+JSON.stringify(data[1].customTargetGroupEntities))
+        this.selectedTargets=this.mapTargetsToTreeNodes(data[1].customTargetGroupEntities,this.selectedTargets);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   isImage(): boolean {

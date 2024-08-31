@@ -50,9 +50,12 @@
 					</div>
 				</div>
 
-				<!-- Tree View -->
+				<!-- Target Select View -->
 				<div class="form-group">
 					<label>Target</label>
+					<button pButton pRipple type="button" [disabled]="targetData.length==0" (click)="saveTarget()"
+						label="Save target" icon="pi pi-save" class="btn btn-success" style="font-size: 15px;"></button>
+						<button type="button" (click)="test()">Test</button>
 					<p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
 						[propagateSelectionDown]="true" [propagateSelectionUp]="true">
 					</p-tree>
@@ -81,7 +84,6 @@
 					<p-calendar id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate" required
 						showTime="true" hourFormat="24"></p-calendar>
 				</div>
-
 
 				<!-- Submit Button -->
 				<div class="form-group">
