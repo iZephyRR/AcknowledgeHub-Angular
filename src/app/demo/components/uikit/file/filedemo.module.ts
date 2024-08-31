@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { FileUploadModule } from 'primeng/fileupload';
 import { FileDemoRoutingModule } from './filedemo-routing.module';
 import { FileDemoComponent } from './filedemo.component';
+import { TableModule } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -11,7 +13,9 @@ import { FileDemoComponent } from './filedemo.component';
 		CommonModule,
 		FormsModule,
 		FileDemoRoutingModule,
-		FileUploadModule
+		FileUploadModule,
+		TableModule,
+		ToastModule
 	],
 	declarations: [FileDemoComponent],
 })

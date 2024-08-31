@@ -5,7 +5,6 @@ import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { NotificationService } from '../services/notifications/notification service';
-import { ProfileComponent } from '../demo/components/profile/profile.component';
 import { UserService } from '../services/user/user.service';
 import { User } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
@@ -52,9 +51,13 @@ export class AppTopBarComponent implements OnInit {
   ) { }
 
   ngOnInit():void{
-    this.profile();
+//     this.userService.getUserById().subscribe(data => {
+//       this.user = data;
+//     });
 
+    this.profile();
     this.notificationService.loadNotifications();
+
     this.notificationService.unreadCount$.subscribe({
       next: (count) => {
         this.unreadCount = count;
@@ -172,4 +175,9 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick() {
     this.layoutService.showConfigSidebar();
   }
+
+  // logOut() {
+  //   this.authService.logOut();
+  // }
+  
 }

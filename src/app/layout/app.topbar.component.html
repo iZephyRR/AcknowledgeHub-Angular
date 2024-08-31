@@ -43,7 +43,7 @@
 
       <!-- Profile Button -->
       <button class="p-link layout-topbar-button" (click)="showProfileCard()">
-        <i class="pi pi-user"></i>
+        <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
         <span>Profile</span>
       </button>
 
@@ -62,22 +62,34 @@
   </div>
 
   <!-- Profile Sidebar Card -->
-  <div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
-    <div class="profile-card" [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
-      <button (click)="closeProfileCard()" [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
+ <!-- Profile Sidebar Card -->
+<div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
+    <div class="profile-card"
+      [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
+
+      <button (click)="closeProfileCard()"
+        [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
         &times;
       </button>
       <div class="card-header">
         <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
+        <button (click)="onChangeProfile()" class="change-profile-btn">
+          <i class="fas fa-edit"></i>
+          Change Profile
+        </button>
+        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
+
       </div>
       <div class="card-body">
-        <h2>{{ user?.name }}</h2>
-        <p>{{ user?.role }}</p>
-        <p><strong>Email:</strong> {{ user?.email }}</p>
+        <h2>{{ user.employee.name }}</h2>
+        <p>{{ user.employee.role }}</p>
+        <p><strong>Email:</strong> {{ user.employee.email }}</p>
+        <p><strong>Company:</strong> {{ user.companyName }}</p>
+        <p><strong>Department:</strong> {{ user.departmentName }}</p>
+
       </div>
     </div>
   </div>
-
   <style>
   .unread-notification {
     background-color: #00BFFF; /* Light blue background for unread notifications */
@@ -194,9 +206,37 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
   }
-
+  .change-profile-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    /* Position the button at the bottom, adjust as needed */
+    width: 100%;
+  }
+  .change-profile-btn {
+    background-color: #3f99f9;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
   .profile-card:hover {
     transform: scale(1.05);
+  }
+  .change-profile-btn i {
+    margin-right: 5px;
+  }
+
+  .change-profile-btn:hover {
+    background-color: #0056b3;
+    /* Customize hover color */
+  }
+  .card-body {
+    padding: 16px;
   }
 
   .card-header {
@@ -204,13 +244,14 @@
     margin-bottom: 15px;
   }
 
-  .profile-img {
-    width: 120px;
-    height: 120px;
+  .profile-image {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid #007bff;
+    margin-right: 8px;
   }
+
 
   .card-body {
     text-align: center;

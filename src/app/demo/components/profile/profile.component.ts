@@ -13,8 +13,14 @@ export class ProfileComponent implements OnInit {
 
   constructor(private userService: UserService, public layoutService: LayoutService) { }
 
-  ngOnInit(): void {
-    
+
+  ngOnInit():void{
+    this.profile();
+  }
+  profile(){
+    this.userService.getUserById().subscribe(data => {
+      this.user = data;
+    });  
   }
 
 

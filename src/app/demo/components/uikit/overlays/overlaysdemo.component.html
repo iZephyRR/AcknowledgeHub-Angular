@@ -1,126 +1,394 @@
-<div class="grid">
-    <p-toast></p-toast>
-    <div class="col-12 lg:col-6">
+<div class="grid p-fluid">
+    <div class="col-12">
         <div class="card">
-            <h5>Dialog</h5>
-            <p-dialog header="Dialog" [(visible)]="display" [modal]="true" showEffect="fade" [style]="{width: '30vw'}" [breakpoints]="{'960px': '75vw'}">
-                <p class="line-height-3 m-0">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit
-                    in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </p>
-                <ng-template pTemplate="footer">
-                        <button pButton icon="pi pi-check" (click)="display=false" label="Ok" class="p-button-outlined"></button>
+            <h5>Announcements List</h5>
+            <p-table #dt [value]="drafts()" dataKey="id" [rows]="10" [rowHover]="true"
+                styleClass="p-datatable-gridlines" [paginator]="true"
+                [globalFilterFields]="['title', 'categoryName', 'filename']" responsiveLayout="scroll">
+
+                <!-- <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <span class="p-input-icon-left mb-2" style="flex: 0 1 auto; width: 250px;">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search Keyword" />
+                        </span>
+                    </div>
+                </ng-template> -->
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <!-- <th>Test</th> -->
+                        <th style="min-width: 4rem">No</th>
+                        <th style="min-width: 11rem">Title
+                            <p-columnFilter type="text" field="title" display="menu"
+                                placeholder="Search by title"></p-columnFilter>
+                        </th>
+                        <th style="min-width: 8rem">Category</th>
+                        <th style="min-width: 10rem">Filename</th>
+                        <th style="min-width: 10rem">Content Type</th>
+                        <th style="min-width: 10rem">Date</th>
+                        <th style="min-width: 20rem">Actions</th>
+                    </tr>
                 </ng-template>
+
+                <ng-template pTemplate="body" let-draft let-i="rowIndex">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td>{{draft.title}}</td>
+                        <td>{{draft.categoryName}}</td>
+                        <td>{{draft.contentType}}</td>
+                        <td>{{draft.filename}}</td>
+                        <td>{{draft.draftAt | date:'MMM d,y'}}</td>
+                        <td>
+                            <ngx-extended-pdf-viewer [src]="draft.fileUrl" [showSidebarButton]="false"
+                                height="600px"></ngx-extended-pdf-viewer>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button pButton icon="pi pi-plus" label="Create" (click)="showModal(draft.id)"></button>
+                                <button pButton icon="pi pi-trash" label="Delete" (click)="delete(draft.id)"
+                                    class="btn-danger"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6">No draft-announcements found.</td>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="loadingbody">
+                    <tr>
+                        <td colspan="6">Loading Announcements List. Please wait.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p-dialog header="Create Announcement" [(visible)]="displayModal" [modal]="true" [closable]="true"
+                [style]="{width: '70vw'}" [baseZIndex]="10000">
+                <form #sendAnnouncement="ngForm" (ngSubmit)="onSubmit(sendAnnouncement)" enctype="multipart/form-data">
+                    <!-- Category Field -->
+                    <div class="form-group">
+                        <label for="category">Category</label>
+
+                        <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
+                            placeholder="Select a category" optionLabel="name" optionValue="id" required></p-dropdown>
+
+                    </div>
+
+                    <!-- Title Field -->
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" [(ngModel)]="title" required />
+                    </div>
+
+                    <!-- PDF File Upload -->
+                    <div class="form-group">
+                        <label for="pdf-file">Announcement</label>
+                        <p-toolbar>
+                            <div class="p-toolbar-group-left flex flex-wrap">
+                                <button type="button" pButton label="Open" icon="pi pi-folder-open"
+                                    class="p-button-secondary mr-2" (click)="fileInput.click()"></button>
+                            </div>
+                        </p-toolbar>
+
+                        <!-- Hidden file input -->
+                        <input type="file" id="media" name="media"
+                            accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
+                            (change)="onFileChange($event)" #fileInput style="display: none;" />
+
+                        <!-- Display the selected file name -->
+                        <div *ngIf="filePreview">
+                            <p class="mt-3">File selected: {{filename}}</p>
+                            <div *ngIf="isImage()">
+                                <img [src]="filePreview" alt="Preview" class="img-fluid mt-3">
+                            </div>
+                            <div *ngIf="isVideo()">
+                                <video [src]="filePreview" controls class="mt-3"></video>
+                            </div>
+                            <div *ngIf="isAudio()">
+                                <audio [src]="filePreview" controls class="mt-3"></audio>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tree View -->
+                    <div class="form-group">
+                        <label>Target</label>
+                        <p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
+                            [propagateSelectionDown]="true" [propagateSelectionUp]="true">
+                        </p-tree>
+                    </div>
+
+                    <!-- Schedule Options -->
+                    <div class="form-group">
+                        <label>Schedule:</label>
+                        <div class="schedule-options">
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="schedule" id="schedule-now"
+                                    value="now" [(ngModel)]="scheduleOption" (change)="toggleDatePicker(false)"
+                                    required />
+                                <label class="form-check-label" for="schedule-now"> Now </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="radio" name="schedule" id="schedule-later"
+                                    value="later" [(ngModel)]="scheduleOption" (change)="toggleDatePicker(true)"
+                                    required />
+                                <label class="form-check-label" for="schedule-later"> Later </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date Picker (hidden by default) -->
+                    <div class="form-group" *ngIf="showDatePicker">
+                        <label for="schedule-date">Select Date and Time</label>
+                        <p-calendar id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate" required
+                            showTime="true" hourFormat="24"></p-calendar>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group">
+                        <button pButton pRipple type="submit"
+                            [disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Create"
+                            icon="pi pi-check" class="btn-primary"></button> &nbsp;
+                        <button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel" icon="pi pi-"
+                            class="btn-secondary"></button> &nbsp;
+                        <button pButton pRipple type="button" label="Delete" icon="pi pi-trash"
+                            class="btn-danger"></button>
+                    </div>
+                </form>
             </p-dialog>
-            <div class="grid">
-                <div class="col-12">
-                    <button (click)="display=true" pButton icon="pi pi-external-link" label="Show"></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card p-fluid">
-            <h5>Overlay Panel</h5>
-            <div class="flex flex-wrap gap-2">
-                <div>
-                    <button type="button" pButton label="Image" (click)="op1.toggle($event)" class="p-button-success"></button>
-                    <p-overlayPanel #op1 [showCloseIcon]="true" [style]="{width: '450px'}">
-                        <img src="assets/demo/images/nature/nature1.jpg" alt="Nature 1" style="width:100%"/>
-                    </p-overlayPanel>
-                </div>
-                <div>
-                    <button type="button" pButton label="DataTable" (click)="op2.toggle($event)" class="p-button-success"></button>
-                    <p-overlayPanel #op2 [showCloseIcon]="true" [style]="{width: '450px'}">
-                        <ng-template pTemplate>
-                            <p-table [value]="products" selectionMode="single" [(selection)]="selectedProduct" [paginator]="true" [rows]="5" (onRowSelect)="op2.hide()" responsiveLayout="scroll">
-                                <ng-template pTemplate="header">
-                                    <tr>
-                                        <th style="min-width:12rem" pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
-                                        <th style="min-width:5rem">Image</th>
-                                        <th style="min-width:8rem" pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
-                                    </tr>
-                                </ng-template>
-                                <ng-template pTemplate="body" let-rowData let-product>
-                                    <tr [pSelectableRow]="rowData">
-                                        <td>{{product.name}}</td>
-                                        <td><img src="assets/demo/images/product/{{product.image}}" [alt]="product.image" width="50" class="shadow-2"/></td>
-                                        <td>{{formatCurrency(product.price)}}</td>
-                                    </tr>
-                                </ng-template>
-                            </p-table>
-                        </ng-template>
-                    </p-overlayPanel>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 lg:col-6">
-        <div class="card p-fluid">
-            <h5>Confirmation</h5>
-            <p-confirmDialog header="Confirmation" key="confirm1" icon="pi pi-exclamation-triangle" message="Are you sure you want to proceed?"
-                             [style]="{width: '350px'}" acceptButtonStyleClass="p-button-text" rejectButtonStyleClass="p-button-text"></p-confirmDialog>
-            <div class="grid">
-                <div class="col-12">
-                    <button type="text" (click)="confirm1()" pButton icon="pi pi-trash" label="Delete" class="p-button-danger" style="width:auto;"></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h5>Sidebar</h5>
-            <p-sidebar [(visible)]="visibleSidebar1" [baseZIndex]="10000">
-                <h3 style="font-weight:normal">Left Sidebar</h3>
-            </p-sidebar>
-
-            <p-sidebar [(visible)]="visibleSidebar2" position="right" [baseZIndex]="10000">
-                <h3 style="font-weight:normal">Right Sidebar</h3>
-            </p-sidebar>
-
-            <p-sidebar [(visible)]="visibleSidebar3" position="top" [baseZIndex]="10000">
-                <h3 style="font-weight:normal">Top Sidebar</h3>
-            </p-sidebar>
-
-            <p-sidebar [(visible)]="visibleSidebar4" position="bottom" [baseZIndex]="10000">
-                <h3 style="font-weight:normal">Bottom Sidebar</h3>
-            </p-sidebar>
-
-            <p-sidebar [(visible)]="visibleSidebar5" [fullScreen]="true" [baseZIndex]="10000">
-                <h3 style="font-weight:normal">Full Screen Sidebar</h3>
-            </p-sidebar>
-
-            <div class="flex flex-wrap gap-2">
-                <button pButton type="button" (click)="visibleSidebar1 = true" icon="pi pi-arrow-right" class="p-button-warning"></button>
-                <button pButton type="button" (click)="visibleSidebar2 = true" icon="pi pi-arrow-left" class="p-button-warning"></button>
-                <button pButton type="button" (click)="visibleSidebar3 = true" icon="pi pi-arrow-down" class="p-button-warning"></button>
-                <button pButton type="button" (click)="visibleSidebar4 = true" icon="pi pi-arrow-up" class="p-button-warning"></button>
-                <button pButton type="button" (click)="visibleSidebar5 = true" icon="pi pi-external-link" class="p-button-warning"></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 lg:col-6">
-        <div class="card">
-            <h5>Tooltip</h5>
-            <div class="flex align-items-center gap-2">
-                <span>
-                    <label for="firstname5" class="p-sr-only">Username</label>
-                    <input id="firstname5" type="text" pInputText placeholder="Username" pTooltip="Enter your username">
-                </span>
-                <button pButton pRipple type="button" label="Save" icon="pi pi-check" pTooltip="Click to proceed"></button>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 lg:col-6">
-        <div class="card">
-            <h5>ConfirmPopup</h5>
-
-            <p-toast></p-toast>
-            <button (click)="confirm2($event)" pButton icon="pi pi-check" label="Confirm"></button>
-            <p-confirmPopup key="confirm2"></p-confirmPopup>
         </div>
     </div>
 </div>
+
+<style>
+    video,
+    img {
+        max-width: 100%;
+        height: auto;
+        max-height: 400px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
+    }
+
+    /* Container Styles */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* height: 100vh;
+        padding: 20px;*/
+    }
+
+    /* Form Card Styles */
+    .form-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        padding: 40px;
+        background-color: #ffffff;
+    }
+
+    /* Card Header Styles */
+    .card-header {
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* Form Group Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        transition: border-color 0.3s;
+        font-size: 16px;
+    }
+
+    input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    /* Flexbox for Schedule Options */
+    .schedule-options {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-inline {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+    }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    /* checkbox-list.component.css */
+    .tree-container {
+        font-family: Arial, sans-serif;
+    }
+
+    .tree {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .tree-node {
+        position: relative;
+        margin: 5px 0;
+    }
+
+    .node-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .node-label input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .tree-children {
+        list-style-type: none;
+        padding-left: 20px;
+        /* Adjust for indentation */
+        margin: 0;
+        display: none;
+        /* Hidden by default */
+    }
+
+    .tree-node {
+        cursor: pointer;
+    }
+
+    .tree-node.open>.tree-children {
+        display: block;
+    }
+
+    .tree-node>.tree-children {
+        display: none;
+    }
+
+
+    .tree-node>.node-label::before {
+        content: '▶';
+        /* Arrow icon */
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .tree-node.open>.node-label::before {
+        transform: rotate(90deg);
+        /* Rotate arrow when open */
+    }
+
+    /* Base font size */
+    .node-label {
+        font-size: 16px;
+        /* Adjust to your desired font size */
+    }
+
+    /* Font size for companies */
+    .tree-node>.node-label {
+        font-size: 16px;
+        /* Example font size for companies */
+    }
+
+    /* Font size for departments */
+    .tree-node .tree-children>.tree-node>.node-label {
+        font-size: 14px;
+        /* Example font size for departments */
+    }
+
+    /* Responsive font size */
+    @media (max-width: 600px) {
+        .node-label {
+            font-size: 0.875rem;
+            /* Smaller font size on smaller screens */
+        }
+    }
+</style>

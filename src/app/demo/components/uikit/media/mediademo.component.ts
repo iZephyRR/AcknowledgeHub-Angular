@@ -1,34 +1,45 @@
-import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/demo/api/product';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Table } from 'primeng/table';
+import { Announcement } from 'src/app/modules/announcement';
+import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 
 @Component({
-    templateUrl: './mediademo.component.html'
+  templateUrl: './mediademo.component.html'
 })
-export class MediaDemoComponent  {
+export class MediaDemoComponent implements OnInit {
 
-    products!: Product[];
+  announcements: Announcement[] = [];
+  displayModal: boolean = false;
+  currentPdfLink: SafeResourceUrl;
+  
 
-    images!: any[];
+  
 
+  constructor(private announcementService: AnnouncementService,
+    private sanitizer: DomSanitizer
+  ) { }
 
+  ngOnInit(): void {
+    this.announcementService.getAllAnnouncements().subscribe(
+      (data) => {
+        console.log('Fetched announcements:', data);
+        this.announcements = data;
+      },
+      (error) => {
+        console.error('Error fetching announcements:', error);
+      }
+    );
+  }
+  onGlobalFilter(table: Table, event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    table.filterGlobal(filterValue, 'contains');
+  }
 
-    carouselResponsiveOptions: any[] = [
-        {
-            breakpoint: '1024px',
-            numVisible: 3,
-            numScroll: 3
-        },
-        {
-            breakpoint: '768px',
-            numVisible: 2,
-            numScroll: 2
-        },
-        {
-            breakpoint: '560px',
-            numVisible: 1,
-            numScroll: 1
-        }
-    ];
-
+  showPdf(pdfLink: string) {
+    this.currentPdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(pdfLink);
+    this.displayModal = true;
+  }
+ 
 
 }

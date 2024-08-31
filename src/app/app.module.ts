@@ -21,16 +21,21 @@ import { environment } from './demo/enviroments/environment';
 import { ReversePipe } from './reverse.pipe';  // Ensure correct import
 import { NgxEchartsModule } from 'ngx-echarts';
 import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
-  // Import NgxEchartsModule
 import * as echarts from 'echarts';import { DashboardModule } from './demo/components/dashboard/dashboard.module';
- @NgModule({
+import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
+import { ProgressBarModule } from 'primeng/progressbar';
+
+@NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
-    ReversePipe  // Declare ReversePipe here
+    ProgressBarComponent
   ],
   imports: [
+    ProgressBarModule,
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -44,7 +49,8 @@ import * as echarts from 'echarts';import { DashboardModule } from './demo/compo
     DashboardModule,
     NbLayoutModule,
     NgxEchartsModule.forRoot({ echarts }),
-
+   // NgxExtendedPdfViewerModule,
+   //  PdfViewerModule
   ],
   providers: [
     {
