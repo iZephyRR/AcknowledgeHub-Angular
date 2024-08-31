@@ -22,10 +22,6 @@ import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 
-import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-import { ReversePipe } from './reverse.pipe';  // Ensure correct import
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,9 +31,6 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
   ],
   imports: [
     ProgressBarModule,
-    ReversePipe  // Declare ReversePipe here
-  ],
-  imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
@@ -48,9 +41,9 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule,
-    NgxExtendedPdfViewerModule,
-    PdfViewerModule
+    ProfileModule
+    // NgxExtendedPdfViewerModule,
+    //  PdfViewerModule
   ],
   providers: [
     {
