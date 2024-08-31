@@ -174,11 +174,6 @@
 
         <div class="col-12 xl:col-6">
             <div class="card">
-                <h5>Sales Overview</h5>
-                <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
-            </div>
-
-            <div class="card">
                 <div class="flex align-items-center justify-content-between mb-4">
                     <h5>Notifications</h5>
                     <div>
@@ -234,7 +229,15 @@
                    Get Started
                </a>
            </div>
+
         </div>
     </div>
 </div>
 
+<style>
+    .echart {
+  height: 400px;
+  width: 100%;
+}
+
+</style>

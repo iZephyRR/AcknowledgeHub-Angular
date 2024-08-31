@@ -1,256 +1,249 @@
 <div class="layout-topbar">
-  <a class="layout-topbar-logo" routerLink="">
-    <span>ACE DataSystem</span>
-  </a>
-  <button
-    #menubutton
-    class="p-link layout-menu-button layout-topbar-button"
-    (click)="layoutService.onMenuToggle()"
-  >
-    <i class="pi pi-bars"></i>
-  </button>
+    <a class="layout-topbar-logo" routerLink="">
+      <span>ACE DataSystem</span>
+    </a>
+    <button
+      #menubutton
+      class="p-link layout-menu-button layout-topbar-button"
+      (click)="layoutService.onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
 
-  <div
-    #topbarmenu
-    class="layout-topbar-menu"
-    [ngClass]="{
-      'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
-    }"
-  >
-    <!-- Notification Bell Icon -->
-    <div class="notification-icon" (click)="toggleNotificationDropdown()">
-      <i class="pi pi-bell"></i>
-      <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-    </div>
-
-    <!-- Notification Dropdown -->
-    <div class="notification-dropdown" *ngIf="showNotifications">
-      <div class="notification-header">
-        <h4>Notifications</h4>
-        <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
+    <div
+      #topbarmenu
+      class="layout-topbar-menu"
+      [ngClass]="{
+        'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
+      }"
+    >
+      <!-- Notification Bell Icon -->
+      <div class="notification-icon" (click)="toggleNotificationDropdown()">
+        <i class="pi pi-bell"></i>
+        <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
       </div>
-      <div class="notification-items">
-        <div
-          class="notification-item"
-          *ngFor="let notification of notifications "
-          (click)="markAsRead(notification)"
-          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
-        >
-          <p class="notification-message">{{ notification.message }}</p>
-        <!-- <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>  -->
+
+      <!-- Notification Dropdown -->
+      <div class="notification-dropdown" *ngIf="showNotifications">
+        <div class="notification-header">
+          <h4>Notifications</h4>
+          <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
+        </div>
+        <div class="notification-items">
+          <div
+            class="notification-item"
+            *ngFor="let notification of notifications "
+            (click)="markAsRead(notification)"
+            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
+          >
+            <p class="notification-message">{{ notification.message }}</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Profile Button -->
-    <button class="p-link layout-topbar-button" (click)="showProfileCard()">
-      <i class="pi pi-user"></i>
-      <span>Profile</span>
-    </button>
-
-    <!-- Config Button -->
-    <button
-      class="layout-config-button layout-topbar-button p-link"
-      type="button"
-      (click)="onConfigButtonClick()"
-    >
-      <i class="pi pi-cog"></i>
-    </button>
-
-    <!-- Logout Button -->
-    <button
-      class="layout-topbar-button p-link"
-      type="button" (click)="authService.logOut()"
-
-    >
-      <i class="pi pi-sign-out"></i>
-    </button>
-
-  </div>
-</div>
-
-<!-- Profile Sidebar Card -->
-<div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
-  <div class="profile-card" [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
-
-       <button (click)="closeProfileCard()" [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
-          &times;
+      <!-- Profile Button -->
+      <button class="p-link layout-topbar-button" (click)="showProfileCard()">
+        <i class="pi pi-user"></i>
+        <span>Profile</span>
       </button>
-  <div class="card-header">
-    <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
 
+      <!-- Config Button -->
+      <button
+        class="layout-config-button layout-topbar-button p-link"
+        type="button"
+        (click)="onConfigButtonClick()"
+      >
+        <i class="pi pi-cog"></i>
+      </button>
+
+      <!-- Logout Button -->
+
+    </div>
   </div>
-  <div class="card-body">
-    <h2>{{ user?.name }}</h2>
-    <p>{{ user?.role }}</p>
-    <p><strong>Email:</strong> {{ user?.email }}</p>
-    <!-- <p><strong>Company:</strong> {{ user?.company.name }}</p>
-    <p><strong>Department:</strong> {{ user?.department.name }}</p> -->
 
+  <!-- Profile Sidebar Card -->
+  <div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
+    <div class="profile-card" [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
+      <button (click)="closeProfileCard()" [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
+        &times;
+      </button>
+      <div class="card-header">
+        <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
+      </div>
+      <div class="card-body">
+        <h2>{{ user?.name }}</h2>
+        <p>{{ user?.role }}</p>
+        <p><strong>Email:</strong> {{ user?.email }}</p>
+      </div>
+    </div>
   </div>
-</div>
-</div>
 
-<style>
-.unread-notification {
-background-color:#00BFFF;
-color: white;
- /* Light background for unread notifications */
-}
+  <style>
+  .unread-notification {
+    background-color: #00BFFF; /* Light blue background for unread notifications */
+    color: white; /* White text for unread notifications */
+  }
 
-.read-notification {
-  background-color: transparent; /* No background for read notifications */
-  color: inherit; /* Keep text color consistent */
-}
-.notification-icon {
-position: relative;
-cursor: pointer;
-font-size: 24px;
+  .read-notification {
+    background-color: transparent; /* No background for read notifications */
+    color: inherit; /* Keep text color consistent */
+  }
+  .notification-icon {
+    position: relative;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    border-radius: 50%;
+    color: gray;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
 .notification-badge {
-position: absolute;
-top: -5px;
-right: -10px;
-background-color: red;
-color: white;
-border-radius: 50%;
-padding: 0.25rem;
-font-size: 0.75rem;
-z-index: 1;
+    position: absolute;
+    top: -4px; /* Adjusted to fine-tune position */
+    right: -9px; /* Adjusted to fine-tune position */
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* Changed from 40% to 50% to make it fully circular */
+    padding: 0.25rem 0.35rem; /* Slightly increased padding for better visibility */
+    font-size: 0.85rem;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 20px; /* Ensures the badge maintains a circular shape even with single digits */
+    height: 20px; /* Ensures the badge maintains a circular shape */
 }
 
-.notification-dropdown {
-position: absolute;
-right: 0;
-top: 100%;
-background-color: white;
-border: 1px solid #ddd;
-border-radius: 4px;
-width: 300px;
-max-height: 400px;
-overflow-y: auto;
-box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-z-index: 2;
-display: flex;
-flex-direction: column;
+
+ .notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
 }
 
-.notification-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px;
-border-bottom: 1px solid #ddd;
-background-color: #f0f0f0;
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f0f0f0;
+  }
+  .notification-icon i {
+    font-size: 18px; /* Adjust the size of the icon here */
+}
+  .notification-items {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  .notification-icon:hover {
+    transform: scale(1.1);
+    background-color: #f0f0f0;
 }
 
-.notification-items {
-flex: 1;
-overflow-y: auto;
-}
+  .notification-message {
+    font-weight: bold;
+    flex-grow: 1;
+    margin-right: 10px;
+  }
 
-.notification-item {
-padding: 10px;
-border-bottom: 1px solid #ddd;
-display: flex;
-justify-content: space-between;
-align-items: center;
-transition: background-color 0.3s ease;
-cursor: pointer;
-}
+  .mark-as-read-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #007bff;
+  }
 
-.notification-item:hover {
-background-color: #f7f7f7;
-}
+  .mark-as-read-button:hover {
+    color: #0056b3;
+  }
 
-.notification-message {
-font-weight: bold;
-flex-grow: 1;
-margin-right: 10px;
-}
+  .profile-card {
+    width: 360px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
 
-.notification-timestamp {
-font-size: 0.75rem;
-color: gray;
-white-space: nowrap;
-}
+  .profile-card:hover {
+    transform: scale(1.05);
+  }
 
-.notification-item:last-child {
-border-bottom: none;
-}
+  .card-header {
+    text-align: center;
+    margin-bottom: 15px;
+  }
 
-.mark-as-read-button {
-background-color: transparent;
-border: none;
-cursor: pointer;
-font-weight: bold;
-color: #007bff;
-}
+  .profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #007bff;
+  }
 
-.mark-as-read-button:hover {
-color: #0056b3;
-}
+  .card-body {
+    text-align: center;
+  }
 
-.profile-card {
-width: 350px;
-margin: 20px auto;
-padding: 20px;
-background-color: #fff;
-border-radius: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-transition: transform 0.3s ease;
-}
+  h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 10px 0;
+  }
 
-.profile-card:hover {
-transform: scale(1.05);
-}
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
 
-.card-header {
-text-align: center;
-margin-bottom: 15px;
-}
+  p strong {
+    color: #333;
+  }
 
-.profile-img {
-width: 120px;
-height: 120px;
-border-radius: 50%;
-object-fit: cover;
-border: 4px solid #007bff;
-}
+  @media (max-width: 768px) {
+    .notification-dropdown {
+      width: 100%;
+      right: 0;
+    }
 
-.card-body {
-text-align: center;
-}
+    .layout-topbar-menu {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
 
-h2 {
-font-size: 1.5rem;
-color: #333;
-margin: 10px 0;
-}
-
-p {
-margin: 5px 0;
-color: #666;
-}
-
-p strong {
-color: #333;
-}
-
-@media (max-width: 768px) {
-.notification-dropdown {
-  width: 100%;
-  right: 0;
-}
-
-.layout-topbar-menu {
-  flex-direction: column;
-  gap: 1rem;
-}
-}
-
-body {
-padding-top: 5rem;
-}
-</style>
+  body {
+    padding-top: 5rem;
+  }
+  </style>

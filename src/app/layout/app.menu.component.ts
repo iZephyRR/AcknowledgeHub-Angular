@@ -75,6 +75,11 @@ export class AppMenuComponent implements OnInit, OnChanges {
                         icon: 'pi pi-fw pi-user',
                         routerLink: ['/uikit/table']
                     },
+                    {
+                        label: 'Chart List',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/uikit/charts']
+                    },
 
                 ]
             }

@@ -10,6 +10,9 @@ import { StyleClassModule } from 'primeng/styleclass';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { DashboardsRoutingModule } from './dashboard-routing.module';
 import { ToastModule } from 'primeng/toast';
+import { NgxEchartsModule } from 'ngx-echarts'; // Import NgxEchartsModule
+import { EchartsBarAnimationComponent  } from '../uikit/charts/echarts-bar-animation.component';
+import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
 
 @NgModule({
     imports: [
@@ -22,8 +25,13 @@ import { ToastModule } from 'primeng/toast';
         PanelMenuModule,
         ButtonModule,
         DashboardsRoutingModule,
-        ToastModule
+        ToastModule,
+        NbThemeModule.forRoot(), // Add this line
+        NbLayoutModule,
+        NgxEchartsModule.forRoot({ echarts: () => import('echarts') }), // Initialize NgxEchartsModule
     ],
-    declarations: [DashboardComponent]
+    declarations: [
+        DashboardComponent,
+             ]
 })
 export class DashboardModule { }

@@ -19,8 +19,11 @@ import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
 import { ReversePipe } from './reverse.pipe';  // Ensure correct import
-
-@NgModule({
+import { NgxEchartsModule } from 'ngx-echarts';
+import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
+  // Import NgxEchartsModule
+import * as echarts from 'echarts';import { DashboardModule } from './demo/components/dashboard/dashboard.module';
+ @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
@@ -37,7 +40,11 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule
+    ProfileModule,
+    DashboardModule,
+    NbLayoutModule,
+    NgxEchartsModule.forRoot({ echarts }),
+
   ],
   providers: [
     {
