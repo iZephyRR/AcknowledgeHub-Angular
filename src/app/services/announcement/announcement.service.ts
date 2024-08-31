@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { Announcement } from 'src/app/modules/announcement';
+import { Draft } from 'src/app/modules/draft';
 
 @Injectable({
   providedIn: 'root',
@@ -23,4 +24,22 @@ export class AnnouncementService {
   getAnnouncementsForAugToOct2024(): Observable<Map<string, Announcement[]>> {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/aug-to-oct-2024`);
   }
+
+  // save draft
+  saveDraft(draft : FormData): Observable<Announcement> {
+    return this.http.post<Announcement>(`${this.baseUrl}/uploadDraft`,draft);
+  }
+
+  getDrafts() : Observable<Draft[]> {
+    return this.http.get<Draft[]>(`${this.baseUrl}/get-drafts`);
+  }
+
+  getDraftById(draftId : number) : Observable<Draft> {
+    return this.http.get<Draft>(`${this.baseUrl}/getDraftById/${draftId}`);
+  }
+
+  deleteDraft(draftId : number) : Observable<String> {
+    return this.http.delete<String>(`${this.baseUrl}/delete-draft/${draftId}`);
+  }
+
 }

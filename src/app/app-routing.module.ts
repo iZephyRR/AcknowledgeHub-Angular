@@ -14,7 +14,7 @@ import { ServerErrorComponent } from './demo/components/server-error/server-erro
                 children: [
                     { path: '', loadChildren: () => import('./demo/components/dashboard/dashboard.module').then(m => m.DashboardModule) },
                     {
-                        path: 'uikit',
+                        path: 'announcement',
                         canActivate: [AuthGuard],
                         data:{roles:['MAIN_HR','MAIN_HR_ASSISTANCE','HR','HR_ASSISTANCE']},//Just for example. Anyone can change.
 

@@ -1,4 +1,5 @@
 export interface AnnouncementTarget {
-    receiverType : string;
-    sendTo : number;
+    id?:number;
+    sendTo:number;
+    receiverType:'DEPARTMENT'|'COMPANY'|'EMPLOYEE';
 }

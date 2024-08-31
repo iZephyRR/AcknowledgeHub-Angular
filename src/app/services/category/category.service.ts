@@ -21,7 +21,11 @@ export class CategoryService {
   }
 
   getAllCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.baseUrl}/get-all`);
+    return this.http.get<Category[]>(`${this.baseUrl}/get-categories`);
+  }
+
+  getAllCategoriesDESC(): Observable<Category[]> {
+    return this.http.get<Category[]>(`${this.baseUrl}/mr/category/get-all`);
   }
 
   softDeleteCategory(id: number): Observable<void> {

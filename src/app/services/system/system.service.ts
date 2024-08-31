@@ -13,6 +13,7 @@ export class SystemService {
 //  private activeInOtherTab = signal(false);
 
   showLoading(message: string): void {
+    console.log("show loading");
     this.loading.set(true);
     this.loadingMessage.set(message);
   }

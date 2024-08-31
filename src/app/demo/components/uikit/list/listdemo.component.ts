@@ -80,7 +80,7 @@ export class ListDemoComponent implements OnInit {
 
 
   findAll(): void {
-    this.categoryService.getAllCategories().subscribe(
+    this.categoryService.getAllCategoriesDESC().subscribe(
       data => {
         if (data !== this.categories) {
           this.check = true;

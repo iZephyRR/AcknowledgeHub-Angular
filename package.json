@@ -74,6 +74,10 @@
 
         "jwt-decode": "^4.0.0",
 
+        "ng2-pdf-viewer": "^10.2.2",
+
+        "ngx-extended-pdf-viewer": "^21.3.7",
+
         "primeflex": "^3.3.1",
 
         "primeicons": "^6.0.1",

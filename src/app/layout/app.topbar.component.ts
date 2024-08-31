@@ -51,8 +51,7 @@ export class AppTopBarComponent implements OnInit {
   ) { }
 
   ngOnInit():void{
-  const userId = 1;
-    this.userService.getUserById(userId).subscribe(data => {
+    this.userService.getUserById().subscribe(data => {
       this.user = data;
     });
     this.notificationService.loadNotifications(); 
@@ -158,4 +157,9 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick() {
     this.layoutService.showConfigSidebar();
   }
+
+  // logOut() {
+  //   this.authService.logOut();
+  // }
+  
 }

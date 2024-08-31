@@ -43,18 +43,23 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                 {
                                     label: 'Create Announcement',
                                     icon: 'pi pi-fw pi-pencil',
-                                    routerLink: ['/uikit/formlayout']
+                                    routerLink: ['/announcement/create']
+                                },
+                                {
+                                    label: 'Announcement For Customize Employees',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/announcement/customize']
                                 },
                                 {
                                     label: 'Announcement List',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/media']
+                                    routerLink: ['/announcement/list']
                                 },
                                 {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/charts']
-                                }
+                                    routerLink: ['/announcement/reports']
+                                }                                
                             ]
                         }
                     ] : []
@@ -63,7 +68,12 @@ export class AppMenuComponent implements OnInit, OnChanges {
                     {
                         label: 'Category',
                         icon: 'pi pi-fw pi-tags',
-                        routerLink: ['/uikit/list']
+                        routerLink: ['/announcement/category']
+                    },
+                    {
+                        label: 'Draft',
+                        icon: 'pi pi-fw pi-calendar',
+                        routerLink: ['/announcement/drafts']
                     },
                     {
                         label: 'Reports',

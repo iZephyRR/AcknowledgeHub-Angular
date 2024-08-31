@@ -18,6 +18,8 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { environment } from './demo/enviroments/environment';
     LoadingComponent
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -35,7 +38,9 @@ import { environment } from './demo/enviroments/environment';
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule
+    ProfileModule,
+    NgxExtendedPdfViewerModule,
+    PdfViewerModule
   ],
   providers: [
     {
