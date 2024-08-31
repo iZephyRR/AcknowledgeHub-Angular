@@ -44,6 +44,16 @@
             <span class="text-green-500 font-medium">20</span>
             <span class="text-500">newly registered last month</span>
         </div>
+
+
+        <div class="col-12 xl:col-6">
+            <div class="card">
+                <div class="flex align-items-center justify-content-between mb-4">
+                    <h5>Notifications</h5>
+                    <div>
+                        <button pButton type="button" icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain" (click)="menu.toggle($event)"></button>
+                        <p-menu #menu [popup]="true" [model]="items"></p-menu>
+                    </div>
     </div>
     <div class="col-12 md:col-6 lg:col-3">
         <div class="card mb-4">
@@ -54,8 +64,21 @@
                 </div>
                 <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                     <i class="pi pi-comment text-purple-500 text-xl"></i>
+
                 </div>
             </div>
+
+            <div class="px-4 py-5 shadow-2 flex flex-column md:flex-row md:align-items-center justify-content-between mb-3" [ngStyle]="{borderRadius: '1rem', background: 'linear-gradient(0deg, rgba(0, 123, 255, 0.5), rgba(0, 123, 255, 0.5)), linear-gradient(92.54deg, #1C80CF 47.88%, #FFFFFF 100.01%)'}">
+           <div>
+               <div class="text-blue-100 font-medium text-xl mt-2 mb-3">TAKE THE NEXT STEP</div>
+               <div class="text-white font-medium text-5xl">Try PrimeBlocks</div>
+           </div>
+           <div class="mt-4 mr-auto md:mt-0 md:mr-0">
+               <a target="_blank" href="https://www.primefaces.org/primeblocks-ng" class="p-button font-bold px-5 py-3 p-button-warning p-button-rounded p-button-raised">
+                   Get Started
+               </a>
+           </div>
+
             <span class="text-green-500 font-medium">25 </span>
             <span class="text-500">responded</span>
         </div>
@@ -86,9 +109,6 @@
             </p-table>
         </div>
     </div>
-    
-
-
     <!-- Third Row with 3 Charts -->
     <div class="col-12 lg:col-4 xl:col-6">
         <div class="card mb-4">
@@ -106,3 +126,4 @@
             <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
         </div>
     </div>
+
