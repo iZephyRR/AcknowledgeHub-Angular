@@ -18,6 +18,9 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+
+import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { ReversePipe } from './reverse.pipe';  // Ensure correct import
 
 @NgModule({
@@ -28,6 +31,7 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     ReversePipe  // Declare ReversePipe here
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
@@ -37,7 +41,9 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule
+    ProfileModule,
+    NgxExtendedPdfViewerModule,
+    PdfViewerModule
   ],
   providers: [
     {

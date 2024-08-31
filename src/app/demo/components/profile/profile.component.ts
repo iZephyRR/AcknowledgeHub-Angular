@@ -13,6 +13,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(private userService: UserService, public layoutService: LayoutService) { }
 
+
   ngOnInit():void{
     this.profile();
   }
