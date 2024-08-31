@@ -51,9 +51,11 @@
 					</div>
 				</div>
 
-				<!-- Tree View -->
+				<!-- Target Select View -->
 				<div class="form-group">
 					<label>Target</label>
+					<button pButton pRipple type="button" [disabled]="targetData.length==0" (click)="saveTarget()"
+						label="Save target" icon="pi pi-save" class="btn btn-success" style="font-size: 15px;"></button>
 					<p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
 						[propagateSelectionDown]="true" [propagateSelectionUp]="true">
 					</p-tree>

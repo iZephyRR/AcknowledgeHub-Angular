@@ -39,4 +39,6 @@ import { TreeTableModule } from 'primeng/treetable';
 	],
 	declarations: [FormLayoutDemoComponent]
 })
-export class FormLayoutDemoModule { }
+export class FormLayoutDemoModule { 
+	
+}

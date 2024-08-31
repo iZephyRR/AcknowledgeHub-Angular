@@ -1,5 +1,6 @@
 export class Email {
     subject:string;
-    message:string | number;
+    message:string;
     address:string;
+    file?:File;
   }

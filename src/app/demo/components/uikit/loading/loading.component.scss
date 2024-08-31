@@ -47,12 +47,15 @@
   height: 100%;
   z-index: 1102;
   background: rgba(255, 255, 255, 0.1);
-  /* Semi-transparent background */
   backdrop-filter: blur(5px);
   overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.hide-bg{
+  background-color: white;
 }
 
 .spinner div:first-child {

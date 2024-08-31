@@ -93,14 +93,6 @@ export class AppTopBarComponent implements OnInit {
     this.cd.detectChanges();
   }
 
-  profile(){
-    this.userService.getUserById().subscribe(data => {
-      console.log(data);
-      this.user = data;
-    });
-
-  }
-
   markAsRead(notification: any): void {
     if (!notification.isRead) {
       this.notificationService.markAsRead(notification.id); // Mark notification as read in service

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Injectable, OnInit, signal, Signal } from '@angular/core';
 import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { jwtDecode, JwtPayload } from 'jwt-decode';
@@ -18,6 +18,7 @@ export class AuthService {
   private _baseUrl: string;
   private _role: Role;
   private _companyId: number;
+  public error=signal('');
   private static readonly ALLOWED_DOMAINS: Set<string> = new Set<string>([
     "@gmail.com",
     "@yahoo.com",
@@ -81,7 +82,7 @@ export class AuthService {
     const decodedToken = this.decodedToken;
     return decodedToken ? decodedToken['sub'] : undefined;
   }
-
+  
   login(credentials: Login) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
@@ -89,6 +90,21 @@ export class AuthService {
    canActivateFor(roles: Role[]) {
       return roles.includes(this.role);
     }
+
+  severConnectionTest():void{
+    this.systemService.showLoading('',true);
+     this.http.get<void>(this.baseUrl+'/sever-connection-test').subscribe({
+      error:(err)=>{
+        console.error(err);
+          this.systemService.hideLoading();
+          this.router.navigate(['/error']);
+      },
+      complete:()=>{
+          this.systemService.hideLoading();
+          this.systemService.restartPage();
+      }
+  });
+  }
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
@@ -104,13 +120,13 @@ export class AuthService {
             } else {
               this.router.navigate(['/']);
               this.systemService.hideLoading();
-              this.messageService.toast('warn', 'Invalid rout', 'You cannot access this rout.')
+              this.messageService.toast('warn', 'You cannot access this rout.')
               console.log('This rout has no permission for ' + JSON.stringify(allowedRoles));
               return false;
             };
           } else {
             console.log('This account has been deactivated!');
-            this.messageService.toast('error', 'Account deactivation.', 'This account has been deactivated!');
+            this.messageService.toast('error', 'This account has been deactivated!');
             this.session.clear();
             this.systemService.hideLoading();
             this.router.navigate(['/auth/login']);
@@ -123,6 +139,7 @@ export class AuthService {
         }
       }),
       catchError((error) => {
+        this.error.set('Error : '+error);
         if (error.status == 403) {
           console.log('Session expired..' + (error.status));
           this.messageService.message('error', 'Session expired.')
@@ -154,10 +171,10 @@ export class AuthService {
   }
 
   async logOut(): Promise<void> {
-    if (await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
+    if ((await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {
       this.messageService.toast('info', 'Logged out.');
       this.session.clear();
-      this.router.navigate(['auth/login']);
+      this.router.navigate(['/auth/login']);
     }
   }
 
@@ -170,6 +187,9 @@ export class AuthService {
     }
   }
 
+  uploadFile():Observable<void>  {
+   return this.http.get<void>(`${this.baseUrl}/test`);
+  }
   static isDomainAvailable(domain: string): boolean {
     return Array.from(this.ALLOWED_DOMAINS).some(allowedDomain => domain.endsWith(allowedDomain));
   }
