@@ -51,8 +51,13 @@ export class AppTopBarComponent implements OnInit {
   ) { }
 
   ngOnInit():void{
+//     this.userService.getUserById().subscribe(data => {
+//       this.user = data;
+//     });
+
     this.profile();
     this.notificationService.loadNotifications();
+
     this.notificationService.unreadCount$.subscribe({
       next: (count) => {
         this.unreadCount = count;
@@ -86,14 +91,6 @@ export class AppTopBarComponent implements OnInit {
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
     this.cd.detectChanges();
-  }
-
-  profile(){
-    this.userService.getUserById().subscribe(data => {
-      console.log(data);
-      this.user = data;
-    });
-
   }
 
   markAsRead(notification: any): void {
@@ -178,4 +175,9 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick() {
     this.layoutService.showConfigSidebar();
   }
+
+  // logOut() {
+  //   this.authService.logOut();
+  // }
+  
 }

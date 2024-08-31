@@ -33,10 +33,12 @@ import { TreeTableModule } from 'primeng/treetable';
 		MultiSelectModule,
 		InputTextareaModule,
 		InputTextModule,
-		ToolbarModule ,
+		ToolbarModule,
 		TreeTableModule,
 		TreeModule  // Add TreeModule to imports
 	],
 	declarations: [FormLayoutDemoComponent]
 })
-export class FormLayoutDemoModule { }
+export class FormLayoutDemoModule { 
+	
+}

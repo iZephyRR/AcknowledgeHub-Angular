@@ -66,7 +66,4 @@ export class LocalStorageService {
     this.saveToStorage();
   }
 
-  restartPage(): void {
-    this.router.navigate(['/']);
-  }
 }

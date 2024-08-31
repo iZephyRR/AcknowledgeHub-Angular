@@ -1,9 +1,4 @@
-<!-- <div class="spinner" *ngIf="canShow">
-    <div class="blob"></div>
-    <div class="ace-logo">ACE</div>
-    <div class="message-container"><p class="message"><strong>{{message}}</strong></p></div>
-  </div> -->
-  <div class="spinner" *ngIf="systemService.isLoading()">
+  <div [ngClass]="{'spinner': true,'hide-bg':systemService.getIsBackgroundHide()}" *ngIf="systemService.isLoading()">
     <div class="blob"></div>
     <div class="ace-logo">ACE</div>
     <div class="message-container"><p class="message"><strong>{{systemService.getLoadingMessage()}}</strong></p></div>
