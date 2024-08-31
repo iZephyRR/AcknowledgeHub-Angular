@@ -6,7 +6,7 @@ import { UIkitRoutingModule } from './uikit-routing.module';
 	imports: [
 		CommonModule,
 		UIkitRoutingModule,
-
+		//BrowserModule
 	]
 })
 export class UIkitModule {
