@@ -1,33 +1,58 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { MenuItem, MessageService } from 'primeng/api';
-import { Product } from '../../api/product';
-import { Subscription, debounceTime } from 'rxjs';
-import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { Subscription } from 'rxjs';
+import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
+import { Announcement } from 'src/app/modules/announcement';
 
 @Component({
+    selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-
-    items!: MenuItem[];
-
-    products!: Product[];
-
-    chartData: any;
-
+    announcements: Announcement[] = [];
+    announcementCount: number = 0; // Property to hold the count
+    lineChartData: any;
+    barChartData: any;
+    pieChartData: any;
+    donutChartData: any;
     chartOptions: any;
-
     subscription!: Subscription;
 
+    constructor(private announcementService: AnnouncementService) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
+        this.fetchAnnouncements();
+        this.countAnnouncements(); // Call the count method on initialization
         this.initChart();
+    }
 
+    fetchAnnouncements(): void {
+        this.subscription = this.announcementService.getAllAnnouncements().subscribe(
+            data => {
+                this.announcements = data;
+                this.updateCharts(data);
+            },
+            error => {
+                console.error('Error fetching announcements', error);
+            }
+        );
+    }
 
-        this.items = [
-            { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-            { label: 'Remove', icon: 'pi pi-fw pi-minus' }
-        ];
+    countAnnouncements(): void {
+        this.announcementService.countAnnouncements().subscribe(
+            (count: number) => {
+                this.announcementCount = count; // Store the result in the property
+            },
+            (error) => {
+                console.error('Error counting announcements', error);
+            }
+        );
+    }
+
+    updateCharts(announcements: Announcement[]): void {
+        // Process the announcements data to update the charts accordingly
+        // This part depends on how you'd like to visualize the data in the charts
+        // For example, you could count the number of announcements per category for the bar chart
+        // Or analyze the status for the donut chart, etc.
     }
 
     initChart() {
@@ -36,24 +61,75 @@ export class DashboardComponent implements OnInit, OnDestroy {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-        this.chartData = {
+        // Example of initial static chart data; this can be updated dynamically in `updateCharts`
+        this.lineChartData = {
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
             datasets: [
                 {
-                    label: 'First Dataset',
+                    label: 'Announcements',
                     data: [65, 59, 80, 81, 56, 55, 40],
                     fill: false,
-                    backgroundColor: documentStyle.getPropertyValue('--bluegray-700'),
-                    borderColor: documentStyle.getPropertyValue('--bluegray-700'),
-                    tension: .4
-                },
+                    borderColor: documentStyle.getPropertyValue('--blue-500'),
+                    tension: 0.4
+                }
+            ]
+        };
+
+        this.barChartData = {
+            labels: ['Holidays', 'Salary', 'Must Know', 'Office Rules', 'General'],
+            datasets: [
                 {
-                    label: 'Second Dataset',
-                    data: [28, 48, 40, 19, 86, 27, 90],
-                    fill: false,
-                    backgroundColor: documentStyle.getPropertyValue('--green-600'),
-                    borderColor: documentStyle.getPropertyValue('--green-600'),
-                    tension: .4
+                    label: 'Category Count',
+                    data: [10, 15, 7, 12, 5],
+                    backgroundColor: [
+                        documentStyle.getPropertyValue('--blue-500'),
+                        documentStyle.getPropertyValue('--orange-500'),
+                        documentStyle.getPropertyValue('--cyan-500'),
+                        documentStyle.getPropertyValue('--green-500'),
+                        documentStyle.getPropertyValue('--purple-500')
+                    ]
+                }
+            ]
+        };
+
+        this.pieChartData = {
+            labels: ['All Employees', 'Managers', 'HR', 'IT Department', 'Finance'],
+            datasets: [
+                {
+                    data: [300, 50, 100, 80, 20],
+                    backgroundColor: [
+                        documentStyle.getPropertyValue('--blue-500'),
+                        documentStyle.getPropertyValue('--orange-500'),
+                        documentStyle.getPropertyValue('--cyan-500'),
+                        documentStyle.getPropertyValue('--green-500'),
+                        documentStyle.getPropertyValue('--purple-500')
+                    ],
+                    hoverBackgroundColor: [
+                        documentStyle.getPropertyValue('--blue-600'),
+                        documentStyle.getPropertyValue('--orange-600'),
+                        documentStyle.getPropertyValue('--cyan-600'),
+                        documentStyle.getPropertyValue('--green-600'),
+                        documentStyle.getPropertyValue('--purple-600')
+                    ]
+                }
+            ]
+        };
+
+        this.donutChartData = {
+            labels: ['Completed', 'In Progress', 'Pending'],
+            datasets: [
+                {
+                    data: [30, 50, 20],
+                    backgroundColor: [
+                        documentStyle.getPropertyValue('--green-500'),
+                        documentStyle.getPropertyValue('--yellow-500'),
+                        documentStyle.getPropertyValue('--red-500')
+                    ],
+                    hoverBackgroundColor: [
+                        documentStyle.getPropertyValue('--green-600'),
+                        documentStyle.getPropertyValue('--yellow-600'),
+                        documentStyle.getPropertyValue('--red-600')
+                    ]
                 }
             ]
         };
@@ -72,8 +148,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         color: textColorSecondary
                     },
                     grid: {
-                        color: surfaceBorder,
-                        drawBorder: false
+                        color: surfaceBorder
                     }
                 },
                 y: {
@@ -81,15 +156,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
                         color: textColorSecondary
                     },
                     grid: {
-                        color: surfaceBorder,
-                        drawBorder: false
+                        color: surfaceBorder
                     }
                 }
             }
         };
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }

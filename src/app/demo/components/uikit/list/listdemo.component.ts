@@ -47,13 +47,13 @@ export class ListDemoComponent implements OnInit {
         name: categoryName.trim(),
         status: 'ACTIVE'
     };
-    
+
     this.categoryService.createCategory(newCategory).pipe(
       catchError(error => {
-        if (error.status === 400) { 
+        if (error.status === 400) {
           this.messagedemoService.message('error', 'This category already exists!');
-         
-        } 
+
+        }
         return throwError(error);
      })
      )
@@ -73,7 +73,7 @@ export class ListDemoComponent implements OnInit {
         },
         error => {
             console.error('Error creating category', error);
-           
+
         }
     );
 }
@@ -122,92 +122,12 @@ export class ListDemoComponent implements OnInit {
       this.buttonLabel = 'Add Category';
     }
   }
-  
+
   onGlobalFilter(table: Table, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     table.filterGlobal(filterValue, 'contains');
   }
 
-  // delete(categoryId: number, status: Status): void {
-  //   if (status === 'ACTIVE') {
-  //     this.confirmationService.confirm({
-  //       message: 'Are you sure you want to delete this category?',
-  //       header: 'Delete Confirmation',
-  //       icon: 'pi pi-exclamation-triangle',
-  //       accept: () => {
-  //         this.categoryService.softDeleteCategory(categoryId).subscribe({
-  //          complete:()=>{
-  //           this.findAll();
-  //             this.messageService.add({
-  //               severity: 'success',
-  //               summary: 'Success',
-  //               detail: 'Category has been deleted successfully!'
-  //             }); 
-  //          },
-              
-  //           error:(err) => {
-  //            {
-  //             console.error('Error deleting category',err);
-  //             this.messageService.add({
-  //               severity: 'error',
-  //               summary: 'Error',
-  //               detail: 'Failed to delete the category.'
-  //             });
-  //            }
-  //           }
-  //         });
-  //       },
-  //       reject: () => {
-  //         console.log('Delete action cancelled');
-  //         this.messageService.add({
-  //           severity: 'info',
-  //           summary: 'Cancelled',
-  //           detail: 'Delete action cancelled.'
-  //         });
-  //       }
-  //     });
-  //   }
-  //   else if (status === 'SOFT_DELETE') {
-  //     this.confirmationService.confirm({
-  //       message: 'Do you want to restore this category?',
-  //       header: 'Restore Confirmation',
-  //       icon: 'pi pi-exclamation-triangle',
-  //       accept: () => {
-  //         this.categoryService.softUndeleteCategory(categoryId).subscribe({
-  //         complete:()=>{
-  //           this.findAll();
-  //           this.messageService.add({ 
-  //             severity: 'success', 
-  //             summary: 'Success', 
-  //             detail: 'Category has been restored successfully!' 
-  //           });
-  //         },
-  //         error:(err)=>{
-  //           {
-  //             console.error('Error restoring category', err);
-  //             this.messageService.add({ 
-  //               severity: 'error', 
-  //               summary: 'Error', 
-  //               detail: 'Failed to restore the category.' 
-  //             });
-  //           }
-  //         }
-  //         });
-            
-  //       },
-  //       reject: () => {
-  //         console.log('Restore action cancelled');
-  //         this.messageService.add({ 
-  //           severity: 'info', 
-  //           summary: 'Cancelled', 
-  //           detail: 'Restore action cancelled.' 
-  //         });
-  //       }
-  //     });
-  //   }
-  
-
- // }
  async delete(categoryId: number, status: Status): Promise<void> {
   if (status === 'ACTIVE') {
     if(await this.messagedemoService.confirmed('Delete Confirmation','Do you want to delete this category?','Yes','No','WHITE','BLUE')){
@@ -222,6 +142,44 @@ export class ListDemoComponent implements OnInit {
            this.messagedemoService.message('error','Failed to delete the category.');
           }
          }
+
+  delete(categoryId: number, status: Status): void {
+    if (status === 'ACTIVE') {
+      this.confirmationService.confirm({
+        message: 'Are you sure you want to delete this category?',
+        header: 'Delete Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.categoryService.softDeleteCategory(categoryId).subscribe({
+           complete:()=>{
+            this.findAll();
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Success',
+                detail: 'Category has been deleted successfully!'
+              });
+           },
+
+            error:(err) => {
+             {
+              console.error('Error deleting category',err);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to delete the category.'
+              });
+             }
+            }
+          });
+        },
+        reject: () => {
+          console.log('Delete action cancelled');
+          this.messageService.add({
+            severity: 'info',
+            summary: 'Cancelled',
+            detail: 'Delete action cancelled.'
+          });
+        }
       });
     }else{
       console.log('Delete action cancelled');
@@ -237,7 +195,7 @@ export class ListDemoComponent implements OnInit {
         },
         error:(err)=>{
             console.error('Error restoring category', err);
-            this.messagedemoService.message('error','Failed to restore the category.');
+            this.messagedemoService.message('error','Failed to restore the category.'); 
         }
         });
     }else{

@@ -8,17 +8,15 @@ import { Announcement } from 'src/app/modules/announcement';
   providedIn: 'root',
 })
 export class AnnouncementService {
-
   private baseUrl = 'http://localhost:8080/api/v1/announcement';
 
-  constructor(private http : HttpClient,
-    private authService : AuthService
-  ) { }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  createAnnouncement (announcement : FormData) : Observable<Announcement> {
+  createAnnouncement(announcement: FormData): Observable<Announcement> {
     return this.http.post<Announcement>(`${this.baseUrl}/create`, announcement);
   }
 
+  // Fetch all announcements
   getAllAnnouncements(): Observable<Announcement[]> {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
   }
@@ -27,6 +25,9 @@ export class AnnouncementService {
   getAnnouncementsForAugToOct2024(): Observable<Map<string, Announcement[]>> {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/aug-to-oct-2024`);
   }
-
-
+  
+  countAnnouncements(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/count`); // Adjust the endpoint as necessary
+  }
 }
+

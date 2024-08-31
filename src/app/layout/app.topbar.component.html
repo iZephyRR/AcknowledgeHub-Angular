@@ -22,10 +22,15 @@
         <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
       <div class="notification-items">
-        <div class="notification-item" *ngFor="let notification of notifications" (click)="markAsRead(notification)"
-          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
+        <div
+          class="notification-item"
+          *ngFor="let notification of notifications "
+          (click)="markAsRead(notification)"
+          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
+        >
+
           <p class="notification-message">{{ notification.message }}</p>
-          <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>
+        <!-- <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>  -->
         </div>
       </div>
     </div>
@@ -42,7 +47,9 @@
     </button>
 
     <!-- Logout Button -->
-    <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
+    <button
+      class="layout-topbar-button p-link"
+      type="button" (click)="authService.logOut()"
       <i class="pi pi-sign-out"></i>
     </button>
 
@@ -298,3 +305,4 @@
     padding-top: 5rem;
   }
 </style>
+
