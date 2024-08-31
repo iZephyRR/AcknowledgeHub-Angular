@@ -264,18 +264,6 @@ export class FormLayoutDemoComponent implements OnInit {
     this.scheduleDate = new Date(); // Reset the schedule date
   }
 
-  test(): void {
-    this.customTargetGroupService.findAll().subscribe({
-      next: (data) => {
-        console.log(JSON.stringify(data));
-        console.log('data 1 '+JSON.stringify(data[1].customTargetGroupEntities))
-        this.selectedTargets=this.mapTargetsToTreeNodes(data[1].customTargetGroupEntities,this.selectedTargets);
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });
-  }
 
   isImage(): boolean {
     return this.filename?.match(/\.(jpg|jpeg|png|gif)$/i) !== null;
