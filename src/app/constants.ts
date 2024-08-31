@@ -4,6 +4,12 @@ export type MessageType = 'info' | 'warn' | 'error' | 'success';
 
 export type Role = 'ADMIN' | 'MAIN_HR' | 'MAIN_HR_ASSISTANCE' | 'HR' | 'HR_ASSISTANCE' | 'STUFF';
 
+export type AnnouncementStatus ='EDITING'| 'PENDING'| 'APPROVED'| 'DECLINED';
+
+export type ContentType ='AUDIO'| 'EXCEL'| 'IMAGE'| 'PDF'| 'VIDEO';
+
+export type Status2 ='FALSE'| 'TRUE'| 'TRUE_PENDING';
+
 export type Color = 
   'ALICEBLUE' | 'ANTIQUEWHITE' | 'AQUA' | 'AQUAMARINE' | 'AZURE' | 'BEIGE' |
   'BISQUE' | 'BLACK' | 'BLANCHEDALMOND' | 'BLUE' | 'BLUEVIOLET' | 'BROWN' |

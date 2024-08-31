@@ -2,21 +2,13 @@
   <a class="layout-topbar-logo" routerLink="">
     <span>ACE DataSystem</span>
   </a>
-  <button
-    #menubutton
-    class="p-link layout-menu-button layout-topbar-button"
-    (click)="layoutService.onMenuToggle()"
-  >
+  <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
     <i class="pi pi-bars"></i>
   </button>
 
-  <div
-    #topbarmenu
-    class="layout-topbar-menu"
-    [ngClass]="{
+  <div #topbarmenu class="layout-topbar-menu" [ngClass]="{
       'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
-    }"
-  >
+    }">
     <!-- Notification Bell Icon -->
     <div class="notification-icon" (click)="toggleNotificationDropdown()">
       <i class="pi pi-bell"></i>
@@ -30,12 +22,8 @@
         <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
       <div class="notification-items">
-        <div
-          class="notification-item"
-          *ngFor="let notification of notifications"
-          (click)="markAsRead(notification)"
-          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
-        >
+        <div class="notification-item" *ngFor="let notification of notifications" (click)="markAsRead(notification)"
+          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
           <p class="notification-message">{{ notification.message }}</p>
           <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>
         </div>
@@ -44,211 +32,269 @@
 
     <!-- Profile Button -->
     <button class="p-link layout-topbar-button" (click)="showProfileCard()">
-      <i class="pi pi-user"></i>
+      <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
       <span>Profile</span>
     </button>
 
     <!-- Config Button -->
-    <button
-      class="layout-config-button layout-topbar-button p-link"
-      type="button"
-      (click)="onConfigButtonClick()"
-    >
+    <button class="layout-config-button layout-topbar-button p-link" type="button" (click)="onConfigButtonClick()">
       <i class="pi pi-cog"></i>
     </button>
 
     <!-- Logout Button -->
-    <button
-      class="layout-topbar-button p-link"
-      type="button" (click)="authService.logOut()"
-      
-    >
+    <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
       <i class="pi pi-sign-out"></i>
     </button>
-    
+
   </div>
 </div>
 
 <!-- Profile Sidebar Card -->
 <div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
-  <div class="profile-card" [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
+  <div class="profile-card"
+    [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
 
-       <button (click)="closeProfileCard()" [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
-          &times;
+    <button (click)="closeProfileCard()"
+      [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
+      &times;
+    </button>
+    <div class="card-header">
+      <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
+      <button (click)="onChangeProfile()" class="change-profile-btn">
+        <i class="fas fa-edit"></i>
+        Change Profile
       </button>
-  <div class="card-header">
-    <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
+      <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
 
+    </div>
+    <div class="card-body">
+      <h2>{{ user.employee.name }}</h2>
+      <p>{{ user.employee.role }}</p>
+      <p><strong>Email:</strong> {{ user.employee.email }}</p>
+      <p><strong>Company:</strong> {{ user.companyName }}</p>
+      <p><strong>Department:</strong> {{ user.departmentName }}</p>
+
+    </div>
   </div>
-  <div class="card-body">
-    <h2>{{ user?.name }}</h2>
-    <p>{{ user?.role }}</p>
-    <p><strong>Email:</strong> {{ user?.email }}</p>
-    <p><strong>Company:</strong> {{ user?.company.name }}</p>
-    <p><strong>Department:</strong> {{ user?.department.name }}</p>
-   
-  </div>
-</div>
 </div>
 
 <style>
-.unread-notification {
-background-color: #f0f0f0; /* Light background for unread notifications */
-}
+  .profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 8px;
+  }
 
-.read-notification {
-background-color: #e0e0e0; /* Different background for read notifications */
-}
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 16px;
+  }
 
-.notification-icon {
-position: relative;
-cursor: pointer;
-font-size: 24px;
-}
+  .profile-img {
+    width: 100px;
+    /* Adjust size as needed */
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 16px;
+  }
 
-.notification-badge {
-position: absolute;
-top: -5px;
-right: -10px;
-background-color: red;
-color: white;
-border-radius: 50%;
-padding: 0.25rem;
-font-size: 0.75rem;
-z-index: 1;
-}
+  .change-profile-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    /* Position the button at the bottom, adjust as needed */
+    width: 100%;
+  }
 
-.notification-dropdown {
-position: absolute;
-right: 0;
-top: 100%;
-background-color: white;
-border: 1px solid #ddd;
-border-radius: 4px;
-width: 300px;
-max-height: 400px;
-overflow-y: auto;
-box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-z-index: 2;
-display: flex;
-flex-direction: column;
-}
+  .change-profile-btn {
+    background-color: #3f99f9;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
 
-.notification-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px;
-border-bottom: 1px solid #ddd;
-background-color: #f0f0f0;
-}
+  .change-profile-btn i {
+    margin-right: 5px;
+  }
 
-.notification-items {
-flex: 1;
-overflow-y: auto;
-}
+  .change-profile-btn:hover {
+    background-color: #0056b3;
+    /* Customize hover color */
+  }
 
-.notification-item {
-padding: 10px;
-border-bottom: 1px solid #ddd;
-display: flex;
-justify-content: space-between;
-align-items: center;
-transition: background-color 0.3s ease;
-cursor: pointer;
-}
+  .card-body {
+    padding: 16px;
+  }
 
-.notification-item:hover {
-background-color: #f7f7f7;
-}
+  .unread-notification {
+    background-color: #f0f0f0;
+    /* Light background for unread notifications */
+  }
 
-.notification-message {
-font-weight: bold;
-flex-grow: 1;
-margin-right: 10px;
-}
+  .read-notification {
+    background-color: #e0e0e0;
+    /* Different background for read notifications */
+  }
 
-.notification-timestamp {
-font-size: 0.75rem;
-color: gray;
-white-space: nowrap;
-}
+  .notification-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 24px;
+  }
 
-.notification-item:last-child {
-border-bottom: none;
-}
+  .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 0.25rem;
+    font-size: 0.75rem;
+    z-index: 1;
+  }
 
-.mark-as-read-button {
-background-color: transparent;
-border: none;
-cursor: pointer;
-font-weight: bold;
-color: #007bff;
-}
+  .notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+  }
 
-.mark-as-read-button:hover {
-color: #0056b3;
-}
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f0f0f0;
+  }
 
-.profile-card {
-width: 350px;
-margin: 20px auto;
-padding: 20px;
-background-color: #fff;
-border-radius: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-transition: transform 0.3s ease;
-}
+  .notification-items {
+    flex: 1;
+    overflow-y: auto;
+  }
 
-.profile-card:hover {
-transform: scale(1.05);
-}
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
 
-.card-header {
-text-align: center;
-margin-bottom: 15px;
-}
+  .notification-item:hover {
+    background-color: #f7f7f7;
+  }
 
-.profile-img {
-width: 120px;
-height: 120px;
-border-radius: 50%;
-object-fit: cover;
-border: 4px solid #007bff;
-}
+  .notification-message {
+    font-weight: bold;
+    flex-grow: 1;
+    margin-right: 10px;
+  }
 
-.card-body {
-text-align: center;
-}
+  .notification-timestamp {
+    font-size: 0.75rem;
+    color: gray;
+    white-space: nowrap;
+  }
 
-h2 {
-font-size: 1.5rem;
-color: #333;
-margin: 10px 0;
-}
+  .notification-item:last-child {
+    border-bottom: none;
+  }
 
-p {
-margin: 5px 0;
-color: #666;
-}
+  .mark-as-read-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #007bff;
+  }
 
-p strong {
-color: #333;
-}
+  .mark-as-read-button:hover {
+    color: #0056b3;
+  }
 
-@media (max-width: 768px) {
-.notification-dropdown {
-  width: 100%;
-  right: 0;
-}
+  .profile-card {
+    width: 350px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+  }
 
-.layout-topbar-menu {
-  flex-direction: column;
-  gap: 1rem;
-}
-}
+  .profile-card:hover {
+    transform: scale(1.05);
+  }
 
-body {
-padding-top: 5rem;
-}
+  .card-header {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+
+  .profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #007bff;
+  }
+
+  .card-body {
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 10px 0;
+  }
+
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
+
+  p strong {
+    color: #333;
+  }
+
+  @media (max-width: 768px) {
+    .notification-dropdown {
+      width: 100%;
+      right: 0;
+    }
+
+    .layout-topbar-menu {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  body {
+    padding-top: 5rem;
+  }
 </style>

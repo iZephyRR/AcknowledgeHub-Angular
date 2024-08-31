@@ -7,7 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 	imports: [
 		CommonModule,
 		UIkitRoutingModule,
-		BrowserModule
+		//BrowserModule
 	]
 })
 export class UIkitModule {

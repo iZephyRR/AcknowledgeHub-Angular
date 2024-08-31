@@ -25,3 +25,8 @@ export interface User {
     status:Status;
   
 }
+export interface UserProfile {
+    employee: User;
+    companyName: string;
+    departmentName: string;
+  }
