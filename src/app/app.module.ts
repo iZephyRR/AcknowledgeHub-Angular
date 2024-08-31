@@ -18,6 +18,9 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
@@ -28,6 +31,10 @@ import { ReversePipe } from './reverse.pipe';  // Ensure correct import
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
+    ProgressBarComponent
+  ],
+  imports: [
+    ProgressBarModule,
     ReversePipe  // Declare ReversePipe here
   ],
   imports: [

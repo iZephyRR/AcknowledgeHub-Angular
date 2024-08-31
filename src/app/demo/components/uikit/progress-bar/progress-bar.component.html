@@ -1,0 +1,6 @@
+<div [ngClass]="{'bg-block':systemService.getBlockBackground()}" *ngIf="0<systemService.getProgress() && systemService.getProgress()<101">
+  <div class="progress-bar">
+    <p style="column-gap: normal;">{{systemService.getMessage()}}</p>
+    <p-progressBar [value]="systemService.getProgress()" [showValue]="systemService.getShowValue()"></p-progressBar>
+  </div>
+</div>

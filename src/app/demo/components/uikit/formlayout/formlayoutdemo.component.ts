@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { TreeNode } from 'primeng/api';
 
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
@@ -14,6 +14,8 @@ import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
 import { NotificationService } from 'src/app/services/notifications/notification service';
+import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
+import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 import { SystemService } from 'src/app/services/system/system.service';
 import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 
@@ -22,11 +24,11 @@ import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
   templateUrl: './formlayoutdemo.component.html',
 })
 export class FormLayoutDemoComponent implements OnInit {
+
   categories: Category[] = [];
   departments: Department[] = [];
   companies: any[] = [];
   target: AnnouncementTarget;
-
   title: string = '';
   selectedCategory: any;
   showDatePicker: boolean = false;
@@ -35,8 +37,7 @@ export class FormLayoutDemoComponent implements OnInit {
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   file: File;
-  //fileType?: string;
-  selectedTargets: TreeNode[] = [];
+  selectedTargets:TreeNode[]=[];
   treeNodes: any[] = [];
   role: string;
   companyId: number;
@@ -47,9 +48,11 @@ export class FormLayoutDemoComponent implements OnInit {
     private categoryService: CategoryService,
     private messageService: MessageDemoService,
     private authService: AuthService,
+    private customTargetGroupService: CustomTargetGroupService,
     private systemService: SystemService,
     private maptotreeService : MaptotreeService
   ) { }
+
 
   onScheduleOptionChange() {
     if (this.scheduleOption === 'later') {
@@ -212,6 +215,28 @@ export class FormLayoutDemoComponent implements OnInit {
     return targetData;
   }
 
+  async saveTarget(): Promise<void> {
+    const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
+    if (confirmed.confirmed) {
+      this.systemService.showProgress('Saving custom target...', true, false, 3);
+      const title: string = confirmed.inputValue;
+      this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
+        next: () => {
+          this.systemService.stopProgress().then(() => {
+            this.messageService.toast('success', 'Saved a custom target.');
+          });
+        },
+        error: (err) => {
+          console.error(err);
+          this.systemService.stopProgress('ERROR').then(() => {
+            this.messageService.toast('error', 'An unknown error occured, please contect to IT Support.');
+          });
+        }
+      });
+    }
+
+  }
+
   onFileChange(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -233,10 +258,23 @@ export class FormLayoutDemoComponent implements OnInit {
 
   resetForm(form: NgForm) {
     form.reset();
-    this.selectedTargets = [];
+    this.selectedTargets=[];
     this.showDatePicker = false;  // Hide the date picker
     this.scheduleOption = 'now';  // Reset schedule option to 'now'
     this.scheduleDate = new Date(); // Reset the schedule date
+  }
+
+  test(): void {
+    this.customTargetGroupService.findAll().subscribe({
+      next: (data) => {
+        console.log(JSON.stringify(data));
+        console.log('data 1 '+JSON.stringify(data[1].customTargetGroupEntities))
+        this.selectedTargets=this.mapTargetsToTreeNodes(data[1].customTargetGroupEntities,this.selectedTargets);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   isImage(): boolean {

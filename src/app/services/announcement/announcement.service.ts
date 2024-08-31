@@ -27,6 +27,8 @@ export class AnnouncementService {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/aug-to-oct-2024`);
   }
 
+  // Custom group data...
+
   // save draft
   saveDraft(draft : FormData): Observable<Announcement> {
     return this.http.post<Announcement>(`${this.baseUrl}/uploadDraft`,draft);

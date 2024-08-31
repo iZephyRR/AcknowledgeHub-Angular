@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/services/auth/auth.service';
 import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
@@ -9,8 +10,8 @@ import { SystemService } from 'src/app/services/system/system.service';
   styleUrl: './server-error.component.scss'
 })
 export class ServerErrorComponent implements OnInit{
-constructor(private systemService:SystemService){}
+constructor(public systemService:SystemService,public authService:AuthService){}
 ngOnInit(): void {
-  this.systemService.hideLoading();
+  this.authService.severConnectionTest();
 }
 }
