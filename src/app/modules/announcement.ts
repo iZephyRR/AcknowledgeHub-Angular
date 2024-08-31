@@ -2,14 +2,11 @@ import { ContentType } from "../constants";
 
 
 export interface Announcement {
-  title: any;
-  department: any;
-    // id:number;
-    // createdAt:string;
-    // file : string;
-    // title : string;
-    // status:string;
-    // categoryName : string;
-    // createdBy: string;
-    // contentType: ContentType;
+    id:number;
+    created_at:Date;
+    file : string;
+    title : string;
+    categoryName : string;
+    creater: string;
+    contentType: ContentType;
 }

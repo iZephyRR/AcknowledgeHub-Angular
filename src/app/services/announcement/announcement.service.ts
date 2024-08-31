@@ -21,12 +21,13 @@ export class AnnouncementService {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
   }
 
-  
   // Fetch announcements for August to October 2024
   getAnnouncementsForAugToOct2024(): Observable<Map<string, Announcement[]>> {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/aug-to-oct-2024`);
   }
+  
   countAnnouncements(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/count`); // Adjust the endpoint as necessary
   }
 }
+
