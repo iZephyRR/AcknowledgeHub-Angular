@@ -9,15 +9,17 @@ import { Draft } from 'src/app/modules/draft';
   providedIn: 'root',
 })
 export class AnnouncementService {
-
   private baseUrl = 'http://localhost:8080/api/v1/announcement';
 
-  constructor(private http : HttpClient,
-    private authService : AuthService
-  ) { }
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
-  createAnnouncement (announcement : FormData) : Observable<Announcement> {
+  createAnnouncement(announcement: FormData): Observable<Announcement> {
     return this.http.post<Announcement>(`${this.baseUrl}/create`, announcement);
+  }
+
+  // Fetch all announcements
+  getAllAnnouncements(): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
   }
 
   // Fetch announcements for August to October 2024
@@ -41,5 +43,9 @@ export class AnnouncementService {
   deleteDraft(draftId : number) : Observable<String> {
     return this.http.delete<String>(`${this.baseUrl}/delete-draft/${draftId}`);
   }
-
+  
+  countAnnouncements(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/count`); // Adjust the endpoint as necessary
+  }
 }
+

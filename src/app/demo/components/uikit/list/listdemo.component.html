@@ -1,17 +1,18 @@
-<div class="d-flex align-items-center gap-2">
-  <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
-    placeholder="Category" pTooltip="Enter Category">
-  <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
-    {{ buttonLabel }}
-  </button>
-</div>
+
 
 <div class="grid">
   <div class="col-12">
     <div class="card">
       <h5>Category List</h5>
+      <div class="d-flex align-items-center gap-2">
+        <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
+          placeholder="Category" pTooltip="Enter Category">
+        <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
+          {{ buttonLabel }}
+        </button>
+      </div>
       <p-confirmDialog></p-confirmDialog>
-      <p-table #dt2 [value]="categories" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
+      <p-table #dt2 [value]="categories" dataKey="id" [rows]="5" [loading]="loading" [rowHover]="true"
         styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name']" responsiveLayout="scroll">
         <ng-template pTemplate="caption">
           <div class="flex justify-content-between flex-column sm:flex-row">
@@ -59,9 +60,6 @@
     </div>
   </div>
 </div>
-
-
-
 
 <style>
   .d-flex {

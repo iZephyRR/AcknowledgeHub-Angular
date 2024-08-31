@@ -9,7 +9,7 @@ import { NotfoundComponent } from './demo/components/notfound/notfound.component
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
 import { ProfileModule } from './demo/components/profile/profile.module';
-import { AppLayoutModule } from './layout/app.layout.module'; // Ensure this path is correct
+import { AppLayoutModule } from './layout/app.layout.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -18,14 +18,17 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
 import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { ReversePipe } from './reverse.pipe';  // Ensure correct import
 
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
-    LoadingComponent
+    LoadingComponent,
+    ReversePipe  // Declare ReversePipe here
   ],
   imports: [
     CommonModule,
@@ -49,6 +52,7 @@ import { PdfViewerModule } from 'ng2-pdf-viewer';
     },
     AuthGuard,
     MessageService,
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
