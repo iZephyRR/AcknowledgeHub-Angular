@@ -30,12 +30,13 @@
 								class="p-button-secondary mr-2" (click)="fileInput.click()"></button>
 						</div>
 					</p-toolbar>
+
 					<!-- Hidden file input -->
 					<input type="file" id="media" name="media"
-						accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+						accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
 						(change)="onFileChange($event)" #fileInput style="display: none;" />
-					<!-- Display the selected file name -->
 
+					<!-- Display the selected file name -->
 					<div *ngIf="filePreview">
 						<p class="mt-3">File selected: {{filename}}</p>
 						<div *ngIf="isImage()">
@@ -50,9 +51,11 @@
 					</div>
 				</div>
 
-				<!-- Tree View -->
+				<!-- Target Select View -->
 				<div class="form-group">
 					<label>Target</label>
+					<button pButton pRipple type="button" [disabled]="targetData.length==0" (click)="saveTarget()"
+						label="Save target" icon="pi pi-save" class="btn btn-success" style="font-size: 15px;"></button>
 					<p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
 						[propagateSelectionDown]="true" [propagateSelectionUp]="true">
 					</p-tree>
@@ -82,14 +85,15 @@
 						showTime="true" hourFormat="24"></p-calendar>
 				</div>
 
-
 				<!-- Submit Button -->
 				<div class="form-group">
-					<button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid" label="Submit"
+					<button pButton pRipple type="submit"
+						[disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Create"
 						icon="pi pi-check" class="btn-primary"></button> &nbsp;
-					<button pButton pRipple type="button" [disabled]="sendAnnouncement.invalid" label="Save"
-						icon="pi pi-save" class="btn-success"></button> &nbsp;
-					<button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel"
+					<button pButton pRipple type="button"
+						[disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Save"
+						(click)="saveToDraft(sendAnnouncement)" icon="pi pi-save" class="btn-success"></button> &nbsp;
+					<button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel" icon="pi pi-"
 						class="btn-secondary"></button> &nbsp;
 					<button pButton pRipple type="button" label="Delete" icon="pi pi-trash" class="btn-danger"></button>
 				</div>
@@ -111,11 +115,11 @@
 
 	/* Container Styles */
 	.container {
-		display: flex;
+		display: flex; 
 		justify-content: center;
 		align-items: center;
-		height: 100vh;
-		padding: 20px;
+		/* height: 100vh;
+		padding: 20px; */
 	}
 
 	/* Form Card Styles */

@@ -1,0 +1,33 @@
+.progress-bar {
+  position: fixed;
+  bottom: 2%;
+  right: 1%;
+  min-width: 250px;
+  border-radius: 5px;
+  border-color: gray;
+  border-width: 2px;
+  border-style: outset;
+  padding: 7px;
+  background-color: whitesmoke;
+  width: 20%;
+}
+
+.bg-block {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .progress-bar {
+    position: relative;
+  }
+}
+p {
+  overflow-wrap: break-word;
+}
