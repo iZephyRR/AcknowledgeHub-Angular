@@ -66,37 +66,44 @@ export class FormLayoutDemoComponent implements OnInit {
   ngOnInit() {
     this.role = this.authService.role;
     this.companyId = this.authService.companyId;
-    this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
-    });
+    this.loadCategories();
 
-    if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
+    if (this.role === 'HR' || this.role === 'HR_ASSISTANCE') {
       this.getCompanyById(this.companyId);
     } else {
       this.getAllCompanies();
     }
   }
 
-  getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(data => {
-      this.companies = data.map(company => this.maptotreeService.mapCompanyToTreeNode(company));
-      console.log('Mapped TreeNode Structure:', this.companies);
-    }, error => {
-      console.error('Error fetching companies data:', error);
+  loadCategories(): void {
+    this.categoryService.getAllCategories().subscribe(data => {
+      this.categories = data;
     });
   }
 
-  getCompanyById(companyId: number): void {
-    this.companyService.getCompanyById(companyId).pipe(
-      map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
-    ).subscribe(
-      (treeNode) => {
-        this.companies = [treeNode];
+  getAllCompanies(): void {
+    this.companyService.getAllCompanies().subscribe(
+      data => {
+        this.companies = data.map(company => this.maptotreeService.mapCompanyToTreeNode(company));
       },
-      (error) => {
-        console.error('Error fetching company data:', error);
+      error => {
+        console.error('Error fetching companies data:', error);
       }
     );
+  }
+
+  getCompanyById(companyId: number): void {
+    this.companyService
+      .getCompanyById(companyId)
+      .pipe(map(company => this.maptotreeService.mapCompanyToTreeNode(company)))
+      .subscribe(
+        treeNode => {
+          this.companies = [treeNode];
+        },
+        error => {
+          console.error('Error fetching company data:', error);
+        }
+      );
   }
 
   toggleDatePicker(show: boolean): void {
@@ -109,30 +116,22 @@ export class FormLayoutDemoComponent implements OnInit {
       fileInput.click();
     }
   }
-
-  // on submit
-  onSubmit(form: NgForm): void {
-    this.systemService.showLoading('Processing...');
+// on submit
+onSubmit(form: NgForm): void {
     const formData = this.prepareFormData();
-
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
-        console.log('error status ' + error.status);
+        console.error('Error status:', error.status);
+        this.messageService.toast("error", "Can't Create");
         return throwError(error);
       })
-    ).subscribe(
-      {
-        complete: () => {
-          this.messageService.toast("success", "Announcement Created");
-          this.resetForm(form);
-          this.clearPreview();
-        },
-        error: (err) => {
-          this.messageService.toast("error", "Can't Create");
-        }
+    ).subscribe({
+      complete: () => {
+        this.messageService.toast("success", "Announcement Created");
+        this.resetForm(form);
+        this.clearPreview();
       }
-    );
-    this.systemService.hideLoading();
+    });
   }
 
   // save to draft
@@ -192,29 +191,29 @@ export class FormLayoutDemoComponent implements OnInit {
     return formData;
   }
 
-  get targetData():AnnouncementTarget[] {
+  get targetData(): AnnouncementTarget[] {
     const selectedCompanyIds: number[] = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);
+
     const targetData: AnnouncementTarget[] = this.selectedTargets
       .filter(target => {
         if (target.data.type === "COMPANY") {
-          return true; // Always include the company
+          return true;
         }
         if (target.data.type === "DEPARTMENT") {
           const parentCompanyId: number = target.data.companyId;
-          // Exclude the department if its parent company is selected
           return !selectedCompanyIds.includes(parentCompanyId);
         }
-        return false; // Exclude any other type (safety net)
+        return false;
       })
       .map(target => ({
         sendTo: target.data.id,
         receiverType: target.data.type
       }));
+
     return targetData;
   }
-
   async saveTarget(): Promise<void> {
     const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
     if (confirmed.confirmed) {
@@ -255,18 +254,18 @@ export class FormLayoutDemoComponent implements OnInit {
     this.filename = undefined;
     this.selectedTargets= null;
   }
-  saveDraft(): void {
-    console.log('Draft saved');
-    // Additional logic to save the draft
-  }
-  resetForm(form: NgForm) {
-    form.reset();
-    this.selectedTargets=[];
-    this.showDatePicker = false;  // Hide the date picker
-    this.scheduleOption = 'now';  // Reset schedule option to 'now'
-    this.scheduleDate = new Date(); // Reset the schedule date
-  }
 
+  resetForm(form: NgForm) {
+    form.resetForm();
+    this.selectedTargets = [];
+    this.selectedCategory = null;
+    this.loadCategories(); // Refresh categories
+    this.getAllCompanies(); // Refresh targets (companies)
+    this.clearPreview();
+    this.showDatePicker = false;
+    this.scheduleOption = 'now';
+    this.scheduleDate = new Date();
+  }
 
   isImage(): boolean {
     return this.filename?.match(/\.(jpg|jpeg|png|gif)$/i) !== null;
@@ -278,5 +277,9 @@ export class FormLayoutDemoComponent implements OnInit {
 
   isAudio(): boolean {
     return this.filename?.match(/\.(mp3|wav|ogg)$/i) !== null;
+  }
+  saveDraft(): void {
+    console.log('Draft saved');
+    // Additional logic to save the draft
   }
 }

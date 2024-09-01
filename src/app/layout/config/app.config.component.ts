@@ -29,8 +29,6 @@ export class AppConfigComponent {
         private systemService: SystemService
     ) {}
 
-
-
     get visible(): boolean {
         return this.layoutService.state.configSidebarVisible;
     }
@@ -42,11 +40,17 @@ export class AppConfigComponent {
         this.showLogoutConfirmation = true;  // Show the confirmation dialog
     }
 
-    async confirmLogout(): Promise<void> {
-
-            this.messageService.toast('info', 'Logged out.');
-            this.router.navigate(['/auth/login']); // Navigate to login page
-             this.showLogoutConfirmation = false; // Hide the confirmation dialog
+    confirmLogout(): void {
+        try {
+            // Clear local session data
+            this.session.clear();
+            this.messageService.toast('info', 'Logged out successfully.');
+            this.router.navigate(['/auth/login']);  // Navigate to login page
+        } catch (error) {
+            this.messageService.toast('error', 'Logout failed. Please try again.');
+        } finally {
+            this.showLogoutConfirmation = false;  // Hide the confirmation dialog
+        }
     }
 
     cancelLogout(): void {
@@ -115,6 +119,7 @@ export class AppConfigComponent {
     onConfigButtonClick() {
         this.layoutService.showConfigSidebar();
     }
+
     changeTheme(theme: string, mode: string) {
         const themePath = `assets/layout/styles/theme/${theme}/theme.css`;
         document.getElementById('theme-css').setAttribute('href', themePath);
