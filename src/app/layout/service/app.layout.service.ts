@@ -64,16 +64,15 @@ export class LayoutService {
         private session: LocalStorageService,
         private router: Router,
         private messageService: MessageDemoService,
-      
+
     ) {
 
-
+        this.resetLayoutState();
 
         // Using effect to reactively update on config changes
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
-                this.changeTheme();
             }
             this.changeScale(config.scale);
             this.onConfigUpdate();
@@ -111,12 +110,25 @@ export class LayoutService {
     }
 
     async logOut1(): Promise<void> {
-        if (await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
-          this.messageService.toast('info', 'Logged out.');
-          this.session.clear();
-          this.router.navigate(['/auth/login']);
+        if (await this.messageService.confirmed('Logout Confirmation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
+            // Reset the layout state
+            this.resetLayoutState();
+
+            this.messageService.toast('info', 'Logged out.');
+            this.session.clear();
+            this.router.navigate(['/auth/login']);
         }
-      }
+    }
+    private resetLayoutState() {
+        this.state = {
+            staticMenuDesktopInactive: false,
+            overlayMenuActive: false,
+            profileSidebarVisible: false,
+            configSidebarVisible: false,  // Ensure the config sidebar is not visible
+            staticMenuMobileActive: false,
+            menuHoverActive: false,
+        };
+    }
 
     // Toggles profile sidebar visibility
     showProfileSidebar() {
@@ -151,48 +163,6 @@ export class LayoutService {
         this._config = { ...this.config() };
         this.configUpdate.next(this.config());
     }
-
-    // Handles theme changes based on configuration
-    changeTheme() {
-        const config = this.config();
-        const themeLink = document.getElementById('theme-css') as HTMLLinkElement;
-        const themeLinkHref = themeLink?.getAttribute('href') ?? '';
-        const newHref = themeLinkHref
-            .split('/')
-            .map((el) =>
-                el === this._config.theme
-                    ? config.theme
-                    : el === `theme-${this._config.colorScheme}`
-                    ? `theme-${config.colorScheme}`
-                    : el
-            )
-            .join('/');
-
-        if (newHref) {
-            this.replaceThemeLink(newHref);
-        }
-    }
-
-    // Replaces the theme link in the document
-    replaceThemeLink(href: string) {
-        const id = 'theme-css';
-        const themeLink = document.getElementById(id) as HTMLLinkElement;
-
-        if (themeLink) {
-            const cloneLinkElement = themeLink.cloneNode(true) as HTMLLinkElement;
-
-            cloneLinkElement.setAttribute('href', href);
-            cloneLinkElement.setAttribute('id', id + '-clone');
-
-            themeLink.parentNode?.insertBefore(cloneLinkElement, themeLink.nextSibling);
-            cloneLinkElement.addEventListener('load', () => {
-                themeLink.remove();
-                cloneLinkElement.setAttribute('id', id);
-            });
-        }
-    }
-
-    // Changes the font scale of the document
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
