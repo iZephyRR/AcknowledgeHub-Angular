@@ -255,7 +255,10 @@ export class FormLayoutDemoComponent implements OnInit {
     this.filename = undefined;
     this.selectedTargets= null;
   }
-
+  saveDraft(): void {
+    console.log('Draft saved');
+    // Additional logic to save the draft
+  }
   resetForm(form: NgForm) {
     form.reset();
     this.selectedTargets=[];

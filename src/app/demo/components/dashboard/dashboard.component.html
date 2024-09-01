@@ -1,3 +1,4 @@
+Kaung Khant Ko, [8/31/2024 10:28 PM]
 <div class="grid grid-nogutter">
     <!-- First Row with 4 equal-width cards -->
     <div class="col-12 md:col-6 lg:col-3">
@@ -78,7 +79,7 @@
                         <td>{{ announcement.categoryName }}</td>
                         <td>{{ announcement.createdAt | date:'medium' }}</td>
                         <td>{{ announcement.role }}</td>
-                        <td>
+                      <td>
                             <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
                         </td>
                     </tr>
@@ -86,21 +87,18 @@
             </p-table>
         </div>
     </div>
-    
-
-
     <!-- Third Row with 3 Charts -->
     <div class="col-12 lg:col-4 xl:col-6">
         <div class="card mb-4">
             <h5>Line Chart - Announcements Over Time</h5>
             <p-chart type="line" [data]="lineChartData" [options]="chartOptions"></p-chart>
         </div>
-        
+
         <div class="card mb-4">
             <h5>Bar Chart - Category Count</h5>
             <p-chart type="bar" [data]="barChartData" [options]="chartOptions"></p-chart>
         </div>
-        
+
         <div class="card mb-4">
             <h5>Pie Chart - Employee Distribution</h5>
             <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>

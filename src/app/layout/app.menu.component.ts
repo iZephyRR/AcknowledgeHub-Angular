@@ -58,18 +58,24 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                 {
                                     label: 'Test2',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/file']
+                                    routerLink: ['/announcement/file']
                                 },
                                 {
                                     label: 'Test1',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/button']
+                                    routerLink: ['/announcement/button']
                                 },
                                 {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/announcement/reports']
-                                }                                
+                                },
+                                {
+                                    label: 'Announcement floatlabel',
+                                    icon: 'pi pi-fw pi-floatlabel',
+                                    routerLink: ['/announcement/floatlabel']
+                                }
+
                             ]
                         }
                     ] : []
@@ -93,8 +99,14 @@ export class AppMenuComponent implements OnInit, OnChanges {
                     {
                         label: 'Employee List',
                         icon: 'pi pi-fw pi-user',
-                        routerLink: ['/uikit/table']
+                        routerLink: ['/announcement/table']
                     },
+                    {
+                        label: 'Chart List',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/announcement/charts']
+                    },
+
 
                 ]
             }

@@ -1,5 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, effect, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { LocalStorageService } from 'src/app/services/local-storage/local-storage.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
+import { SystemService } from 'src/app/services/system/system.service';
 
 export interface AppConfig {
     inputStyle: string;
@@ -54,7 +59,16 @@ export class LayoutService {
     configUpdate$ = this.configUpdate.asObservable();
     overlayOpen$ = this.overlayOpen.asObservable();
 
-    constructor() {
+    constructor(
+
+        private session: LocalStorageService,
+        private router: Router,
+        private messageService: MessageDemoService,
+      
+    ) {
+
+
+
         // Using effect to reactively update on config changes
         effect(() => {
             const config = this.config();
@@ -95,7 +109,14 @@ export class LayoutService {
             }
         }
     }
-    
+
+    async logOut1(): Promise<void> {
+        if (await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
+          this.messageService.toast('info', 'Logged out.');
+          this.session.clear();
+          this.router.navigate(['/auth/login']);
+        }
+      }
 
     // Toggles profile sidebar visibility
     showProfileSidebar() {
@@ -175,5 +196,5 @@ export class LayoutService {
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
-    
+
 }

@@ -1,16 +1,30 @@
-// app.module.ts or any other module
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { ChartsDemoComponent } from './chartsdemo.component';
-import { ChartsDemoRoutingModule } from './chartsdemo-routing.module';
 import { CommonModule } from '@angular/common';
+import { ChartsDemoRoutingModule } from './chartsdemo-routing.module';
+import { ChartsDemoComponent } from './chartsdemo.component';
+import { NgxEchartsModule } from 'ngx-echarts';
+import * as echarts from 'echarts';
 
+// Import your components
+import { EchartsBarAnimationComponent } from './echarts-bar-animation.component';
+import { ChartjsBarHorizontalComponent } from './chartjs-bar-horizontal.components';
+
+export function createECharts(): any {
+  return echarts;
+}
 
 @NgModule({
   imports: [
     CommonModule,
-    ChartsDemoRoutingModule// Import the standalone component here
+    ChartsDemoRoutingModule,
+    NgxEchartsModule,
+    NgxEchartsModule.forRoot({ echarts: createECharts() }),  // Use a factory function
+
   ],
-  declarations: [ChartsDemoComponent]
+  declarations: [
+    EchartsBarAnimationComponent,
+    ChartjsBarHorizontalComponent,
+    ChartsDemoComponent,
+  ],
 })
 export class ChartsDemoModule { }

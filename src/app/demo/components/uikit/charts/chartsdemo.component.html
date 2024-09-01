@@ -1,4 +1,34 @@
 <div class="chart-container">
-    <canvas #barChart></canvas>
-  </div>
-  
+    <div class="echart-container">
+      <ngx-echarts-bar-animation></ngx-echarts-bar-animation>
+    </div>
+    <div class="chartjs-container">
+      <ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>
+    </div>
+</div>
+
+<style>
+    .chart-container {
+      display: flex;
+      justify-content: space-between; /* Space between the charts */
+      align-items: flex-start; /* Align the charts at the top */
+      width: 100%; /* Full width container */
+      padding: 20px; /* Add some padding to prevent the charts from touching the edges */
+    }
+
+    .echart-container {
+      width: 48%; /* Both charts will take 48% of the space */
+      height: 600px; /* Fixed height for the charts */
+    }
+
+    .chartjs-container {
+      width: 48%; /* Both charts will take 48% of the space */
+      height: 500px; /* Fixed height for the charts */
+    }
+
+    /* Ensure the canvas takes full width and height */
+    .chartjs-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+</style>
