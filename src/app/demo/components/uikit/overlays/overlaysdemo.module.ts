@@ -2,33 +2,44 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OverlaysDemoRoutingModule } from './overlaysdemo-routing.module';
-import { ToastModule } from 'primeng/toast';
-import { DialogModule } from 'primeng/dialog';
-import { ButtonModule } from 'primeng/button';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { TableModule } from 'primeng/table';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { SidebarModule } from 'primeng/sidebar';
-import { RippleModule } from 'primeng/ripple';
-import { ConfirmPopupModule } from 'primeng/confirmpopup';
-import { TooltipModule } from 'primeng/tooltip';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { CalendarModule } from 'primeng/calendar';
+import { ChipsModule } from 'primeng/chips';
+import { DropdownModule } from 'primeng/dropdown';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToolbarModule } from 'primeng/toolbar';
+import { TreeTableModule } from 'primeng/treetable';
+import { TreeModule } from 'primeng/tree';
+import { OverlaysDemoComponent } from './overlaysdemo.component';
+import { TableModule } from 'primeng/table';
+import { DialogModule } from 'primeng/dialog';
+
 @NgModule({
 	imports: [
 		CommonModule,
-		OverlaysDemoRoutingModule,
-		ToastModule,
-		DialogModule,
 		FormsModule,
-		TooltipModule,
+		OverlaysDemoRoutingModule,
+		AutoCompleteModule,
+		CalendarModule,
+		ChipsModule,
+		DropdownModule,
+		InputMaskModule,
+		InputNumberModule,
+		CascadeSelectModule,
+		MultiSelectModule,
+		InputTextareaModule,
 		InputTextModule,
-		ButtonModule,
-		OverlayPanelModule,
-		TableModule,
-		ConfirmDialogModule,
-		SidebarModule,
-		RippleModule,
-		ConfirmPopupModule
+		ToolbarModule,
+		TreeTableModule,
+		TreeModule,
+		TableModule,  // Add TreeModule to imports
+		DialogModule
 	],
+	declarations: [OverlaysDemoComponent]
 })
 export class OverlaysDemoModule { }

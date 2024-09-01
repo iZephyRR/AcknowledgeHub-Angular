@@ -51,8 +51,8 @@
                         <td>{{user.email}}</td>
                         <td>{{user.role}}</td>
                         <td>{{ user.workEntryDate | date: 'MM/dd/yyyy' }}</td>
-                        <td>{{user.company.name}}</td>
-                        <td>{{user.department.name}}</td>
+                        <td>{{user.companyName}}</td>
+                        <td>{{user.departmentName}}</td>
                         <td>{{user.status}}</td>
                         <td>
                             <button pButton pRipple type="button" label="Info" class="p-button-info p-button-text"
@@ -93,8 +93,8 @@
                 <p><strong>Date of Birth:</strong> {{selectedUser.dob | date: 'MM/dd/yyyy' }}</p>
                 <p><strong>NRC:</strong> {{selectedUser.nrc}}</p>
                 <p><strong>Role:</strong> {{selectedUser.role}}</p>
-                <p><strong>Company:</strong> {{selectedUser.company.name}}</p>
-                <p><strong>Department:</strong> {{selectedUser.department.name}}</p>
+                <p><strong>Company:</strong> {{selectedUser.companyName}}</p>
+                <p><strong>Department:</strong> {{selectedUser.departmentName}}</p>
                 <p><strong>Work Entry Date:</strong> {{selectedUser.workEntryDate | date: 'MM/dd/yyyy' }}</p>
                 <p><strong>Staff ID:</strong> {{selectedUser.stuffId}}</p>
                 <p><strong>Telegram Username:</strong> {{selectedUser.telegramUsername}}</p>

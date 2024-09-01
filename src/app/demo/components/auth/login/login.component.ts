@@ -5,6 +5,8 @@ import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
 import { OTPMail } from 'src/app/modules/otp-mails';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
+import { DepartmentService } from 'src/app/services/department/department.service';
 import { LocalStorageService } from 'src/app/services/local-storage/local-storage.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
@@ -51,9 +53,11 @@ export class LoginComponent implements OnInit {
     public authService: AuthService,
     public systemService: SystemService,
     public messageService: MessageDemoService,
-    private session: LocalStorageService
+    private session: LocalStorageService,
+    public departmentService:DepartmentService
   ) { }
-  
+
+
   canClickOTP(): boolean {
     this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
     return (this.combinedOTP.length > 5);
@@ -69,31 +73,32 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.systemService.hideLoading();
+    //this.authService.severConnectionTest();
   }
-  
+
   onInput(event: Event, nextInput: HTMLInputElement | null) {
     const input = event.target as HTMLInputElement;
 
     // Move to the next input if the current input has a value
     if (input.value && nextInput) {
-        nextInput.focus();
+      nextInput.focus();
     }
-}
+  }
 
-onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: HTMLInputElement | null) {
+  onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: HTMLInputElement | null) {
     const key = event.key;
 
     if (key === 'Backspace') {
-        if (currentInput.value === '') {
-            // Move to the previous input if the current input is empty and backspace is pressed
-            if (prevInput) {
-                prevInput.focus();
-            }
-        } else {
-            // Clear the current input and keep focus on it
-            currentInput.value = '';
-            event.preventDefault(); // Prevent the cursor from moving backward
+      if (currentInput.value === '') {
+        // Move to the previous input if the current input is empty and backspace is pressed
+        if (prevInput) {
+          prevInput.focus();
         }
+      } else {
+        // Clear the current input and keep focus on it
+        currentInput.value = '';
+        event.preventDefault(); // Prevent the cursor from moving backward
+      }
     }
   }
 
@@ -119,10 +124,10 @@ onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: 
               this.isFirstTime = true;
               this.name = response.string_RESPONSE;
               this.systemService.hideLoading();
-              if (await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')) {
+              if ((await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')).confirmed) {
                 if (AuthService.isDomainAvailable(this.login.email)) {
                   setTimeout(() => {
-                    this.systemService.showLoading('Performing');
+                    this.systemService.showLoading('Sending OTP...');
                   }, 0);
                   OTPMail.action = 'FIRST_LOGIN';
                   this.email = this.login.email;
@@ -143,7 +148,7 @@ onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: 
             } else {
               this.session.add('token', response.string_RESPONSE);
               console.log('saved token : ' + this.session.get('token'));
-              this.messageService.toast('success', 'Login success', 'Successfully logged in!');
+              this.messageService.toast('success', 'Successfully logged in!');
               this.router.navigate(['/']);
             }
             this.isValid = true;

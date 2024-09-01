@@ -30,7 +30,6 @@
         </div>
     </div>
 </div>
-
 <!-- Forgot Password Dialog -->
 <p-dialog header="Forgot Password" [(visible)]="displayForgotPasswordDialog" [modal]="true" [style]="{width: '30vw'}" [closable]="true">
     <div class="forgot-password-container">
@@ -39,7 +38,7 @@
         <button pButton type="button" label="Get OTP" [disabled]="email==''" (click)="sendPasswordChangeOTP()"></button>
     </div>
 
-</p-dialog> -->
+</p-dialog>
 <!-- OTP Verification Dialog -->
 <p-dialog header="Verify OTP" [(visible)]="displayOtpDialog" [modal]="true" [responsive]="true" [style]="{width: '30vw'}" [closable]="true">
   <div class="otp-container">

@@ -7,6 +7,7 @@ import { ImageModule } from 'primeng/image';
 import { GalleriaModule } from 'primeng/galleria';
 import { CarouselModule } from 'primeng/carousel';
 import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
 	imports: [
@@ -16,7 +17,8 @@ import { DialogModule } from 'primeng/dialog';
 		ImageModule,
 		GalleriaModule,
 		CarouselModule,
-		DialogModule
+		DialogModule,
+		TableModule,
 	],
 	declarations: [MediaDemoComponent]
 })

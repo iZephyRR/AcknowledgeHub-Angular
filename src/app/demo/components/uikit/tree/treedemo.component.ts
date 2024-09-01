@@ -1,41 +1,41 @@
-// import { Component, OnInit } from '@angular/core';
-// import { TreeNode} from 'primeng/api';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-// @Component({
-//     templateUrl: './treedemo.component.html'
-// })
-// export class TreeDemoComponent implements OnInit {
+@Component({
+    templateUrl: './treedemo.component.html'
+})
+export class TreeDemoComponent implements OnInit {
+  selectedAudience: string = 'company';
+  selectedSchedule: string = 'now';
+  recipientsList = []; // Example data, replace with real data
 
-//     files1: TreeNode[] = [];
+  constructor() {
+    this.updateRecipientsList();
+  }
+    ngOnInit(): void {
+        throw new Error('Method not implemented.');
+    }
 
-//     files2: TreeNode[] = [];
+  updateRecipientsList() {
+    // Update the recipientsList based on the selected audience
+    // Example logic:
+    if (this.selectedAudience === 'department') {
+      this.recipientsList = [{ id: 1, name: 'HR' }, { id: 2, name: 'Engineering' }];
+    } else if (this.selectedAudience === 'individual') {
+      this.recipientsList = [{ id: 1, name: 'John Doe' }, { id: 2, name: 'Jane Smith' }];
+    } else {
+      this.recipientsList = [];
+    }
+  }
 
-//     files3: TreeNode[] = [];
+  onSubmit(form: any) {
+    if (form.valid) {
+      console.log(form.value);
+      // Process the form submission, e.g., call an API to create the announcement
+    }
+  }
 
-//     selectedFiles1: TreeNode[] = [];
-
-//     selectedFiles2: TreeNode[] = [];
-
-//     selectedFiles3: TreeNode = {};
-
-//     cols: any[] = [];
-
-//     constructor(private nodeService: NodeService) {}
-
-//     ngOnInit() {
-//         this.nodeService.getFiles().then(files => this.files1 = files);
-//         this.nodeService.getFilesystem().then(files => this.files2 = files);
-//         this.nodeService.getFiles().then(files => {
-//             this.files3 = [{
-//                 label: 'Root',
-//                 children: files
-//             }];
-//         });
-
-//         this.cols = [
-//             { field: 'name', header: 'Name' },
-//             { field: 'size', header: 'Size' },
-//             { field: 'type', header: 'Type' }
-//         ];
-//     }
-// }
+  cancel() {
+    // Handle cancellation logic, e.g., navigate back to the previous page
+  }
+}

@@ -119,16 +119,15 @@
 
     <!-- Submit Button Section -->
     <div class="form-actions">
-        <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid" label="Submit"
+        <button pButton pRipple type="submit"[disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Create"
             icon="pi pi-check" class="btn-primary"></button>
-        <button pButton pRipple type="button" label="Save" icon="pi pi-save" class="btn-success"
+        <button pButton pRipple type="button" label="Save" icon="pi pi-save" class="btn-success"[disabled]="sendAnnouncement.invalid || !selectedTargets.length" 
             (click)="saveDraft()"></button>
         <button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel"
             class="btn-secondary"></button>
         <button pButton pRipple type="button" label="Delete" icon="pi pi-trash" class="btn-danger"></button>
     </div>
-</form>
-
+       </form>
 <style>
     /* Responsive Image and Video Styles */
     video,

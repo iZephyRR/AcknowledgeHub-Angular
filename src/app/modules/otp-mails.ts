@@ -4,7 +4,7 @@ export class OTPMail {
 
     private static _otp: number;
     private static _action: 'FIRST_LOGIN' | 'FORGOT_PASSWORD';
-    //private static _email:string;
+        //private static _email:string;
 
     static get otp(): number {
         return OTPMail._otp;
@@ -27,7 +27,7 @@ export class OTPMail {
         return {
             address: address,
             subject: 'Acknowledge-Hub: Confirm Your Email and Update Your Password (Action required)',
-            message: 'Dear ' + name + ',\n\nWelcome to Acknowledge-Hub!\n\nTo complete your account setup, please:\n\nConfirm Your Email:\n\nEnter the following One-Time Password (OTP):\nOTP: ' + OTPMail.otp + '\n(Valid for 5 minutes)\n\nUpdate Your Password:\nYou’ll be prompted to change your password upon your first login with the default one. This step is mandatory to secure your account.\n\nIf you need assistance, please contact IT Support.\n\nThank you for using Acknowledge-Hub.\n\nBest regards,\nThe Acknowledge-Hub Team\nace@123.ai'
+            message: 'Dear ' + name + ',<br><br>Welcome to Acknowledge-Hub!<br><br>To complete your account setup, please:<br>Confirm Your Email:<br>Enter the following One-Time Password (OTP):<br><p style="color:gray;">' + OTPMail.otp + '</p>(Valid for 5 minutes)<br><br>Update Your Password:<br>You’ll be prompted to change your password upon your first login with the default one. This step is mandatory to secure your account.<br>If you need assistance, please contact IT Support.<br><br>Thank you for using Acknowledge-Hub.<br><br>Best regards,<br>The Acknowledge-Hub Team<br>ace@123.ai'
         };
     }
 
@@ -36,7 +36,7 @@ export class OTPMail {
         return {
             address: address,
             subject: 'Acknowledge-Hub: Reset Your Password',
-            message: 'Dear ' + name + ',\n\nWe received a request to reset your password for Acknowledge-Hub.\n\nTo reset your password, please use the One-Time Password (OTP) below:\n\nOTP: ' + OTPMail.otp + '\n(Valid for 5 minutes)\n\nAfter entering the OTP, you’ll be prompted to create a new password.\n\nIf you did not request this change, please contact IT Support immediately.\n\nThank you for using Acknowledge-Hub.\n\nBest regards,\nThe Acknowledge-Hub Team\nace@123.ai'
+            message: 'Dear ' + name + ',<br><br>We received a request to reset your password for Acknowledge-Hub.To<br>reset your password, please use the One-Time Password (OTP) below:<br><p style="color:gray;">' + OTPMail.otp + '</p>(Valid for 5 minutes)<br><br>After entering the OTP, you’ll be prompted to create a new password.<br>If you did not request this change, please contact IT Support immediately.<br><br>Thank you for using Acknowledge-Hub.<br><br>Best regards,<br>The Acknowledge-Hub Team<br>ace@123.ai'
         };
     }
 

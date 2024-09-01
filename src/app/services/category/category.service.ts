@@ -29,10 +29,10 @@ export class CategoryService {
   }
 
   softDeleteCategory(id: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/disable/${id}`, {});
+    return this.http.put<void>(`${this.baseUrl}/mr/category/disable/${id}`, {});
 
   }
   softUndeleteCategory(categoryId: number): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/enable/${categoryId}`, {});
+    return this.http.put<void>(`${this.baseUrl}/mr/category/enable/${categoryId}`, {});
   }
 }
