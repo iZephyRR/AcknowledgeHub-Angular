@@ -104,6 +104,8 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.systemService.showLoading('Logging in..');
+    this.layoutService.state.configSidebarVisible = false;
+
     if (this.login.email != undefined && this.login.email != '' && this.login.password != undefined && this.login.password != '') {
       this.authService.login(this.login).pipe(
         catchError(error => {

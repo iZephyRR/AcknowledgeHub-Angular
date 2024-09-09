@@ -20,13 +20,27 @@ export class UserService {
   constructor(private http: HttpClient) {
 
   }
-  getAllUsers(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/mr/users`);
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/mr/users`);
+  }
+
+  getUsersByCompany(): Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getUsersByCompanyId`);
   }
 
   getUserById(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/user/profile`);
   }
+
+  getUserWhoNotedWithInOneDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho1DNoted/${announcementId}`);
+  }
+
+  getUserWhoNotedWithInThreeDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho3DNoted/${announcementId}`);
+  }
+  
+
 }
 
 

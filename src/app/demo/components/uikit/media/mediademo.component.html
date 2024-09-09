@@ -3,10 +3,9 @@
         <div class="card">
             <h5>Announcement List</h5>
             <p-table #dt3 [value]="announcements" dataKey="id" [rows]="10" [rowHover]="true"
-                styleClass="p-datatable-gridlines" [paginator]="true"
-                [globalFilterFields]="['title', 'createdBy', 'categoryName', 'role']" responsiveLayout="scroll">
 
-
+                styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['title', 'createdBy', 'categoryName', 'role']" responsiveLayout="scroll">
+              
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="min-width: 4rem">No</th>
@@ -42,6 +41,16 @@
                             <!-- <a [href]="announcement.fileUrl" target="_blank" rel="noopener noreferrer">
                                 <button pButton icon="pi pi-external-link" label="Show" style="width: 100px;"></button>
                             </a> -->
+                        </td>
+                        <td>
+                            <a [routerLink]="['/announcement/notedOneDay',announcement.id]" rel="noopener noreferrer">
+                                <button pButton icon="pi pi-external-link" label="Within One Day" style="width: 100px;"></button>
+                            </a>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/announcement/notedThreeDay',announcement.id]"  rel="noopener noreferrer">
+                                <button pButton icon="pi pi-external-link" label="Within Three Day" style="width: 100px;"></button>
+                            </a>
                         </td>
                     </tr>
                 </ng-template>

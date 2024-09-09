@@ -18,6 +18,7 @@ import { TreeModule } from 'primeng/tree';
 import { OverlaysDemoComponent } from './overlaysdemo.component';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
+import { CheckboxModule } from 'primeng/checkbox';
 
 @NgModule({
 	imports: [
@@ -38,7 +39,8 @@ import { DialogModule } from 'primeng/dialog';
 		TreeTableModule,
 		TreeModule,
 		TableModule,  // Add TreeModule to imports
-		DialogModule
+		DialogModule,
+		CheckboxModule
 	],
 	declarations: [OverlaysDemoComponent]
 })

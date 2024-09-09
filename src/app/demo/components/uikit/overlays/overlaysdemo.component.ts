@@ -36,10 +36,11 @@ export class OverlaysDemoComponent implements OnInit {
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   role: string;
-  companyId: number;
   draft: Draft;
   draftId: number;
   fileUrl : string;
+  selectAllCompanies : boolean;
+  selectedChannels: any[] = ['telegram'];
 
   constructor(
     private announcementService: AnnouncementService,
@@ -54,12 +55,9 @@ export class OverlaysDemoComponent implements OnInit {
   ngOnInit() {
     this.loadDrafts();
     this.role = this.authService.role;
-    this.companyId = this.authService.companyId;
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
-      console.log("in get company by id ");
-      this.getCompanyById(this.companyId);
+      this.getCompanyById();
     } else {
-      console.log("get all companies");
       this.getAllCompanies();
     }
   }
@@ -96,7 +94,6 @@ export class OverlaysDemoComponent implements OnInit {
           this.draft.target = JSON.parse(this.draft.target);
         }
         this.selectedTargets = this.mapToTreeService.mapTargetsToTreeNodes(this.draft.target, this.companies);
-        console.log("target : ", this.selectedTargets);
       },
       error: (err) => {
         console.error("Error fetching draft:", err);
@@ -105,15 +102,19 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(data => {
-      this.companies = data.map(company => this.mapToTreeService.mapCompanyToTreeNode(company));
-    }, error => {
-      console.error('Error fetching companies data:', error);
-    });
+    this.companyService.getAllCompanies().subscribe(
+      data => {
+        const mappedTree = this.mapToTreeService.mapAllCompaniesToTree(data);
+        this.companies = [mappedTree];
+      },
+      error => {
+        console.error('Error fetching companies data:', error);
+      }
+    );
   }
 
-  getCompanyById(companyId: number): void {
-    this.companyService.getCompanyById(companyId).pipe(
+  getCompanyById(): void {
+    this.companyService.getCompanyById().pipe(
       map((company) => this.mapToTreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
@@ -150,10 +151,11 @@ export class OverlaysDemoComponent implements OnInit {
     this.filePreview = undefined;
     this.filename = undefined;
     this.selectedTargets = null;
+    this.selectedChannels = [];
   }
 
   onSubmit(form: NgForm) {
-    this.systemService.showLoading('Processing...');
+    //this.systemService.showLoading('Processing...');
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
@@ -188,7 +190,7 @@ export class OverlaysDemoComponent implements OnInit {
     formData.append('filename', this.filename);
     if (this.scheduleOption === 'later') {
       const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
+      const correctedDate = new Date(new Date(this.scheduleDate).getTime() - offset * 60000);
       console.log("scheduleOption : later " + correctedDate.toISOString());
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
@@ -200,15 +202,18 @@ export class OverlaysDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
     }
-    const targetJSON = JSON.stringify(this.targetData);
-    console.log("real target : ", targetJSON);
-    formData.append('target', targetJSON);
+    formData.append("channel", JSON.stringify(this.selectedChannels));
+    console.log("targets : ", JSON.stringify(this.targetData));
+    formData.append('target', JSON.stringify(this.targetData));
     console.log("file url : ", this.fileUrl);
     formData.append('fileUrl',this.fileUrl);
+    formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
+    formData.append('channel',JSON.stringify(this.selectedChannels));
     return formData;
   }
 
   get targetData(): AnnouncementTarget[] {
+    this.selectAllCompanies = false;
     const selectedCompanyIds: number[] = this.selectedTargets
       .filter(target => target.data.type === "COMPANY")
       .map(target => target.data.id);
@@ -226,8 +231,11 @@ export class OverlaysDemoComponent implements OnInit {
       })
       .map(target => ({
         sendTo: target.data.id,
-        receiverType: target.data.type
+        receiverType: target.data.type as 'COMPANY' | 'DEPARTMENT'
       }));
+      if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
+        this.selectAllCompanies = true;
+      }
     return targetData;
   }
 
@@ -241,7 +249,7 @@ export class OverlaysDemoComponent implements OnInit {
         this.messageService.toast('error', "Can't delete");
       }
     });
-  }
+  } 
 
   async delete(id: number) {
     if (await this.messageService.confirmed('Delete Confirmation', 'Are you sure to delete?', 'Yes', 'No', 'WHITE', 'BLACK')) {

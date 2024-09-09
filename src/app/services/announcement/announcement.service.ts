@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { Announcement } from 'src/app/modules/announcement';
 import { Draft } from 'src/app/modules/draft';
@@ -63,9 +63,24 @@ export class AnnouncementService {
   deleteDraft(draftId : number) : Observable<String> {
     return this.http.delete<String>(`${this.baseUrl}/delete-draft/${draftId}`);
   }
-  
+
   countAnnouncements(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/count`); // Adjust the endpoint as necessary
   }
+
+  getPieChart(): Observable<Map<string, BigInt>> {
+    return this.http.get<{ [key: string]: BigInt }>(`${this.baseUrl}/pieChart`).pipe(
+        map(data => {
+            const map = new Map<string, BigInt>();
+            Object.entries(data).forEach(([key, value]) => {
+                map.set(key, value);
+            });
+            return map;
+        })
+    );
+}
+
+
+
 }
 

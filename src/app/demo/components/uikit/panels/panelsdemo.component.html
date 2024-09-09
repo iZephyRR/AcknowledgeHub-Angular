@@ -1,83 +1,258 @@
-<div class="container">
-	<div class="form-card">
-	  <div class="card-header">
-		<h2>Select Employee</h2>
-	  </div>
-	  <div class="card-body">
-		<!-- AutoComplete for Employee Selection -->
-		<div class="form-group">
-		  <label for="employee">Employee</label>
-		  <p-autoComplete [(ngModel)]="selectedEmployee" 
-						  [suggestions]="filteredEmployees" 
-						  (completeMethod)="filterEmployees($event)" 
-						  field="name" [dropdown]="true" 
-						  placeholder="Search for an employee" 
-						  forceSelection="true">
-		  </p-autoComplete>
-		</div>
-  
-		<!-- Display Selected Employee Info -->
-		<div *ngIf="selectedEmployee">
-		  <h3>Selected Employee</h3>
-		  <p><strong>Name:</strong> {{ selectedEmployee.name }}</p>
-		  <p><strong>Department:</strong> {{ selectedEmployee.department }}</p>
-		</div>
-  
-		<!-- Submit Button -->
-		<div class="form-group">
-		  <button pButton pRipple type="submit" label="Submit" 
-				  icon="pi pi-check" class="btn-primary"></button>
-		</div>
-	  </div>
-	</div>
-  </div>
-  
-  <style>
-	.container {
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
-	  height: 100vh;
-	  padding: 20px;
-	}
-  
-	.form-card {
-	  border-radius: 12px;
-	  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	  width: 100%;
-	  max-width: 500px;
-	  padding: 40px;
-	  background-color: #ffffff;
-	}
-  
-	.card-header {
-	  padding: 15px;
-	  text-align: center;
-	}
-  
-	.form-group {
-	  margin-bottom: 20px;
-	}
-  
-	label {
-	  display: block;
-	  margin-bottom: 5px;
-	  font-weight: bold;
-	}
-  
-	.btn-primary {
-	  background-color: #007bff;
-	  color: #ffffff;
-	  border: none;
-	  border-radius: 6px;
-	  padding: 10px 20px;
-	  font-size: 16px;
-	  cursor: pointer;
-	  transition: background-color 0.3s;
-	}
-  
-	.btn-primary:hover {
-	  background-color: #0056b3;
-	}
-  </style>
-  
+<div class="grid p-fluid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Employees Who Noted</h5>
+            <p-table #dt [value]="users" dataKey="id" [rows]="10" [rowHover]="true"
+                styleClass="p-datatable-gridlines" [paginator]="true"
+                [globalFilterFields]="['name', 'stuffId','departmentName','companyName']" responsiveLayout="scroll">
+
+                <ng-template pTemplate="caption">
+                    <div class="flex justify-content-between flex-column sm:flex-row">
+                        <span class="p-input-icon-left mb-2" style="flex: 0 1 auto; width: 250px;">
+                            <!-- <i class="pi pi-search"></i> -->
+                            <input pInputText type="text" #filter (input)="onGlobalFilter(dt, $event)"
+                                placeholder="Search Keyword" />
+                        </span>
+                        <button class="btn btn-primary ml-auto" (click)="downloadSmartPDF()">Download Smart PDF</button>
+
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="header">
+                    <tr>
+                        <!-- <th>Test</th> -->
+                        <th style="min-width: 4rem">No</th>
+                        <!-- <th style="min-width: 11rem">Employee Id
+                            <p-columnFilter type="text" field="title" display="menu"
+                                placeholder="Search by title"></p-columnFilter>
+                        </th> -->
+                        <th style="min-width: 8rem">Staff Id
+                            <!-- <p-columnFilter type="text" field="title" display="menu"
+                                placeholder="Search by title"></p-columnFilter> -->
+                        </th>
+                        <th style="min-width: 10rem">NotedAt</th>
+                        <th style="min-width: 10rem">Name</th>
+                        <th style="min-width: 10rem">Gender</th>
+                        <th style="min-width: 10rem">Role</th>
+                        <th style="min-width: 20rem">Department</th>
+                        <th style="min-width: 20rem">Company</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-user let-i="rowIndex">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td>{{user.stuffId}}</td>
+                        <td>{{user.notedAt}}</td>
+                        <td>{{user.name}}</td>
+                        <td>{{user.gender}}</td>
+                        <td>{{user.role}}</td>
+                        <td>{{user.departmentName}}</td>
+                        <td>{{user.companyName}}</td>
+
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Card Header Styles */
+    .card-header {
+        padding: 15px;
+        text-align: center;
+    }
+
+    /* Form Group Styles */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    input[type="text"],
+    input[type="file"] {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        transition: border-color 0.3s;
+        font-size: 16px;
+    }
+
+    input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    /* Flexbox for Schedule Options */
+    .schedule-options {
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-inline {
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+    }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+
+    /* checkbox-list.component.css */
+    .tree-container {
+        font-family: Arial, sans-serif;
+    }
+
+    .tree {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .tree-node {
+        position: relative;
+        margin: 5px 0;
+    }
+
+    .node-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .node-label input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .tree-children {
+        list-style-type: none;
+        padding-left: 20px;
+        /* Adjust for indentation */
+        margin: 0;
+        display: none;
+        /* Hidden by default */
+    }
+
+    .tree-node {
+        cursor: pointer;
+    }
+
+    .tree-node.open>.tree-children {
+        display: block;
+    }
+
+    .tree-node>.tree-children {
+        display: none;
+    }
+
+
+    .tree-node>.node-label::before {
+        content: '▶';
+        /* Arrow icon */
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .tree-node.open>.node-label::before {
+        transform: rotate(90deg);
+        /* Rotate arrow when open */
+    }
+
+    /* Base font size */
+    .node-label {
+        font-size: 16px;
+        /* Adjust to your desired font size */
+    }
+
+    /* Font size for companies */
+    .tree-node>.node-label {
+        font-size: 16px;
+        /* Example font size for companies */
+    }
+
+    /* Font size for departments */
+    .tree-node .tree-children>.tree-node>.node-label {
+        font-size: 14px;
+        /* Example font size for departments */
+    }
+
+    /* Responsive font size */
+    @media (max-width: 600px) {
+        .node-label {
+            font-size: 0.875rem;
+            /* Smaller font size on smaller screens */
+        }
+    }
+</style>

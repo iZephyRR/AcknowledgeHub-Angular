@@ -18,6 +18,10 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+import { ReversePipe } from './reverse.pipe';  // Ensure correct import
+import { NgxEchartsModule } from 'ngx-echarts';
+import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
+import * as echarts from 'echarts';import { DashboardModule } from './demo/components/dashboard/dashboard.module';
 import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -58,9 +62,14 @@ import { FormsModule } from '@angular/forms';
     ProfileModule,
     DialogModule,
     FormsModule,
-    
     // NgxExtendedPdfViewerModule,
      PdfViewerModule
+    DashboardModule,
+    NbLayoutModule,
+    NgxEchartsModule.forRoot({ echarts }),
+   // NgxExtendedPdfViewerModule,
+   //  PdfViewerModule
+
   ],
   providers: [
     {

@@ -1,79 +1,199 @@
-<div class="col-12">
-    <div class="card">
-        <h5>User List with Expandable Rows</h5>
-        <p-toast></p-toast>
-        <p-table [value]="users" dataKey="name" [expandedRowKeys]="expandedRows" responsiveLayout="scroll">
-            <ng-template pTemplate="caption">
-                <button pButton icon="pi pi-fw {{isExpanded ? 'pi-minus' : 'pi-plus'}}" 
-                        label="{{isExpanded ? 'Collapse All' : 'Expand All'}}" 
-                        (click)="expandAll()"></button>
-                <div class="flex table-header">
-                    <input #filter type="text" pInputText placeholder="Global Search" 
-                           (input)="onGlobalFilter($event.target.table, $event)" />
-                    <button pButton icon="pi pi-refresh" (click)="clear($event.target.table)"></button>
-                </div>
-            </ng-template>
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width: 3rem"></th>
-                    <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
-                    <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-                    <th pSortableColumn="role">Role <p-sortIcon field="role"></p-sortIcon></th>
-                    <th pSortableColumn="workEntryDate">Work Entry Date <p-sortIcon field="workEntryDate"></p-sortIcon></th>
-                    <th pSortableColumn="company">Company <p-sortIcon field="company"></p-sortIcon></th>
-                    <th pSortableColumn="department">Department <p-sortIcon field="department"></p-sortIcon></th>
-                    <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-user let-expanded="expanded">
-                <tr>
-                    <td>
-                        <button type="button" pButton pRipple [pRowToggler]="user"
-                                class="p-button-text p-button-rounded p-button-plain"
-                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
-                    </td>
-                    <td>{{user.name}}</td>
-                    <td>{{user.email}}</td>
-                    <td>{{user.role}}</td>
-                    <td>{{user.workEntryDate | date: 'MM/dd/yyyy'}}</td>
-                    <td>{{user.company.name}}</td>
-                    <td>{{user.department.name}}</td>
-                    <td><span [class]="'user-badge status-' + user.status.toLowerCase()">{{user.status}}</span></td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="rowexpansion" let-user>
-                <tr>
-                    <td colspan="8">
-                        <div class="p-3">
-                            <table class="table">
-                                <tbody>
-                                    <tr>
-                                        <td><strong>Address:</strong> {{user.address}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Gender:</strong> {{user.gender}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Date of Birth:</strong> {{user.dob | date: 'MM/dd/yyyy'}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>NRC:</strong> {{user.nrc}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Staff ID:</strong> {{user.staffId}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Telegram Username:</strong> {{user.telegramUsername}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td><strong>Photo Link:</strong> <img [src]="user.photolink" alt="User Photo" style="max-width: 100%; height: auto;" /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
+<div class="target-container">
+    <!-- Manage Targets Column -->
+    <div class="manage-targets">
+        <div class="card">
+            <h5>Manage Targets</h5>
+            <p-toast></p-toast>
+            <div class="tree-container">
+                <p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
+                    [propagateSelectionDown]="true" [propagateSelectionUp]="true"
+                    (onNodeSelect)="updateSelectedTargets($event.node, true)"
+                    (onNodeUnselect)="updateSelectedTargets($event.node, false)">
+                    <ng-template let-node pTemplate="default">
+                        <span>{{ node.label }}</span>
+                    </ng-template>
+                </p-tree>
+            </div>
+
+            <div class="button-container">
+                <button pButton label="Save Custom Target Group" icon="pi pi-save" class="p-button-success"
+                    [disabled]="!selectedTargets.length" (click)="saveTarget()"></button>
+                <button pButton label="Clear Preview" icon="pi pi-times" class="p-button-danger"
+                    (click)="clearPreview()"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Targets Overview Column -->
+    <div class="overview">
+        <div class="card">
+            <h5>Selected Targets Overview</h5>
+            <div class="table-container">
+                <p-table [value]="overviewSelectedTargets" dataKey="id" responsiveLayout="scroll"
+                    [expandedRowKeys]="expandedRows">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3rem"></th>
+                            <th style="text-align: center;">Type</th>
+                            <th style="text-align: center;">Name</th>
+                            <th style="text-align: center;">Role</th>
+                            <th style="text-align: center;">Department</th>
+                            <th style="text-align: center;">Company</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-target let-expanded="expanded">
+                        <tr>
+                            <td>
+                                <button *ngIf="target.data.type !== 'EMPLOYEE' && target.data.type !== 'DEPARTMENT'"
+                                    type="button" pButton pRipple (click)="onRowToggle(target)" [pRowToggler]="target"
+                                    class="p-button-rounded p-button-text"
+                                    [icon]="expandedRowKeys[target.data.id] ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                            </td>
+                            <td style="text-align: center;">{{ target.data.type }}</td>
+                            <td style="text-align: center;">{{ target.label }}</td>
+                            <td style="text-align: center;">{{ target.data.type === 'EMPLOYEE' ? target.data.role : '--' }}</td>
+                            <td style="text-align: center;">{{ target.data.type === 'EMPLOYEE' ? target.data.department : '--' }}</td>
+                            <td style="text-align: center;">{{ (target.data.type === 'EMPLOYEE' || target.data.type === 'DEPARTMENT') ? target.data.company : '--' }}</td>
+                            <td style="text-align: center;">
+                                <button type="button" pButton icon="pi pi-search" class="p-button-rounded p-button-info"
+                                    (click)="viewDetails(target)"></button>
+                            </td>
+                        </tr>
+                    <!-- </ng-template>
+                    <ng-template pTemplate="rowexpansion" let-target > -->
+                        <tr *ngIf="expandedRowKeys[target.data.id]">
+                            <td colspan="7">
+                                <div class="p-3">
+                                    <p-table [value]="target.children" dataKey="id" responsiveLayout="scroll">
+                                        <ng-template pTemplate="header">
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Name</th>
+                                            </tr>
+                                        </ng-template>
+                    
+                                        <ng-template pTemplate="body" let-child>
+                                            <tr>
+                                                <td>{{ child.data.type }}</td>
+                                                <td>{{ child.label }}</td>
+                                            </tr>
+                                        </ng-template>
+                    
+                                        <ng-template pTemplate="emptymessage">
+                                            <tr>
+                                                <td colspan="2" style="text-align: center;">No data available.</td>
+                                            </tr>
+                                        </ng-template>
+                                    </p-table>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No data available.</td>
+                        </tr>
+                    </ng-template>                
+                </p-table>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+<style>
+    .target-container {
+        display: flex;
+        gap: 2rem;
+        /* align-items: flex-start; */
+        /* height: calc(100vh - 70px); */
+    }
+
+    .manage-targets {
+        flex: 1;
+        min-width: 400px;
+        /* Ensures columns are responsive */
+        max-width: 200px;
+        /* Limits the maximum width */
+        height: 200%;
+        /* Make the height fill the available space */
+        display: flex;
+        flex-direction: column;
+        /* overflow-x: auto; */
+    }
+
+    .overview {
+        flex: 1;
+        min-width: 700px;
+        /* Ensures columns are responsive */
+        max-width: 600px;
+        /* Limits the maximum width */
+        height: 200%;
+        /* Make the height fill the available space */
+        display: flex;
+        flex-direction: column;
+        /* overflow-x: auto; */
+    }
+
+    .card {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        height: 100%;
+        /* Makes the card take full height of its container */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        /* Pushes the button-container to the bottom */
+    }
+
+    .tree-container,
+    .table-container {
+        flex: 1;
+        /* Makes the container take up the remaining space */
+        overflow-y: auto;
+        /* Adds scrollbar if needed */
+    }
+
+    .tree-container {
+        max-height: calc(100% - 70px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .button-container {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: auto;
+        /* Pushes buttons to the bottom of the card */
+    }
+
+    .p-button-success {
+        background-color: #4caf50;
+        color: #fff;
+    }
+
+    .p-button-danger {
+        background-color: #f44336;
+        color: #fff;
+    }
+
+    .p-table {
+        width: 150%;
+        margin-top: 2rem;
+        /* Ensures spacing above the table */
+    }
+
+    .p-table .p-button-rounded {
+        margin-right: 0.5rem;
+    }
+
+    .p-tree {
+        width: 150%;
+    }
+</style>

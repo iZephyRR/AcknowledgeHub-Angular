@@ -120,6 +120,12 @@ export class AppMenuComponent implements OnChanges {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/announcement/reports']
+
+                                },
+                                {
+                                    label: 'Announcement floatlabel',
+                                    icon: 'pi pi-fw pi-floatlabel',
+                                    routerLink: ['/announcement/floatlabel']
                                 }
                             ]
                         }
@@ -152,7 +158,14 @@ export class AppMenuComponent implements OnChanges {
                         label: 'Employee List',
                         icon: 'pi pi-fw pi-user',
                         routerLink: ['/announcement/employeelist']
+
                     },
+                    {
+                        label: 'Chart List',
+                        icon: 'pi pi-fw pi-list',
+                        routerLink: ['/announcement/charts']
+                    },
+
 
                 ]
             }

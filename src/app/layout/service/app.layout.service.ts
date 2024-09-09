@@ -1,5 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable, effect, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { LocalStorageService } from 'src/app/services/local-storage/local-storage.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
+import { SystemService } from 'src/app/services/system/system.service';
 
 export interface AppConfig {
     inputStyle: string;
@@ -30,7 +35,7 @@ export class LayoutService {
         menuMode: 'static',
         colorScheme: 'light',
         theme: 'lara-light-indigo',
-        scale: 14,
+        scale: 12,
     };
 
     // Using Angular's signal to manage reactive state
@@ -54,12 +59,20 @@ export class LayoutService {
     configUpdate$ = this.configUpdate.asObservable();
     overlayOpen$ = this.overlayOpen.asObservable();
 
-    constructor() {
+    constructor(
+
+        private session: LocalStorageService,
+        private router: Router,
+        private messageService: MessageDemoService,
+
+    ) {
+
+        this.resetLayoutState();
+
         // Using effect to reactively update on config changes
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
-                this.changeTheme();
             }
             this.changeScale(config.scale);
             this.onConfigUpdate();
@@ -81,21 +94,47 @@ export class LayoutService {
             if (this.state.overlayMenuActive) {
                 this.overlayOpen.next(null);
             }
-        }
-
-        if (this.isDesktop()) {
-            this.state.staticMenuDesktopInactive =
-                !this.state.staticMenuDesktopInactive;
+        } else if (this.isDesktop()) {
+            this.state.staticMenuDesktopInactive = !this.state.staticMenuDesktopInactive;
         } else {
-            this.state.staticMenuMobileActive =
-                !this.state.staticMenuMobileActive;
+            // For mobile, control toggle behavior manually
+            this.state.staticMenuMobileActive = !this.state.staticMenuMobileActive;
 
+            // Add your logic to change it to a dropdown arrow instead of dropping automatically
             if (this.state.staticMenuMobileActive) {
+                // You can trigger the dropdown arrow here, e.g., by setting another state or calling another method.
+                this.showDropdownArrow();
                 this.overlayOpen.next(null);
             }
         }
     }
-    
+
+    showDropdownArrow() {
+        // Implement your logic for showing the dropdown arrow here
+        console.log('Show dropdown arrow instead of dropping menu automatically');
+        // You may update some state or add additional logic here
+    }
+
+    async logOut1(): Promise<void> {
+        if (await this.messageService.confirmed('Logout Confirmation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')) {
+            // Reset the layout state
+            this.resetLayoutState();
+
+            this.messageService.toast('info', 'Logged out.');
+            this.session.clear();
+            this.router.navigate(['/auth/login']);
+        }
+    }
+    private resetLayoutState() {
+        this.state = {
+            staticMenuDesktopInactive: false,
+            overlayMenuActive: false,
+            profileSidebarVisible: false,
+            configSidebarVisible: false,  // Ensure the config sidebar is not visible
+            staticMenuMobileActive: false,
+            menuHoverActive: false,
+        };
+    }
 
     // Toggles profile sidebar visibility
     showProfileSidebar() {
@@ -130,50 +169,8 @@ export class LayoutService {
         this._config = { ...this.config() };
         this.configUpdate.next(this.config());
     }
-
-    // Handles theme changes based on configuration
-    changeTheme() {
-        const config = this.config();
-        const themeLink = document.getElementById('theme-css') as HTMLLinkElement;
-        const themeLinkHref = themeLink?.getAttribute('href') ?? '';
-        const newHref = themeLinkHref
-            .split('/')
-            .map((el) =>
-                el === this._config.theme
-                    ? config.theme
-                    : el === `theme-${this._config.colorScheme}`
-                    ? `theme-${config.colorScheme}`
-                    : el
-            )
-            .join('/');
-
-        if (newHref) {
-            this.replaceThemeLink(newHref);
-        }
-    }
-
-    // Replaces the theme link in the document
-    replaceThemeLink(href: string) {
-        const id = 'theme-css';
-        const themeLink = document.getElementById(id) as HTMLLinkElement;
-
-        if (themeLink) {
-            const cloneLinkElement = themeLink.cloneNode(true) as HTMLLinkElement;
-
-            cloneLinkElement.setAttribute('href', href);
-            cloneLinkElement.setAttribute('id', id + '-clone');
-
-            themeLink.parentNode?.insertBefore(cloneLinkElement, themeLink.nextSibling);
-            cloneLinkElement.addEventListener('load', () => {
-                themeLink.remove();
-                cloneLinkElement.setAttribute('id', id);
-            });
-        }
-    }
-
-    // Changes the font scale of the document
     changeScale(value: number) {
         document.documentElement.style.fontSize = `${value}px`;
     }
-    
+
 }

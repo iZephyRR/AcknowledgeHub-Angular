@@ -1,4 +1,60 @@
 <div class="chart-container">
-    <canvas #barChart></canvas>
-  </div>
-  
+    <div class="left-container">
+        <div class="echart-container">
+            <ngx-echarts-bar-animation></ngx-echarts-bar-animation>
+        </div>
+        <div class="piechart-container">
+            <pie-chart></pie-chart> <!-- Pie chart placed below the echart-container -->
+        </div>
+    </div>
+    <div class="chartjs-container">
+        <ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>
+    </div>
+</div>
+
+
+<style>
+   .chart-container {
+    display: flex;
+    justify-content: space-between; /* Space between the left and right containers */
+    align-items: flex-start; /* Align the charts at the top */
+    width: 100%; /* Full width container */
+    padding: 20px; /* Add some padding to prevent the charts from touching the edges */
+}
+
+.left-container {
+    width: 65%; /* Left container holding echart and piechart */
+}
+
+.echart-container,
+.piechart-container {
+    width: 100%; /* Both echart and piechart take full width of the left container */
+    height: 500px; /* Fixed height for the charts */
+    margin-bottom: 20px; /* Add space between echart and piechart */
+}
+
+.chartjs-container {
+    width: 32%; /* Right container takes 32% of the space */
+    height: 500px; /* Fixed height for the chart */
+}
+
+.piechart-container,
+.chartjs-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Responsive: For smaller screens, stack the charts vertically */
+@media (max-width: 768px) {
+    .chart-container {
+        flex-direction: column;
+    }
+
+    .left-container,
+    .chartjs-container {
+        width: 100%; /* Full width for smaller screens */
+        margin-bottom: 20px; /* Add some space between stacked charts */
+    }
+}
+
+</style>

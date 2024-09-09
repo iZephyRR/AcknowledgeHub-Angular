@@ -40,14 +40,14 @@
                         <td>{{draft.contentType}}</td>
                         <td>{{draft.filename}}</td>
                         <td>{{draft.draftAt | date:'MMM d,y'}}</td>
-                        <td>
+                        <!-- <td>
                             <ngx-extended-pdf-viewer [src]="draft.fileUrl" [showSidebarButton]="false"
                                 height="600px"></ngx-extended-pdf-viewer>
-                        </td>
+                        </td> -->
                         <td>
                             <div style="display: flex; gap: 0.5rem;">
                                 <button pButton icon="pi pi-plus" label="Create" (click)="showModal(draft.id)"></button>
-                                <button pButton icon="pi pi-trash" label="Delete" (click)="delete(draft.id)"
+                                <button pButton icon="pi pi-trash" label="Delete" (click)="deleteDraft(draft.id)"
                                     class="btn-danger"></button>
                             </div>
                         </td>
@@ -144,8 +144,25 @@
                     <!-- Date Picker (hidden by default) -->
                     <div class="form-group" *ngIf="showDatePicker">
                         <label for="schedule-date">Select Date and Time</label>
-                        <p-calendar id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate" required
-                            showTime="true" hourFormat="24"></p-calendar>
+                        <input type="datetime-local" id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate"
+                        min="{{ currentDate }}" required />
+                    </div>
+
+                    <!-- channel option -->
+                    <div class="form-group">
+                        <label>Channel:</label>
+                        <div class="channel-options d-flex align-items-center">
+                            <div class="form-check me-3"> <!-- Added margin-end class for spacing -->
+                                <p-checkbox name="channel" value="telegram" [(ngModel)]="selectedChannels"
+                                    inputId="telegram" label="Telegram" class="me-3">
+                                </p-checkbox>
+                            </div>
+                            <div class="form-check">
+                                <p-checkbox name="channel" value="email" [(ngModel)]="selectedChannels" inputId="email"
+                                    label="Email">
+                                </p-checkbox>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
@@ -154,9 +171,7 @@
                             [disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Create"
                             icon="pi pi-check" class="btn-primary"></button> &nbsp;
                         <button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel" icon="pi pi-"
-                            class="btn-secondary"></button> &nbsp;
-                        <button pButton pRipple type="button" label="Delete" icon="pi pi-trash"
-                            class="btn-danger"></button>
+                            class="btn-secondary"></button>
                     </div>
                 </form>
             </p-dialog>
@@ -165,6 +180,15 @@
 </div>
 
 <style>
+    .channel-options {
+        display: flex;
+        /* Makes the child elements (checkboxes) appear side by side */
+        gap: 20px;
+        /* Adds space between the checkboxes */
+        align-items: center;
+        /* Centers the checkboxes vertically with the label */
+    }
+
     video,
     img {
         max-width: 100%;
