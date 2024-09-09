@@ -31,6 +31,16 @@ export class UserService {
   getUserById(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/user/profile`);
   }
+
+  getUserWhoNotedWithInOneDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho1DNoted/${announcementId}`);
+  }
+
+  getUserWhoNotedWithInThreeDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho3DNoted/${announcementId}`);
+  }
+  
+
 }
 
 

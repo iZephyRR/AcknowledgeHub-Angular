@@ -18,12 +18,15 @@ export interface User {
     company:number;
     department:bigint;
     workentrydate:Date;
-    staffid:string;
+    stuffId:string;
     telegramuserid:string;
     telegramusername:string;
     photolink:string;
     status:Status;
-  
+    notedAt:string;
+    companyName:string;
+    departmentName:string;
+
 }
 export interface UserProfile {
     employee: User;

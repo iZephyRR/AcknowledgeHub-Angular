@@ -3,9 +3,8 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { AuthService } from '../auth/auth.service';
-import { catchError, take } from 'rxjs/operators';
+import { catchError, map, take } from 'rxjs/operators';
 import { environment } from 'src/app/demo/enviroments/environment';
-import { map, filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +16,11 @@ export class NotificationService {
   private notificationsSubject = new BehaviorSubject<any[]>([]);
   notifications$ = this.notificationsSubject.asObservable();
 
+  private notedNotifications: any[] = []; // Store noted notifications separately
+  private notifications: any[] = []; // Regular notifications
+
+  private combinedNotifications: any[] = []; // Merged notifications
+
   private apiUrl = environment.apiUrl + '/api/v1/notifications';
   private notificationsCollection: AngularFirestoreCollection<any>;
 
@@ -27,6 +31,64 @@ export class NotificationService {
   ) {
     this.notificationsCollection = this.firestore.collection('notifications');
     this.loadNotifications();
+    this.loadNotedNotifications();
+  }
+
+  // Combine noted and regular notifications, update unread count
+  updateCombinedNotifications(): void {
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications];
+    const unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
+    this.unreadCountSubject.next(unreadCount);
+    this.notificationsSubject.next(this.combinedNotifications);
+  }
+
+  loadNotedNotifications(): void {
+    const userId = this.authService.userId;
+
+    if (userId) {
+      console.log('Querying noted notifications for userId:', userId);
+
+      this.firestore.collection('notifications', ref =>
+        ref.where('targetId', '==', userId)
+          .orderBy('userId', 'asc')
+          .orderBy('announcementId', 'desc')
+          .orderBy('timestamp', 'desc')
+          .orderBy('noticeAt', 'desc')
+          .orderBy('__name__', 'desc')
+      ).valueChanges({ idField: 'id' }).pipe(
+        map((notifications: any[]) =>
+          notifications.filter(notification => notification.noticeAt !== notification.timestamp)
+        ),
+        catchError(error => {
+          console.error('Error fetching noted notifications:', error);
+          return of([]);
+        })
+      ).subscribe(
+        (notedNotifications: any[]) => {
+          console.log('Fetched Noted Notifications:', notedNotifications);
+
+          this.notedNotifications = notedNotifications.map(notification => {
+            const acknowledgedUsers = notification.acknowledgedUsers || [];
+            let message = '';
+
+            if (acknowledgedUsers.length > 1) {
+              message = `${acknowledgedUsers[0]} and ${acknowledgedUsers.length - 1} others have noted the announcement.`;
+            } else if (acknowledgedUsers.length === 1) {
+              message = `${acknowledgedUsers[0]} has noted the announcement.`;
+            }
+
+            return {
+              ...notification,
+              message
+            };
+          }).filter(notification => notification.message); // Filter out notifications with no message
+
+          this.updateCombinedNotifications(); // Update combined notifications
+        }
+      );
+    } else {
+      console.warn('User ID is undefined. Cannot load noted notifications.');
+    }
   }
 
   loadNotifications(): void {
@@ -37,8 +99,11 @@ export class NotificationService {
 
       this.firestore.collection('notifications', ref =>
         ref.where('targetId', '==', userId)
-           .orderBy('timestamp', 'desc')
-           .orderBy('__name__', 'desc')
+          .orderBy('userId', 'asc')
+          .orderBy('announcementId', 'desc')
+          .orderBy('timestamp', 'desc')
+          .orderBy('noticeAt', 'desc')
+          .orderBy('__name__', 'desc')
       ).valueChanges({ idField: 'id' }).pipe(
         catchError(error => {
           console.error('Error fetching notifications:', error);
@@ -47,15 +112,15 @@ export class NotificationService {
       ).subscribe(
         (notifications: any[]) => {
           console.log('Fetched Notifications:', notifications);
-          const unreadNotifications = notifications.filter(notification => !notification.isRead);
-          this.notificationsSubject.next(notifications);
-          this.unreadCountSubject.next(unreadNotifications.length);
+          this.notifications = notifications;
+          this.updateCombinedNotifications(); // Update combined notifications after loading
         }
       );
     } else {
-      console.warn('Sender is undefined. Cannot load notifications.');
+      console.warn('User ID is undefined. Cannot load notifications.');
     }
   }
+
 
   markAsRead(notificationId: string): void {
     const userId = this.authService.userId;
@@ -69,16 +134,16 @@ export class NotificationService {
             .then(() => {
               console.log('Notification marked as read in Firebase.');
 
-              // Update local state
+
               const notifications = this.notificationsSubject.getValue();
               const updatedNotifications = notifications.map(n =>
                 n.id === notificationId ? { ...n, isRead: true } : n
               );
               this.notificationsSubject.next(updatedNotifications);
-
-              // Update unread count
               const unreadCount = updatedNotifications.filter(n => !n.isRead && n.targetId === userId).length;
               this.unreadCountSubject.next(unreadCount);
+              this.updateCombinedNotifications(); // Update the combined notifications after loading
+
             })
             .catch(error => {
               console.error('Error marking notification as read in Firebase:', error);

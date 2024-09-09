@@ -1,105 +1,165 @@
 <div class="grid grid-nogutter">
-    <!-- First Row with 4 equal-width cards -->
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card mb-4">
-            <div class="flex justify-content-between mb-3">
-                <div>
-                    <span class="block text-500 font-medium mb-3">Announcements</span>
-                    <div class="text-900 font-medium text-xl">{{ announcementCount }}</div>
+    <!-- First Row with 4 equal-width cards with space between them -->
+    <div class="col-12">
+        <div class="flex justify-content-between enterprise-card-category-container" style="gap: 1rem;">
+            <div class="enterprise-card-category shadow-3 surface-card">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-2">Announcements</span>
+                        <div class="text-primary font-semibold text-2xl">{{ announcementCount }}</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-blue-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <i class="pi pi-bell text-blue-600 text-2xl"></i>
+                    </div>
                 </div>
-                <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>
-                </div>
+                <span class="text-green-600 font-semibold">4 new </span>
+                <span class="text-500">since last visit</span>
             </div>
-            <span class="text-green-500 font-medium">4 new </span>
-            <span class="text-500">since last visit</span>
+
+            <div class="enterprise-card-category shadow-3 surface-card">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-2">Total Company</span>
+                        <div class="text-primary font-semibold text-2xl">15</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-orange-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <i class="pi pi-briefcase text-orange-600 text-2xl"></i>
+                    </div>
+                </div>
+                <span class="text-green-600 font-semibold">7 Departments</span>
+                <span class="text-500">in each Company</span>
+            </div>
+
+            <div class="enterprise-card-category shadow-3 surface-card">
+                <div class="flex justify-content-between mb-3">
+                    <div>
+                        <span class="block text-500 font-medium mb-2">Employees</span>
+                        <div class="text-primary font-semibold text-2xl">8441</div>
+                    </div>
+                    <div class="flex align-items-center justify-content-center bg-cyan-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <i class="pi pi-users text-cyan-600 text-2xl"></i>
+                    </div>
+                </div>
+                <span class="text-green-600 font-semibold">20</span>
+                <span class="text-500">newly registered last month</span>
+            </div>
         </div>
     </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card mb-4">
-            <div class="flex justify-content-between mb-3">
-                <div>
-                    <span class="block text-500 font-medium mb-3">Total Company</span>
-                    <div class="text-900 font-medium text-xl">15</div>
+
+    <!-- Charts and Announcements Table in same row -->
+    <div class="grid grid-nogutter mt-4">
+        <div class="col-12">
+            <div class="flex justify-content-between" style="gap: 1rem;">
+                <!-- Charts section -->
+                <div class="enterprise-chart-card shadow-3 surface-card">
+                    <div class="chart-header">
+                        <h5 class="text-primary">Bar Chart - Category Count</h5>
+                    </div>
+                    <div class="chart-content">
+                        <p-chart type="bar" [data]="barChartData" [options]="chartOptions"></p-chart>
+                    </div>
                 </div>
-                <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-map-marker text-orange-500 text-xl"></i>
+
+
+                <div class="enterprise-chart-card shadow-3 surface-card">
+                    <h5 class="text-primary">Pie Chart - Employee Distribution</h5>
+                    <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
                 </div>
+
             </div>
-            <span class="text-green-500 font-medium">7 Departments</span>
-            <span class="text-500">in each Company</span>
-        </div>
-    </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card mb-4">
-            <div class="flex justify-content-between mb-3">
-                <div>
-                    <span class="block text-500 font-medium mb-3">Employees</span>
-                    <div class="text-900 font-medium text-xl">8441</div>
-                </div>
-                <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-inbox text-cyan-500 text-xl"></i>
-                </div>
-            </div>
-            <span class="text-green-500 font-medium">20</span>
-            <span class="text-500">newly registered last month</span>
-        </div>
-    </div>
-    <div class="col-12 md:col-6 lg:col-3">
-        <div class="card mb-4">
-            <div class="flex justify-content-between mb-3">
-                <div>
-                    <span class="block text-500 font-medium mb-3">Comments</span>
-                    <div class="text-900 font-medium text-xl">152 Unread</div>
-                </div>
-                <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
-                    <i class="pi pi-comment text-purple-500 text-xl"></i>
-                </div>
-            </div>
-            <span class="text-green-500 font-medium">25 </span>
-            <span class="text-500">responded</span>
-        </div>
-    </div><div class="col-12 xl:col-6">
-        <div class="card">
-            <h5>All Announcements</h5>
-            <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Title</th>
-                        <th>Category</th>
-                        <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt"></p-sortIcon></th>
-                        <th>Role</th>
-                        <th>View</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-announcement>
-                    <tr>
-                        <td>{{ announcement.title }}</td>
-                        <td>{{ announcement.categoryName }}</td>
-                        <td>{{ announcement.createdAt | date:'medium' }}</td>
-                        <td>{{ announcement.role }}</td>
-                      <td>
-                            <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
-    <!-- Third Row with 3 Charts -->
-    <div class="col-12 lg:col-4 xl:col-6">
-        <div class="card mb-4">
-            <h5>Line Chart - Announcements Over Time</h5>
-            <p-chart type="line" [data]="lineChartData" [options]="chartOptions"></p-chart>
         </div>
 
-        <div class="card mb-4">
-            <h5>Bar Chart - Category Count</h5>
-            <p-chart type="bar" [data]="barChartData" [options]="chartOptions"></p-chart>
-        </div>
-
-        <div class="card mb-4">
-            <h5>Pie Chart - Employee Distribution</h5>
-            <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
+        <!-- Announcements table aligned with charts -->
+        <div class="col-12 mt-4">
+            <div class="enterprise-card-table shadow-3 surface-card">
+                <h5 class="text-primary">All Announcements</h5>
+                <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt"></p-sortIcon></th>
+                            <th>Role</th>
+                            <th>View</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-announcement>
+                        <tr>
+                            <td>{{ announcement.title }}</td>
+                            <td>{{ announcement.categoryName }}</td>
+                            <td>{{ announcement.createdAt | date:'medium' }}</td>
+                            <td>{{ announcement.role }}</td>
+                            <td>
+                                <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
         </div>
     </div>
+</div>
+
+<style>
+.chart-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: nowrap;
+}
+
+.enterprise-chart-card {
+    flex: 1 1 0px;
+    min-width: 500px;
+    height: 550px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Makes the chart content stick to the bottom */
+    border-radius: 0.75rem;
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border, #e0e0e0);
+}
+
+.chart-header {
+    margin-bottom: auto; /* Ensures the header stays at the top */
+}
+
+.chart-content {
+    margin-top: auto; /* Pushes the chart to the bottom */
+    height: auto;
+}
+
+.enterprise-card-category-container {
+    display: flex;
+    gap: 1rem;
+}
+
+.enterprise-card-category {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border, #e0e0e0);
+}
+
+.enterprise-card-category:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.enterprise-card-table {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background-color: var(--surface-card);
+    border: 1px solid var(--surface-border, #e0e0e0);
+}
+
+.text-primary {
+    color: var(--primary-color, #007ad9);
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+</style>
