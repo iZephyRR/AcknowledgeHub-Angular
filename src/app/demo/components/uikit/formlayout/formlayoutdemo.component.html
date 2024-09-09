@@ -1,46 +1,40 @@
-<!-- Form Header -->
-<div class="card-header">
-    <h2>Create Announcement</h2>
-</div>
-
-<form #sendAnnouncement="ngForm" (ngSubmit)="onSubmit(sendAnnouncement)">
-    <div class="form-layout">
-        <!-- Left Section -->
-        <div class="left-side">
-            <!-- Combined Category and Title Container -->
-            <div class="container combined-container">
+<!-- Form Layout -->
+<div class="container">
+    <div class="form-card">
+        <div class="card-header">
+            <h2>Create Announcement</h2>
+        </div>
+        <div class="card-body">
+            <form #sendAnnouncement="ngForm" (ngSubmit)="onSubmit(sendAnnouncement)" enctype="multipart/form-data">
+                <!-- Category Field -->
                 <div class="form-group">
                     <label for="category">Category</label>
                     <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
-                        placeholder="Select a category" optionLabel="name" optionValue="id" required>
-                    </p-dropdown>
-                    <!-- <div *ngIf="!selectedCategory && sendAnnouncement.submitted" class="invalid-feedback">
-                        Category is required
-                    </div> -->
+                        placeholder="Select a category" optionLabel="name" optionValue="id" required></p-dropdown>
                 </div>
 
+                <!-- Title Field -->
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" id="title" name="title" [(ngModel)]="title" required />
-                    <div *ngIf="!title && sendAnnouncement.submitted" class="invalid-feedback">
-                        Title is required
-                    </div>
                 </div>
-            </div>
 
-            <!-- Announcement Container -->
-            <div class="container short-input">
+                <!-- PDF File Upload -->
                 <div class="form-group">
-                    <label for="media">Announcement</label>
+                    <label for="pdf-file">Announcement</label>
                     <p-toolbar>
                         <div class="p-toolbar-group-left">
                             <button type="button" pButton label="Open" icon="pi pi-folder-open"
-                                class="p-button-secondary mr-2" (click)="fileInput.click()"></button>
+                                class="p-button-secondary" (click)="fileInput.click()"></button>
                         </div>
                     </p-toolbar>
+
+                    <!-- Hidden file input -->
                     <input type="file" id="media" name="media"
-                        accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                        accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
                         (change)="onFileChange($event)" #fileInput style="display: none;" />
+
+                    <!-- Display the selected file name -->
                     <div *ngIf="filePreview">
                         <p class="mt-3">File selected: {{filename}}</p>
                         <div *ngIf="isImage()">
@@ -54,77 +48,207 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Schedule Options -->
-            <div class="container">
+                <!-- Target Select View -->
+                <div class="form-group">
+                    <div class="target-group d-flex justify-content-between align-items-center">
+                        <label for="createdGroups">Target:</label>
+                        <p-dropdown id="createdGroups" name="createdGroups" [(ngModel)]="selectedGroup"
+                            [options]="groups" placeholder="Select Created Groups" optionLabel="name" optionValue="id"
+                            [filter]="true" [showClear]="true" class="dropdown">
+                        </p-dropdown>
+                    </div>
+
+                    <!-- Radio Buttons for Selecting View -->
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
+                                (change)="onViewChange('tree')">
+                            Show Tree View
+                        </label>
+                        <label>
+                            <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
+                                (change)="onViewChange('table')">
+                            Show User List Table
+                        </label>
+                    </div>
+
+                    <!-- Conditionally Display Components -->
+                    <div *ngIf="viewOption === 'tree'" class="tree-wrapper">
+                        <div>
+                            <p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
+                                [propagateSelectionDown]="true" [propagateSelectionUp]="true" styleClass="custom-tree">
+                            </p-tree>
+                        </div>
+                    </div>
+
+                    <div *ngIf="viewOption === 'table'"> <!--  class="tree-wrapper" -->
+                        <div class="by-one-employee-container">
+                            <div class="user-list-container">
+                                <div
+                                    class="search-bar-container d-flex align-items-center justify-content-between mb-3">
+                                    <!-- Search Bar -->
+                                    <div class="d-flex align-items-center" style="margin-top: 5px;">
+                                        <!-- <i class="pi pi-search me-2"></i> -->
+                                        <input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
+                                            placeholder="Search Keyword" class="p-inputtext-sm" />
+                                    </div>
+                                </div>
+                                <!-- User List Table -->
+                                <p-table #dt1 [value]="users" dataKey="id" [rows]="10" [loading]="loading"
+                                    [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true"
+                                    [globalFilterFields]="['name', 'companyName', 'departmentName']"
+                                    responsiveLayout="scroll" selectionMode="multiple"
+                                    [(selection)]="selectedEmployees">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th style="width: 3rem"></th> <!-- Empty header cell for checkboxes -->
+                                            <th style="min-width: 12rem">Name
+                                                <p-columnFilter type="text" field="name" display="menu"
+                                                    placeholder="Search by name"></p-columnFilter>
+                                            </th>
+                                            <th style="min-width: 12rem">Role
+                                                <p-columnFilter type="text" field="role" display="menu"
+                                                    placeholder="Search by role"></p-columnFilter>
+                                            </th>
+                                            <th style="min-width: 12rem">Department
+                                                <p-columnFilter type="text" field="departmentName" display="menu"
+                                                    placeholder="Search by department"></p-columnFilter>
+                                            </th>
+                                            <th style="min-width: 10rem">Company
+                                                <p-columnFilter type="text" field="companyName" display="menu"
+                                                    placeholder="Search by company"></p-columnFilter>
+                                            </th>
+                                        </tr>
+                                    </ng-template>
+
+                                    <ng-template pTemplate="body" let-user>
+                                        <tr>
+                                            <td>
+                                                <p-tableCheckbox [value]="user"></p-tableCheckbox>
+                                            </td>
+                                            <td>{{ user.name }}</td>
+                                            <td>{{ user.role }}</td>
+                                            <td>{{ user.departmentName }}</td>
+                                            <td>{{ user.companyName }}</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0"
+                        (onChange)="saveTarget()" class="p-checkbox-success">
+                    </p-checkbox>
+                </div>
+
+                <!-- Schedule Options -->
+
                 <div class="form-group">
                     <label>Schedule:</label>
                     <div class="schedule-options">
                         <div class="form-check-inline">
                             <input class="form-check-input" type="radio" name="schedule" id="schedule-now" value="now"
                                 [(ngModel)]="scheduleOption" (change)="toggleDatePicker(false)" required />
-                            <label class="form-check-label" for="schedule-now">Now</label>
+                            <label class="form-check-label" for="schedule-now"> Now </label>
                         </div>
                         <div class="form-check-inline">
-                            <input class="form-check-input" type="radio" name="schedule" id="schedule-later" value="later"
-                                [(ngModel)]="scheduleOption" (change)="toggleDatePicker(true)" required />
-                            <label class="form-check-label" for="schedule-later">Later</label>
+                            <input class="form-check-input" type="radio" name="schedule" id="schedule-later"
+                                value="later" [(ngModel)]="scheduleOption" (change)="toggleDatePicker(true)" required />
+                            <label class="form-check-label" for="schedule-later"> Later </label>
                         </div>
                     </div>
-                    <div *ngIf="!scheduleOption && sendAnnouncement.submitted" class="invalid-feedback">
-                        Schedule option is required
-                    </div>
                 </div>
 
-                <!-- Date Picker Container -->
+                <!-- Date Picker (hidden by default) -->
                 <div class="form-group" *ngIf="showDatePicker">
                     <label for="schedule-date">Select Date and Time</label>
-                    <p-calendar id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate" required
-                        showTime="true" hourFormat="24"></p-calendar>
-                    <div *ngIf="!scheduleDate && sendAnnouncement.submitted" class="invalid-feedback">
-                        Date and time are required
-                    </div>
+                    <input type="datetime-local" id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate"
+                        min="{{ currentDate }}" required />
                 </div>
-            </div>
-        </div>
 
-        <!-- Right Section -->
-        <div class="right-side">
-            <!-- Target Container -->
-            <div class="container">
+                <!-- Channel Options -->
                 <div class="form-group">
-                    <label>Target</label>
-                    <p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
-                        [propagateSelectionDown]="true" [propagateSelectionUp]="true">
-                    </p-tree>
-                    <!-- <div *ngIf="!selectedTargets.length && sendAnnouncement.submitted" class="invalid-feedback">
-                        At least one target is required
-                    </div> -->
+                    <label>Channel: (DEFAULT : TELEGRAM) </label>
+                    <div class="channel-options d-flex align-items-center">
+                        <div class="form-check me-3"> <!-- Added margin-end class for spacing -->
+                            <p-checkbox name="channel" value="telegram" [(ngModel)]="selectedChannels"
+                                inputId="telegram" label="Telegram" class="me-3">
+                            </p-checkbox>
+                        </div>
+                        <div class="form-check">
+                            <p-checkbox name="channel" value="email" [(ngModel)]="selectedChannels" inputId="email"
+                                label="Email">
+                            </p-checkbox>
+                        </div>
+                    </div>                                        
                 </div>
-            </div>
 
-            <!-- Custom Target -->
 
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button pButton pRipple type="submit"
+                        [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length)"
+                        label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
+                    <button pButton pRipple type="button"
+                        [disabled]="sendAnnouncement.invalid || !selectedTargets.length || viewOption === 'table'"
+                        label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save"
+                        class="btn-success"></button>
+                    &nbsp;
+                    <button pButton pRipple type="reset" (click)="clearPreview()" label="Reset" icon="pi pi-trash"
+                        class="btn-danger"></button> &nbsp;
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <!-- Submit Button Section -->
-    <div class="form-actions">
-        <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || !selectedTargets.length" label="Create"
-            icon="pi pi-check" class="btn-primary"></button>
-        <button pButton pRipple type="button" label="Save" icon="pi pi-save" class="btn-success" [disabled]="sendAnnouncement.invalid || !selectedTargets.length"
-            (click)="saveDraft()"></button>
-        <button pButton pRipple type="reset" (click)="clearPreview()" label="Cancel"
-            class="btn-secondary"></button>
-        <button pButton pRipple type="button" label="Delete" icon="pi pi-trash" class="btn-danger"></button>
-    </div>
-</form>
 
-<!-- Styles -->
 <style>
-    /* Styles for media elements */
-    video, img {
+    /* Styles for radio buttons */
+    .radio-group {
+        display: flex;
+        gap: 1rem;
+        /* Adjust the gap between buttons as needed */
+    }
+
+    .radio-group label {
+        display: flex;
+        align-items: center;
+    }
+
+    .tree-wrapper {
+        max-height: 400px;
+        /* Set the height constraint */
+        overflow-y: auto;
+        /* Enable scrolling when content exceeds the height */
+        border: 1px solid #ccc;
+        /* Optional: Add border for better visibility */
+    }
+
+    /* Apply to inner elements of the PrimeNG tree using ::ng-deep */
+    ::ng-deep .custom-tree .ui-tree {
+        max-height: 100%;
+        /* Ensure tree can grow to the container’s height */
+        overflow-y: auto;
+        /* Allow vertical scrolling */
+    }
+
+    ::ng-deep .custom-tree .ui-treenode-content {
+        display: block;
+        /* Ensure block display for proper sizing */
+    }
+
+    ::ng-deep .custom-tree .ui-treenode {
+        max-height: inherit;
+        /* Inherit height from parent container */
+    }
+
+    video,
+    img {
         max-width: 100%;
         height: auto;
         max-height: 400px;
@@ -133,43 +257,36 @@
         margin-top: 10px;
     }
 
-    /* Form layout styles */
+
+    /* Container Styles */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* height: 100vh;
+		padding: 20px; */
+    }
+
+    /* Form Card Styles */
+    .form-card {
+        border-radius: 12px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        padding: 40px;
+        background-color: #ffffff;
+    }
+
+    /* Card Header Styles */
     .card-header {
         padding: 15px;
         text-align: center;
-        background-color: #f8f9fa;
-        margin-bottom: 20px;
-    }
-
-    .form-layout {
-        display: flex;
-        gap: 2rem;
-    }
-
-    .left-side,
-    .right-side {
-        flex: 1;
-    }
-
-    /* Container styles */
-    .combined-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .container {
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 10px;
-        background-color: #ffffff;
-        box-shadow: 0 2px 4px rgba(125, 123, 123, 0.1);
     }
 
     /* Input and button styles */
     input[type="text"],
     input[type="file"] {
-        max-width: 300px;
+        width: 100%;
         padding: 10px;
         border: 1px solid #ced4da;
         border-radius: 6px;
@@ -188,36 +305,116 @@
         font-weight: bold;
     }
 
-    .btn-primary,
-    .btn-success,
-    .btn-secondary,
-    .btn-danger {
+    /* Button Styles */
+    .btn-primary {
+        background-color: #007bff;
+        color: #ffffff;
         border: none;
         border-radius: 6px;
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
         transition: background-color 0.3s;
-        color: #ffffff;
-    }
-
-    .btn-primary {
-        background-color: #007bff;
     }
 
     .btn-success {
         background-color: #28a745;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
     }
 
     .btn-secondary {
         background-color: #6c757d;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
     }
 
     .btn-danger {
         background-color: #dc3545;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
     }
 
-    /* Schedule options styles */
+
+    .btn-danger:hover {
+        background-color: #c82333;
+    }
+
+    /* announcement-form.component.css */
+
+    .search-bar {
+        margin-bottom: 1rem;
+    }
+
+    .profile-img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+
+    .p-dialog .p-dialog-content {
+        overflow: hidden;
+    }
+
+    .p-table .p-datatable-gridlines {
+        border: 1px solid #ddd;
+    }
+
+    .p-button-text {
+        font-size: 1rem;
+    }
+
+    .search-bar-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .p-inputtext-sm {
+        width: 100%;
+        max-width: 250px;
+        /* Adjust width as needed */
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        /* Spacing between buttons */
+    }
+
+
+    /* Style for User Details Dialog */
+    .user-details-container {
+        padding: 1rem;
+    }
+
+    .profile-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin-bottom: 1rem;
+    }
+
+    .user-details-container p {
+        margin-bottom: 0.5rem;
+    }
+
+
     .schedule-options {
         display: flex;
         align-items: center;
@@ -229,7 +426,119 @@
         margin-right: 1rem;
     }
 
-    .form-check-label {
-        margin-left: 5px;
+    /* checkbox-list.component.css */
+    .tree-container {
+        font-family: Arial, sans-serif;
+    }
+
+    .tree {
+        list-style-type: none;
+        padding-left: 0;
+        margin: 0;
+    }
+
+    .tree-node {
+        position: relative;
+        margin: 5px 0;
+    }
+
+    .node-label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .node-label input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .tree-children {
+        list-style-type: none;
+        padding-left: 20px;
+        /* Adjust for indentation */
+        margin: 0;
+        display: none;
+        /* Hidden by default */
+    }
+
+    .tree-node {
+        cursor: pointer;
+    }
+
+    .tree-node.open>.tree-children {
+        display: block;
+    }
+
+    .tree-node>.tree-children {
+        display: none;
+    }
+
+
+    .tree-node>.node-label::before {
+        content: '▶';
+        /* Arrow icon */
+        display: inline-block;
+        width: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .tree-node.open>.node-label::before {
+        transform: rotate(90deg);
+        /* Rotate arrow when open */
+    }
+
+    /* Base font size */
+    .node-label {
+        font-size: 16px;
+        /* Adjust to your desired font size */
+    }
+
+    /* Font size for companies */
+    .tree-node>.node-label {
+        font-size: 16px;
+        /* Example font size for companies */
+    }
+
+    /* Font size for departments */
+    .tree-node .tree-children>.tree-node>.node-label {
+        font-size: 14px;
+        /* Example font size for departments */
+    }
+
+    .channel-options {
+        display: flex;
+        /* Makes the child elements (checkboxes) appear side by side */
+        gap: 20px;
+        /* Adds space between the checkboxes */
+        align-items: center;
+        /* Centers the checkboxes vertically with the label */
+    }
+
+    .target-group {
+        display: flex;
+        justify-content: space-between;
+        /* Distributes space between label and dropdown */
+        align-items: center;
+        /* Centers the items vertically */
+        margin-bottom: 1rem;
+        /* Adds some spacing below */
+        gap: 1rem;
+        /* Adds spacing between the label and dropdown */
+    }
+
+    .dropdown {
+        min-width: 200px;
+        /* Ensures the dropdown has a minimum width */
+    }
+
+
+    /* Responsive font size */
+    @media (max-width: 600px) {
+        .node-label {
+            font-size: 0.875rem;
+            /* Smaller font size on smaller screens */
+        }
     }
 </style>
