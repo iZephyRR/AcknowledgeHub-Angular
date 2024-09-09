@@ -71,8 +71,14 @@
       </div>
       <button pButton type="button" label="Verify" [disabled]="!canClickOTP()" (click)="verifyOtp()"></button>
       <p class="resend">
-         Didn't receive the code? <a (click)="resendCode(name)" style="cursor: pointer;">Request again</a>
+        <span *ngIf="isCountingDown; else showResend">
+          You can request again in {{ remainingTime }} seconds.
+        </span>
+        <ng-template #showResend>
+          Didn't receive the code?<a (click)="resendCode()" style="cursor: pointer;">Request again!</a>
+        </ng-template>
       </p>
+      
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
   </div>
 </p-dialog>

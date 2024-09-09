@@ -46,11 +46,6 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                     routerLink: ['/announcement/create']
                                 },
                                 {
-                                    label: 'Announcement For Customize Employees',
-                                    icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/announcement/customize']
-                                },
-                                {
                                     label: 'Announcement List',
                                     icon: 'pi pi-fw pi-list',
                                     routerLink: ['/announcement/list']
@@ -58,13 +53,14 @@ export class AppMenuComponent implements OnInit, OnChanges {
                                 {
                                     label: 'Test2',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/file']
+                                    routerLink: ['/announcement/file']
                                 },
                                 {
                                     label: 'Test1',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/uikit/button']
+                                    routerLink: ['/announcement/button']
                                 },
+                               
                                 {
                                     label: 'Announcement reports',
                                     icon: 'pi pi-fw pi-list',
@@ -88,12 +84,12 @@ export class AppMenuComponent implements OnInit, OnChanges {
                     {
                         label: 'Reports',
                         icon: 'pi pi-fw pi-calendar',
-                        routerLink: ['/pages/timeline']
+                        routerLink: ['/announcement/timeline']
                     },
                     {
                         label: 'Employee List',
                         icon: 'pi pi-fw pi-user',
-                        routerLink: ['/uikit/table']
+                        routerLink: ['/announcement/table']
                     },
 
                 ]

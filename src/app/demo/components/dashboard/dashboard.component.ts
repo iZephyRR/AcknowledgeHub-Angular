@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { Announcement } from 'src/app/modules/announcement';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,13 +17,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
     donutChartData: any;
     chartOptions: any;
     subscription!: Subscription;
-
-    constructor(private announcementService: AnnouncementService) {}
+    employeeCount: number = 0;
+   
+    constructor(
+        private announcementService: AnnouncementService,
+        private userService: UserService // Inject UserService here
+      ) {}
 
     ngOnInit(): void {
         this.fetchAnnouncements();
         this.countAnnouncements(); // Call the count method on initialization
         this.initChart();
+        this.countEmployees();
     }
 
     fetchAnnouncements(): void {
@@ -47,7 +53,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
         );
     }
-
+    countEmployees(): void {
+        this.userService. getEmployeeCount().subscribe(
+            (count: number) => {
+                this.employeeCount = count; // Store the result in the property
+            },
+            (error) => {
+                console.error('Error counting employees', error);
+            }
+        );
+    }
     updateCharts(announcements: Announcement[]): void {
         // Process the announcements data to update the charts accordingly
         // This part depends on how you'd like to visualize the data in the charts

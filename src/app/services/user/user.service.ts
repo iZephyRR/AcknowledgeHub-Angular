@@ -27,6 +27,10 @@ export class UserService {
   getUserById(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/user/profile`);
   }
+
+  getEmployeeCount(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/count`);
+  }
 }
 
 

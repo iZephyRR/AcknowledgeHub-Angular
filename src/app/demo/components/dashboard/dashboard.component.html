@@ -33,10 +33,12 @@
     <div class="col-12 md:col-6 lg:col-3">
         <div class="card mb-4">
             <div class="flex justify-content-between mb-3">
-                <div>
-                    <span class="block text-500 font-medium mb-3">Employees</span>
-                    <div class="text-900 font-medium text-xl">8441</div>
-                </div>
+                <!-- employee-count.component.html -->
+<div>
+    <span class="block text-500 font-medium mb-3">Employees</span>
+    <div class="text-900 font-medium text-xl">{{ employeeCount }}</div>
+</div>
+
                 <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                     <i class="pi pi-inbox text-cyan-500 text-xl"></i>
                 </div>
@@ -59,7 +61,9 @@
             <span class="text-green-500 font-medium">25 </span>
             <span class="text-500">responded</span>
         </div>
-    </div><div class="col-12 xl:col-6">
+    </div>
+
+    <div class="col-12 xl:col-6">
         <div class="card">
             <h5>All Announcements</h5>
             <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
@@ -106,3 +110,4 @@
             <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
         </div>
     </div>
+
