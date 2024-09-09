@@ -36,7 +36,7 @@ export class MessageDemoService {
       modal.style.display = "flex";
       modal.style.justifyContent = "center";
       modal.style.alignItems = "center";
-      modal.style.zIndex = "1002";
+      modal.style.zIndex = "1000";
 
       const dialog = document.createElement("div");
       dialog.style.backgroundColor = backgroundColor;

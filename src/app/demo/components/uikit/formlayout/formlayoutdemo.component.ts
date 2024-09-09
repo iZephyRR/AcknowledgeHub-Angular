@@ -77,7 +77,6 @@ export class FormLayoutDemoComponent implements OnInit {
     this.role = this.authService.role;
     this.companyId = this.authService.companyId;
     this.loadCategories();
-    
 
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
       this.getCompanyById();
@@ -155,8 +154,8 @@ export class FormLayoutDemoComponent implements OnInit {
       (treeNode) => {
         this.companies = [treeNode];
       },
-      (error) => {
-        console.error('Error fetching company data:', error);
+      error => {
+        console.error('Error fetching companies data:', error);
       }
     );
   }
@@ -182,7 +181,6 @@ export class FormLayoutDemoComponent implements OnInit {
   onSubmit(form: NgForm): void {
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
-
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
         console.error('Error status:', error.status);
@@ -283,7 +281,6 @@ export class FormLayoutDemoComponent implements OnInit {
     return targets;
   }
 
-
   async saveTarget(): Promise<void> {
     const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
     if (confirmed.confirmed) {
@@ -344,5 +341,9 @@ export class FormLayoutDemoComponent implements OnInit {
 
   isAudio(): boolean {
     return this.filename?.match(/\.(mp3|wav|ogg)$/i) !== null;
+  }
+  saveDraft(): void {
+    console.log('Draft saved');
+    // Additional logic to save the draft
   }
 }
