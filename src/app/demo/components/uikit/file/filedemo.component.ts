@@ -41,7 +41,9 @@ export class FileDemoComponent implements OnInit {
     this.role = this.authService.role;
     this.companyId = this.authService.companyId;
     if (this.role === 'HR' || this.role === 'HR_ASSISTANCE') {
-      this.getCompanyById();
+
+      this.getCompanyById(this.companyId);
+
     } else {
       this.getAllCompanies();
     }
@@ -52,7 +54,8 @@ export class FileDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(
+    this.companyService.getAll().subscribe(
+
       (data) => {
         this.companies = data.map((company) =>
           this.maptotreeService.mapCompaniesToNodesWithEmployees(company)
@@ -65,9 +68,11 @@ export class FileDemoComponent implements OnInit {
     );
   }
 
-  getCompanyById(): void {
+
+  getCompanyById(companyId: number): void {
     this.companyService
-      .getCompanyById()
+      .getById(companyId)
+
       .pipe(map((company) => this.maptotreeService.mapCompaniesToNodesWithEmployees(company)))
       .subscribe(
         (treeNode) => {
@@ -176,7 +181,9 @@ export class FileDemoComponent implements OnInit {
       this.systemService.showProgress('Saving custom target...', true, false, 3);
       const title: string = confirmed.inputValue;
       this.customTargetGroupService
-        .save({ title: title, customTargetGroupEntities: this.targetData })
+
+        .save({ title: title, entities: this.targetData })
+
         .subscribe({
           next: () => {
             this.systemService.stopProgress().then(() => {

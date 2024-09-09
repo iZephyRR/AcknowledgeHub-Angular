@@ -21,6 +21,8 @@ export class SystemService {
   private progress = signal(0);
   private blockBackground = signal(false);
   private message = signal('');
+  //Current rout
+  public currentRout=signal('');
 
   showLoading(message: string, hideBackground?: boolean): void {
     this.loading.set(true);

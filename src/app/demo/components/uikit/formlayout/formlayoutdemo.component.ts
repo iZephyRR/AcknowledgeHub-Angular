@@ -136,7 +136,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(
+    this.companyService.getAll().subscribe(
       data => {
         const mappedTree = this.maptotreeService.mapAllCompaniesToTree(data);
         this.companies = [mappedTree];
@@ -287,7 +287,7 @@ export class FormLayoutDemoComponent implements OnInit {
     if (confirmed.confirmed) {
       this.systemService.showProgress('Saving custom target...', true, false, 3);
       const title: string = confirmed.inputValue;
-      this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
+      this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
         next: () => {
           this.systemService.stopProgress().then(() => {
             this.messageService.toast('success', 'Saved a custom target.');
