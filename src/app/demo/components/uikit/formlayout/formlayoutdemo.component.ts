@@ -1,6 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { TreeNode } from 'primeng/api';
-
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
 import { Department } from 'src/app/modules/department';
 import { CompanyService } from 'src/app/services/company/company.service';
@@ -13,11 +12,12 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 import { catchError, map, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
-import { NotificationService } from 'src/app/services/notifications/notification service';
+import { UserService } from 'src/app/services/user/user.service';
 import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
-import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 import { SystemService } from 'src/app/services/system/system.service';
 import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
+import { User } from 'src/app/modules/user';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-form-layout-demo',
@@ -25,22 +25,41 @@ import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 })
 export class FormLayoutDemoComponent implements OnInit {
 
+  groups: any[] = [
+    { id: 'group1', name: 'Group 1' },
+    { id: 'group2', name: 'Group 2' },
+    { id: 'group3', name: 'Group 3' },
+    { id: 'group4', name: 'Group 4' },
+  ];
+
+  selectedGroup: string | null = null;
   categories: Category[] = [];
   departments: Department[] = [];
-  companies: any[] = [];
+  companies: TreeNode[] = [];
   target: AnnouncementTarget;
   title: string = '';
-  selectedCategory: any;
+  selectedCategory: string;
   showDatePicker: boolean = false;
   scheduleOption: string = 'now';
   scheduleDate: Date = new Date();
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   file: File;
-  selectedTargets:TreeNode[]=[];
+  selectedTargets: TreeNode[] = [];
   treeNodes: any[] = [];
   role: string;
   companyId: number;
+  showEmployeeModal: boolean = false;
+  users: User[] = [];
+  selectedUser?: User;
+  loading: boolean = false;
+  filter: string = ''; // Updated to string for search functionality
+  displayByOneEmployeeDialog: boolean;
+  selectedChannels: string[] = ['telegram'];
+  channels: any;
+  selectedEmployees: any[] = [];
+  viewOption: 'tree' | 'table' = 'tree'; // Default to 'tree'
+  selectAllCompanies : boolean;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -50,44 +69,87 @@ export class FormLayoutDemoComponent implements OnInit {
     private authService: AuthService,
     private customTargetGroupService: CustomTargetGroupService,
     private systemService: SystemService,
-    private maptotreeService : MaptotreeService
+    private maptotreeService: MaptotreeService,
+    private userService: UserService
   ) { }
-
-
-  onScheduleOptionChange() {
-    if (this.scheduleOption === 'later') {
-      this.showDatePicker = true;  // Show date picker if 'later' is selected
-    } else {
-      this.showDatePicker = false; // Hide date picker if 'now' is selected
-      this.scheduleDate = new Date(); // Reset to current date for 'now' option
-    }
-  }
 
   ngOnInit() {
     this.role = this.authService.role;
     this.companyId = this.authService.companyId;
-    this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
-    });
+    this.loadCategories();
+    
 
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
-      this.getCompanyById(this.companyId);
+      this.getCompanyById();
+      this.retrieveAllUsersByConpanyId();
     } else {
       this.getAllCompanies();
+      this.retrieveAllUsers();
     }
   }
 
-  getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(data => {
-      this.companies = data.map(company => this.maptotreeService.mapCompanyToTreeNode(company));
-      console.log('Mapped TreeNode Structure:', this.companies);
-    }, error => {
-      console.error('Error fetching companies data:', error);
+  onViewChange(option: 'tree' | 'table') {
+    this.viewOption = option;
+    // if (this.viewOption == 'tree') {
+    //   this.selectedEmployees = [];
+    // } else {
+    //   this.selectedTargets = [];
+    // }
+  }
+
+  retrieveAllUsers(): void {
+    this.userService.getAllUsers().subscribe(data => {
+      this.users = data;
     });
   }
 
-  getCompanyById(companyId: number): void {
-    this.companyService.getCompanyById(companyId).pipe(
+  retrieveAllUsersByConpanyId(): void {
+    this.userService.getUsersByCompany().subscribe(data => {
+      this.users = data;
+    });
+  }
+
+  showDetails(user: User): void {
+    this.selectedUser = user;
+  }
+
+  closeDetails(): void {
+    this.selectedUser = undefined;
+  }
+
+  onGlobalFilter(table: Table, event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value;
+    table.filterGlobal(filterValue, 'contains');
+  }
+
+  toggleByOneEmployeeDialog(): void {
+    this.displayByOneEmployeeDialog = !this.displayByOneEmployeeDialog;
+  }
+
+  clear(table: Table): void {
+    table.clear();
+  }
+
+  loadCategories(): void {
+    this.categoryService.getAllCategories().subscribe(data => {
+      this.categories = data;
+    });
+  }
+
+  getAllCompanies(): void {
+    this.companyService.getAllCompanies().subscribe(
+      data => {
+        const mappedTree = this.maptotreeService.mapAllCompaniesToTree(data);
+        this.companies = [mappedTree];
+      },
+      error => {
+        console.error('Error fetching companies data:', error);
+      }
+    );
+  }
+
+  getCompanyById(): void {
+    this.companyService.getCompanyById().pipe(
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
@@ -97,6 +159,13 @@ export class FormLayoutDemoComponent implements OnInit {
         console.error('Error fetching company data:', error);
       }
     );
+  }
+
+  onScheduleOptionChange(): void {
+    this.showDatePicker = this.scheduleOption === 'later';
+    if (this.scheduleOption === 'now') {
+      this.scheduleDate = new Date();
+    }
   }
 
   toggleDatePicker(show: boolean): void {
@@ -110,60 +179,45 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  // on submit
   onSubmit(form: NgForm): void {
-    this.systemService.showLoading('Processing...');
+    //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
 
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
-        console.log('error status ' + error.status);
+        console.error('Error status:', error.status);
         return throwError(error);
       })
-    ).subscribe(
-      {
-        complete: () => {
-          this.messageService.toast("success", "Announcement Created");
-          this.resetForm(form);
-          this.clearPreview();
-        },
-        error: (err) => {
-          this.messageService.toast("error", "Can't Create");
-        }
-      }
-    );
-    this.systemService.hideLoading();
-  }
-
-  // save to draft
-  saveToDraft(form: NgForm): void {
-    console.log("in save to draft");
-    const formData = this.prepareFormData();
-    const formDataObj = {};
-    formData.forEach((value, key) => {
-      if (value instanceof File) {
-        formDataObj[key] = value.name; // Save just the filename
-      } else {
-        formDataObj[key] = value;
+    ).subscribe({
+      complete: () => {
+        this.messageService.toast("success", "Announcement Created");
+        this.resetForm(form);
+        this.clearPreview();
+      },
+      error: () => {
+        this.messageService.toast("error", "Can't Create");
       }
     });
+  }
+
+  saveToDraft(form: NgForm): void {
+    console.log("Saving to draft...");
+    const formData = this.prepareFormData();
     this.announcementService.saveDraft(formData).pipe(
       catchError(error => {
-        console.log('error status ' + error.status);
+        console.error('Error status:', error.status);
         return throwError(error);
       })
-    ).subscribe(
-      {
-        complete: () => {
-          this.messageService.toast("success", "Announcement Saved");
-          this.resetForm(form);
-          this.clearPreview();
-        },
-        error :(err) =>{
-          this.messageService.toast("error", "Can't Save");
-        }
+    ).subscribe({
+      complete: () => {
+        this.messageService.toast("success", "Announcement Saved");
+        this.resetForm(form);
+        this.clearPreview();
+      },
+      error: () => {
+        this.messageService.toast("error", "Can't Save");
       }
-    );
+    });
   }
 
   prepareFormData(): FormData {
@@ -172,48 +226,63 @@ export class FormLayoutDemoComponent implements OnInit {
     formData.append('categoryId', this.selectedCategory);
     formData.append('file', this.file);
     formData.append('filename', this.filename);
-    if (this.scheduleOption === 'later') {
-      const offset = new Date().getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedDate = new Date(this.scheduleDate.getTime() - offset * 60000);
-      console.log("scheduleOption : later " + correctedDate.toISOString());
-      formData.append('scheduleOption', 'later');
-      formData.append('createdAt', correctedDate.toISOString()); // Use corrected date
-    } else {
-      const now = new Date();
-      const offset = now.getTimezoneOffset(); // Get the time zone offset in minutes
-      const correctedNow = new Date(now.getTime() - offset * 60000);
-      console.log("scheduleOption : now " + correctedNow.toISOString());
-      formData.append('scheduleOption', 'now');
-      formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
-    }
-    const targetJSON = JSON.stringify(this.targetData);
-    formData.append('target', targetJSON);
 
+    const offset = new Date().getTimezoneOffset();
+    if (this.scheduleOption === 'later') {
+      const correctedDate = new Date(new Date(this.scheduleDate).getTime() - offset * 60000);
+      formData.append('scheduleOption', 'later');
+      formData.append('createdAt', correctedDate.toISOString());
+    } else {
+      const correctedNow = new Date(new Date().getTime() - offset * 60000);
+      formData.append('scheduleOption', 'now');
+      formData.append('createdAt', correctedNow.toISOString());
+    }
+    console.log("channel : ", JSON.stringify(this.selectedChannels));
+    formData.append("channel", JSON.stringify(this.selectedChannels));
+    console.log("target : ", this.targetData);
+    formData.append('target', JSON.stringify(this.targetData));
+    console.log("select all companies : ", this.selectAllCompanies);
+    formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
     return formData;
   }
 
-  get targetData():AnnouncementTarget[] {
-    const selectedCompanyIds: number[] = this.selectedTargets
-      .filter(target => target.data.type === "COMPANY")
-      .map(target => target.data.id);
-    const targetData: AnnouncementTarget[] = this.selectedTargets
-      .filter(target => {
-        if (target.data.type === "COMPANY") {
-          return true; // Always include the company
+  get targetData(): AnnouncementTarget[] {
+    let targets: AnnouncementTarget[] = [];
+    this.selectAllCompanies = false;
+    if (this.selectedTargets.length > 0) {
+      const selectedCompanyIds: number[] = this.selectedTargets
+        .filter(target => target.data.type === 'COMPANY')
+        .map(target => target.data.id);
+      targets = this.selectedTargets
+        .filter(target => {
+          if (target.data.type === 'COMPANY') {
+            return true;
+          }
+          if (target.data.type === 'DEPARTMENT') {
+            const parentCompanyId: number = target.data.companyId;
+            return !selectedCompanyIds.includes(parentCompanyId);
+          }
+          return false;
+        })
+        .map(target => ({
+          sendTo: target.data.id,
+          receiverType: target.data.type as 'COMPANY' | 'DEPARTMENT'
+        }));
+        if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
+          this.selectAllCompanies = true;
         }
-        if (target.data.type === "DEPARTMENT") {
-          const parentCompanyId: number = target.data.companyId;
-          // Exclude the department if its parent company is selected
-          return !selectedCompanyIds.includes(parentCompanyId);
-        }
-        return false; // Exclude any other type (safety net)
-      })
-      .map(target => ({
-        sendTo: target.data.id,
-        receiverType: target.data.type
+    }
+    if (this.selectedEmployees.length > 0) {
+      const employeeTargets = this.selectedEmployees.map(employee => ({
+        sendTo: employee.id,
+        receiverType: 'EMPLOYEE' as 'EMPLOYEE'
       }));
-    return targetData;
+  
+      targets = [...targets, ...employeeTargets];  // Append employees
+    }
+    return targets;
   }
+
 
   async saveTarget(): Promise<void> {
     const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
@@ -229,12 +298,11 @@ export class FormLayoutDemoComponent implements OnInit {
         error: (err) => {
           console.error(err);
           this.systemService.stopProgress('ERROR').then(() => {
-            this.messageService.toast('error', 'An unknown error occured, please contect to IT Support.');
+            this.messageService.toast('error', 'An unknown error occurred, please contact IT support.');
           });
         }
       });
     }
-
   }
 
   onFileChange(event: any): void {
@@ -251,22 +319,20 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   clearPreview(): void {
-    this.filePreview = undefined;
-    this.filename = undefined;
-    this.selectedTargets= null;
-  }
-  saveDraft(): void {
-    console.log('Draft saved');
-    // Additional logic to save the draft
-  }
-  resetForm(form: NgForm) {
-    form.reset();
-    this.selectedTargets=[];
-    this.showDatePicker = false;  // Hide the date picker
-    this.scheduleOption = 'now';  // Reset schedule option to 'now'
-    this.scheduleDate = new Date(); // Reset the schedule date
+    this.filePreview = null;
+    this.filename = '';
   }
 
+  resetForm(form: NgForm): void {
+    form.reset();
+    this.selectedChannels = ['telegram'];
+    this.clearPreview();
+    this.selectedCategory = '';
+    this.scheduleOption = 'now';
+    this.showDatePicker = false;
+    this.title = '';
+    this.file = null;
+  }
 
   isImage(): boolean {
     return this.filename?.match(/\.(jpg|jpeg|png|gif)$/i) !== null;

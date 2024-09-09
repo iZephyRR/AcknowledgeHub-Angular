@@ -13,7 +13,7 @@ type Status = 'ACTIVATED' | 'DEACTIVATED' | 'DEPARTED';
     providers: [UserService, MessageService, ConfirmationService] // Add UserService here
 })
 export class TableDemoComponent implements OnInit {
-    users: User;
+    users: User[] = [];
     statuses: { label: string; value: Status }[] = [];
     activityValues: number[] = [0, 100];
     selectedUser?:User;
