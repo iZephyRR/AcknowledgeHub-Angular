@@ -14,9 +14,9 @@
                     <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
                         placeholder="Select a category" optionLabel="name" optionValue="id" required>
                     </p-dropdown>
-                    <div *ngIf="!selectedCategory && sendAnnouncement.submitted" class="invalid-feedback">
+                    <!-- <div *ngIf="!selectedCategory && sendAnnouncement.submitted" class="invalid-feedback">
                         Category is required
-                    </div>
+                    </div> -->
                 </div>
 
                 <div class="form-group">
@@ -98,9 +98,9 @@
                     <p-tree [value]="companies" selectionMode="checkbox" [(selection)]="selectedTargets"
                         [propagateSelectionDown]="true" [propagateSelectionUp]="true">
                     </p-tree>
-                    <div *ngIf="!selectedTargets.length && sendAnnouncement.submitted" class="invalid-feedback">
+                    <!-- <div *ngIf="!selectedTargets.length && sendAnnouncement.submitted" class="invalid-feedback">
                         At least one target is required
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

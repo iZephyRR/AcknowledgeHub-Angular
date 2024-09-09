@@ -4,6 +4,7 @@ import { NotfoundComponent } from './demo/components/notfound/notfound.component
 import { AppLayoutComponent } from "./layout/app.layout.component";
 import { AuthGuard } from './guards/auth.guard';
 import { ServerErrorComponent } from './demo/components/server-error/server-error.component';
+import { PanelsDemoComponent } from './demo/components/uikit/panels/panelsdemo.component';
 
 @NgModule({
     imports: [

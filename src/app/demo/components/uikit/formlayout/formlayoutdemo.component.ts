@@ -128,7 +128,8 @@ onSubmit(form: NgForm): void {
     ).subscribe({
       complete: () => {
         this.messageService.toast("success", "Announcement Created");
-        this.resetForm(form);
+    //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
+       this.resetForm(form);
         this.clearPreview();
       }
     });
@@ -210,6 +211,7 @@ onSubmit(form: NgForm): void {
       .map(target => ({
         sendTo: target.data.id,
         receiverType: target.data.type
+
       }));
 
     return targetData;

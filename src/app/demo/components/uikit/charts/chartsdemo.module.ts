@@ -8,6 +8,7 @@ import * as echarts from 'echarts';
 // Import your components
 import { EchartsBarAnimationComponent } from './echarts-bar-animation.component';
 import { ChartjsBarHorizontalComponent } from './chartjs-bar-horizontal.components';
+import { PiechartComponent } from './piechart.component';
 
 export function createECharts(): any {
   return echarts;
@@ -24,6 +25,7 @@ export function createECharts(): any {
   declarations: [
     EchartsBarAnimationComponent,
     ChartjsBarHorizontalComponent,
+    PiechartComponent,
     ChartsDemoComponent,
   ],
 })

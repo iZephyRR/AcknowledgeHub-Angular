@@ -18,6 +18,7 @@
       }"
     >
       <!-- Notification Bell Icon -->
+
       <div class="notification-icon" (click)="toggleNotificationDropdown()">
         <i class="pi pi-bell"></i>
         <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
@@ -30,16 +31,21 @@
           <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
         </div>
         <div class="notification-items">
-          <div
-            class="notification-item"
-            *ngFor="let notification of notifications "
+          <!-- Combined Notifications -->
+          <div class="notification-items">
+            <div class="notification-item" *ngFor="let notification of combinedNotifications"
             (click)="markAsRead(notification)"
-            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
-          >
-            <p class="notification-message">{{ notification.message }}</p>
+            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
+         <p class="notification-message">{{ notification.message }}</p>
+       </div>
+
           </div>
+
+
         </div>
       </div>
+
+
 
       <!-- Profile Button -->
       <button class="p-link layout-topbar-button" (click)="showProfileCard()">

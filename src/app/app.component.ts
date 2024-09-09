@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
       this.systemService.showLoading('');
+    //   this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
       this.primengConfig.ripple = true;
       this.messageService.requestWindowNotiPermit();
 

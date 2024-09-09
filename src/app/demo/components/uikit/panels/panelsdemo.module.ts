@@ -6,6 +6,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { PanelsDemoRoutingModule } from './panelsdemo-routing.module';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
 	imports: [
@@ -13,8 +14,10 @@ import { PanelsDemoRoutingModule } from './panelsdemo-routing.module';
 		FormsModule,
 		PanelsDemoRoutingModule,
 		AutoCompleteModule,  // Include AutoCompleteModule here
-    	ButtonModule 
-		
+    	ButtonModule,
+        TableModule,
+        
+
 	],
 	declarations: [PanelsDemoComponent]
 })
