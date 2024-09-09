@@ -21,6 +21,24 @@ export class AnnouncementService {
   getAllAnnouncements(): Observable<Announcement[]> {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
   }
+  //fetch all announcements for companyid
+  getAllAnnouncementsWithCompanyId(id:string): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByCompanyId`);
+  }
+  //fetch all announcements for individual employee
+  getAnnouncementsForEmployee(): Observable<Announcement[]>{
+    return this.http.get<Announcement[]>(`${this.baseUrl}/get-By-EmployeeId`)
+  }
+
+  getAnnouncementsById(id:string):Observable<Announcement[]>{
+    return this.http.get<Announcement[]>(`${this.baseUrl}/${id}`)
+  }
+
+  
+  //fetch all announcements for departmentid
+  getAllAnnouncementsWithDepartmentId(id:string): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByDepartmentId`);
+  }
 
   // Fetch announcements for August to October 2024
   getAnnouncementsForAugToOct2024(): Observable<Map<string, Announcement[]>> {

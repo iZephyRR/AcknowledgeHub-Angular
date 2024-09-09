@@ -21,15 +21,29 @@ import { environment } from './demo/enviroments/environment';
 import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { SafeUrlPipe } from './safe-url.pipe';
+import { BadgeModule } from 'primeng/badge';
+import { ChipModule } from 'primeng/chip';
+import { ButtonModule } from 'primeng/button';
+import { AnnouncementDetailsComponent } from './demo/components/uikit/announcementdetails/announcementdetails.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { DialogModule } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    SafeUrlPipe ,
+    AnnouncementDetailsComponent,
+    
   ],
   imports: [
+		BadgeModule,
+		ChipModule,
+		ButtonModule,
     ProgressBarModule,
     CommonModule,
     BrowserModule,
@@ -41,9 +55,12 @@ import { ProgressBarModule } from 'primeng/progressbar';
     TreeModule,
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule
+    ProfileModule,
+    DialogModule,
+    FormsModule,
+    
     // NgxExtendedPdfViewerModule,
-    //  PdfViewerModule
+     PdfViewerModule
   ],
   providers: [
     {

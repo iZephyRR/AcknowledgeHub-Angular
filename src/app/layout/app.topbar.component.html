@@ -10,7 +10,7 @@
       'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
     }">
     <!-- Notification Bell Icon -->
-    <div class="notification-icon" (click)="toggleNotificationDropdown()">
+    <div class="layout-config-button layout-topbar-button p-link" (click)="toggleNotificationDropdown()">
       <i class="pi pi-bell"></i>
       <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
     </div>
@@ -22,24 +22,21 @@
         <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
       <div class="notification-items">
-        <div
-          class="notification-item"
-          *ngFor="let notification of notifications "
-          (click)="markAsRead(notification)"
-          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }"
-        >
+        <div class="notification-item" *ngFor="let notification of notifications " (click)="markAsRead(notification)"
+          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
 
           <p class="notification-message">{{ notification.message }}</p>
-        <!-- <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>  -->
+          <!-- <span class="notification-timestamp">{{ notification.noticeAt | date: 'short' }}</span>  -->
         </div>
       </div>
     </div>
 
     <!-- Profile Button -->
-    <button class="p-link layout-topbar-button" (click)="showProfileCard()">
+    <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
       <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
-      <span>Profile</span>
     </button>
+    <span class="user-role">{{user.employee.role}}</span>
+
 
     <!-- Config Button -->
     <button class="layout-config-button layout-topbar-button p-link" type="button" (click)="onConfigButtonClick()">
@@ -47,9 +44,7 @@
     </button>
 
     <!-- Logout Button -->
-    <button
-      class="layout-topbar-button p-link"
-      type="button" (click)="authService.logOut()">
+    <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
       <i class="pi pi-sign-out"></i>
     </button>
 
@@ -91,7 +86,7 @@
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    margin-right: 8px;
+    /* margin-right: 8px; */
   }
 
   .card-header {
@@ -141,6 +136,12 @@
 
   .card-body {
     padding: 16px;
+  }
+
+  .user-role {
+    margin-left: 10px;
+    font-size: 16px;
+    color: #000000;
   }
 
   .unread-notification {
@@ -305,4 +306,3 @@
     padding-top: 5rem;
   }
 </style>
-

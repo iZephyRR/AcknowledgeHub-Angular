@@ -76,7 +76,7 @@
 
         "jwt-decode": "^4.0.0",
 
-        "ng2-pdf-viewer": "^10.2.2",
+        "ng2-pdf-viewer": "^10.3.0",
 
         "ngx-extended-pdf-viewer": "^21.3.7",
 

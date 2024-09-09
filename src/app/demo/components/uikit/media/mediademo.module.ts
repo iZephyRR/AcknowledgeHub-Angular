@@ -8,6 +8,8 @@ import { GalleriaModule } from 'primeng/galleria';
 import { CarouselModule } from 'primeng/carousel';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
+import { FormsModule } from '@angular/forms';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
 	imports: [
@@ -19,6 +21,8 @@ import { TableModule } from 'primeng/table';
 		CarouselModule,
 		DialogModule,
 		TableModule,
+		FormsModule,
+		PdfViewerModule
 	],
 	declarations: [MediaDemoComponent]
 })
