@@ -10,6 +10,7 @@
       <i class="pi pi-bars"></i>
     </button>
 
+
     <div
       #topbarmenu
       class="layout-topbar-menu"
@@ -23,7 +24,6 @@
         <i class="pi pi-bell"></i>
         <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
       </div>
-
       <!-- Notification Dropdown -->
       <div class="notification-dropdown" *ngIf="showNotifications">
         <div class="notification-header">
@@ -42,10 +42,15 @@
           </div>
 
 
+
         </div>
       </div>
 
-
+    <!-- Profile Button -->
+    <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
+      <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+    </button>
+    <span class="user-role">{{user.employee.role}}</span>
 
       <!-- Profile Button -->
       <button class="p-link layout-topbar-button" (click)="showProfileCard()">
@@ -136,6 +141,7 @@
           {{ newPasswordError }}
         </div>
       </div>
+
 
       <!-- Confirm Password -->
       <div class="p-field">
@@ -231,6 +237,12 @@
 p-footer {
   padding: 1rem 0; /* Adjust padding to ensure proper spacing around the footer */
 }
+
+  .user-role {
+    margin-left: 10px;
+    font-size: 16px;
+    color: #000000;
+  }
 
   .unread-notification {
     background-color: #00BFFF; /* Light blue background for unread notifications */
@@ -428,4 +440,5 @@ p-footer {
   body {
     padding-top: 5rem;
   }
-  </style>
+</style>
+

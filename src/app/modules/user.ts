@@ -6,6 +6,7 @@ export interface Representative {
 }
 
 export interface User {
+    employee: User;
     id: bigint;
     name: string;
     email:string;
@@ -32,4 +33,5 @@ export interface UserProfile {
     employee: User;
     companyName: string;
     departmentName: string;
-  }
+}
+
