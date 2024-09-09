@@ -1,4 +1,4 @@
-import { Role, Status } from "../constants";
+import { Gender, Role, Status } from "../constants";
 
 export interface Representative {
     name?: string;
@@ -6,22 +6,21 @@ export interface Representative {
 }
 
 export interface User {
-    id: bigint;
+    id?: bigint;
     name: string;
     email:string;
     address:string;
-    password:string;
-    gender:string;
-    dateofbirth:Date;
+    gender:Gender;
+    dob:Date;
     nrc:string;
     role:Role;
-    company:number;
-    department:bigint;
-    workentrydate:Date;
-    staffid:string;
-    telegramuserid:string;
-    telegramusername:string;
-    photolink:string;
+    companyId:bigint;
+    departmentId:bigint;
+    workEntryDate:Date;
+    staffId:string;
+    telegramUserId:string;
+    telegramUsername:string;
+    photoLink:string;
     status:Status;
   
 }

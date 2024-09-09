@@ -3,7 +3,6 @@ import { RouterModule } from '@angular/router';
 
 @NgModule({
     imports: [RouterModule.forChild([
-        { path: 'button', data: { breadcrumb: 'Button' }, loadChildren: () => import('./button/buttondemo.module').then(m => m.ButtonDemoModule) },
         { path: 'reports', data: { breadcrumb: 'Charts' }, loadChildren: () => import('./charts/chartsdemo.module').then(m => m.ChartsDemoModule) },
         { path: 'file', data: { breadcrumb: 'File' }, loadChildren: () => import('./file/filedemo.module').then(m => m.FileDemoModule) },
         { path: 'floatlabel', data: { breadcrumb: 'Float Label' }, loadChildren: () => import('./floatlabel/floatlabeldemo.module').then(m => m.FloatlabelDemoModule) },
@@ -18,8 +17,7 @@ import { RouterModule } from '@angular/router';
         { path: 'Panel', data: { breadcrumb: 'Panel' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) },
         { path: 'table', data: { breadcrumb: 'Table' }, loadChildren: () => import('./table/tabledemo.module').then(m => m.TableDemoModule) },
         { path: 'menu', data: { breadcrumb: 'Menu' }, loadChildren: () => import('./menus/menus.module').then(m => m.MenusModule) },
-        { path: 'customize', data: { breadcrumb: 'Panels' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) },
-        { path: '**', redirectTo: '/notfound' }
+        { path: 'customize', data: { breadcrumb: 'Panels' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) }
     ])],
     exports: [RouterModule]
 })

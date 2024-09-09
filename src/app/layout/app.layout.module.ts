@@ -17,7 +17,6 @@ import { AppFooterComponent } from './app.footer.component';
 import { AppConfigModule } from './config/config.module';
 import { AppSidebarComponent } from "./app.sidebar.component";
 import { AppLayoutComponent } from "./app.layout.component";
-import { ProfileModule } from "../demo/components/profile/profile.module";
 
 @NgModule({
     declarations: [

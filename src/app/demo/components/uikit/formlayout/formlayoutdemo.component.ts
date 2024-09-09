@@ -78,7 +78,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(data => {
+    this.companyService.getAll().subscribe(data => {
       this.companies = data.map(company => this.maptotreeService.mapCompanyToTreeNode(company));
       console.log('Mapped TreeNode Structure:', this.companies);
     }, error => {
@@ -87,7 +87,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getCompanyById(companyId: number): void {
-    this.companyService.getCompanyById(companyId).pipe(
+    this.companyService.getById(companyId).pipe(
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
@@ -220,7 +220,7 @@ export class FormLayoutDemoComponent implements OnInit {
     if (confirmed.confirmed) {
       this.systemService.showProgress('Saving custom target...', true, false, 3);
       const title: string = confirmed.inputValue;
-      this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
+      this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
         next: () => {
           this.systemService.stopProgress().then(() => {
             this.messageService.toast('success', 'Saved a custom target.');

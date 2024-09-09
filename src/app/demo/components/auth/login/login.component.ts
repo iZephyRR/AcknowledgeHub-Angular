@@ -57,7 +57,6 @@ export class LoginComponent implements OnInit {
     public departmentService:DepartmentService
   ) { }
 
-
   canClickOTP(): boolean {
     this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
     return (this.combinedOTP.length > 5);
@@ -72,8 +71,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.systemService.hideLoading();
-    //this.authService.severConnectionTest();
+    //this.systemService.hideLoading();
+    this.authService.severConnectionTest();
   }
 
   onInput(event: Event, nextInput: HTMLInputElement | null) {

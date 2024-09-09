@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Department } from 'src/app/modules/department';
 
@@ -8,11 +8,19 @@ import { Department } from 'src/app/modules/department';
 })
 export class DepartmentService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/mr';
-
+  private baseUrl = 'http://localhost:8080/api/v1/hrs/department';
   constructor(private http: HttpClient) { }
 
-  getAllDepartments(): Observable<Department[]> {
-    return this.http.get<Department[]>(`${this.baseUrl}/get-companies`);
+  getAll(): Observable<Department[]> {
+    return this.http.get<Department[]>(`${this.baseUrl}`);
   }
+
+  getAllByCompany(id:number): Observable<Department[]> {
+    return this.http.get<Department[]>(`${this.baseUrl}/by-company/${id}`);
+  }
+
+  getDTOById(id:string): Observable<Department>{
+    return this.http.get<Department>(`${this.baseUrl}/dto/${id}`);
+  }
+  
 }

@@ -62,6 +62,7 @@ export class MaptotreeService {
         data: {
             ...company,
             type: "COMPANY"
+
         },
         expanded: false, // Hide children by default
         children: company.departments.map(department => ({
@@ -69,7 +70,8 @@ export class MaptotreeService {
             data: {
                 ...department,
                 companyId: company.id, // Reference to the parent company
-                type: "DEPARTMENT"
+                type: "DEPARTMENT",
+                company: company.name
             },
             expanded: false, // Hide children by default
             children: department.employees.map(employee => ({
@@ -77,7 +79,10 @@ export class MaptotreeService {
                 data: {
                     ...employee,
                     departmentId: department.id, // Reference to the parent department
-                    type: "EMPLOYEE"
+                    type: "EMPLOYEE",
+                    department: department.name,
+                    company: company.name,
+                    role:employee.role
                 }
             }))
         }))

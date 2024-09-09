@@ -105,7 +105,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(data => {
+    this.companyService.getAll().subscribe(data => {
       this.companies = data.map(company => this.mapToTreeService.mapCompanyToTreeNode(company));
     }, error => {
       console.error('Error fetching companies data:', error);
@@ -113,7 +113,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getCompanyById(companyId: number): void {
-    this.companyService.getCompanyById(companyId).pipe(
+    this.companyService.getById(companyId).pipe(
       map((company) => this.mapToTreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {

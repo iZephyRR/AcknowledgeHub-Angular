@@ -34,7 +34,6 @@ export class NotificationService {
 
     if (userId) {
       console.log('Querying notifications for userId:', userId);
-
       this.firestore.collection('notifications', ref =>
         ref.where('targetId', '==', userId)
            .orderBy('timestamp', 'desc')
@@ -63,12 +62,10 @@ export class NotificationService {
     this.firestore.collection('notifications').doc(notificationId).get().subscribe(doc => {
       if (doc.exists) {
         const notif = doc.data() as { targetId: string; isRead: boolean };
-
         if (notif.targetId === userId && !notif.isRead) {
           this.firestore.collection('notifications').doc(notificationId).update({ isRead: true })
             .then(() => {
               console.log('Notification marked as read in Firebase.');
-
               // Update local state
               const notifications = this.notificationsSubject.getValue();
               const updatedNotifications = notifications.map(n =>

@@ -6,6 +6,8 @@ import { FileDemoRoutingModule } from './filedemo-routing.module';
 import { FileDemoComponent } from './filedemo.component';
 import { TableModule } from 'primeng/table';
 import { ToastModule } from 'primeng/toast';
+import { TreeModule } from 'primeng/tree';
+import { ButtonModule } from 'primeng/button';
 
 
 @NgModule({
@@ -15,7 +17,10 @@ import { ToastModule } from 'primeng/toast';
 		FileDemoRoutingModule,
 		FileUploadModule,
 		TableModule,
-		ToastModule
+		ToastModule,
+		ButtonModule,
+		TreeModule,
+
 	],
 	declarations: [FileDemoComponent],
 })
