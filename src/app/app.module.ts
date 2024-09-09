@@ -17,6 +17,23 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
+
+import { ReversePipe } from './reverse.pipe';  // Ensure correct import
+import { NgxEchartsModule } from 'ngx-echarts';
+import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
+import * as echarts from 'echarts';import { DashboardModule } from './demo/components/dashboard/dashboard.module';
+import { RouterModule } from '@angular/router';
+import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SafeUrlPipe } from './safe-url.pipe';
+import { BadgeModule } from 'primeng/badge';
+import { ChipModule } from 'primeng/chip';
+import { ButtonModule } from 'primeng/button';
+import { AnnouncementDetailsComponent } from './demo/components/uikit/announcementdetails/announcementdetails.component';
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+import { DialogModule } from 'primeng/dialog';
+import { FormsModule } from '@angular/forms';
+
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SystemSettingsComponent } from './demo/components/system-settings/system-settings.component';
@@ -44,12 +61,16 @@ import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { EditDepartmentComponent } from './demo/components/edit-department/edit-department.component';
 
+
 @NgModule({
   declarations: [
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
     ProgressBarComponent,
+ SafeUrlPipe ,
+    AnnouncementDetailsComponent,   
+
     SystemSettingsComponent,
     LoginComponent,
     DashboardComponent,
@@ -59,10 +80,13 @@ import { EditDepartmentComponent } from './demo/components/edit-department/edit-
     EditDepartmentComponent
   ],
   imports: [
+BadgeModule,
+		ChipModule,
     AppRoutingModule,
     AppLayoutModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
+
     BrowserModule,
     BrowserAnimationsModule,
     ButtonModule,
@@ -73,6 +97,11 @@ import { EditDepartmentComponent } from './demo/components/edit-department/edit-
     ProgressBarModule,
     ToastModule,
     TreeModule,
+
+    AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
+    AngularFirestoreModule, // Firestore module
+    ProfileModule,
+    DialogModule,
     FormsModule,
     RippleModule,
     InputSwitchModule,
@@ -84,13 +113,14 @@ import { EditDepartmentComponent } from './demo/components/edit-department/edit-
     TableModule,
     StyleClassModule,
     PanelMenuModule,
-		ButtonModule,
 		SliderModule,
 		ToggleButtonModule,
 		MultiSelectModule,
-		DropdownModule
-    // NgxExtendedPdfViewerModule,
-    //  PdfViewerModule
+		DropdownModule,
+     PdfViewerModule,
+    DashboardModule,
+    NbLayoutModule,
+    NgxEchartsModule.forRoot({ echarts }),
   ],
   providers: [
     {

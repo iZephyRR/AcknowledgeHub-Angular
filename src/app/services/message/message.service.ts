@@ -37,14 +37,14 @@ export class MessageDemoService {
       modal.style.justifyContent = "center";
       modal.style.alignItems = "center";
       modal.style.zIndex = "1000";
-  
+
       const dialog = document.createElement("div");
       dialog.style.backgroundColor = backgroundColor;
       dialog.style.padding = "30px";
       dialog.style.borderRadius = "10px";
       dialog.style.textAlign = "center";
       dialog.style.width = "300px";
-  
+
       const text = document.createElement("p");
       text.textContent = header;
       text.style.marginBottom = "20px";
@@ -52,16 +52,16 @@ export class MessageDemoService {
       text.style.fontWeight = "bold";
       text.style.color = primaryColor;
       text.style.cursor = "default";
-  
+
       const subtext = document.createElement("p");
       subtext.textContent = message;
       subtext.style.marginBottom = "20px";
       subtext.style.fontSize = "14px";
       subtext.style.color = "#666";
       subtext.style.cursor = "default";
-  
+
       let inputBox: HTMLInputElement | undefined;
-  
+
       if (hasInput) {
         inputBox = document.createElement("input");
         inputBox.type = "text";
@@ -71,7 +71,7 @@ export class MessageDemoService {
         inputBox.style.marginBottom = "30px";
         inputBox.style.borderRadius = "5px";
         inputBox.style.border = "1px solid #ccc";
-  
+
         // Set the initial state of the yesButton to disabled
         inputBox.oninput = function () {
           if (inputBox!.value === "") {
@@ -85,7 +85,7 @@ export class MessageDemoService {
           }
         };
       }
-  
+
       const yesButton = document.createElement("button");
       yesButton.textContent = okBtnText;
       yesButton.style.backgroundColor = primaryColor;
@@ -95,14 +95,14 @@ export class MessageDemoService {
       yesButton.style.borderRadius = "5px";
       yesButton.style.marginRight = "10px";
       yesButton.style.cursor = "pointer";
-      
+
       // Initially disable the yesButton if there is an input field
       if (hasInput && inputBox!.value === "") {
         yesButton.disabled = true;
         yesButton.style.opacity = "80%";
         yesButton.style.cursor = "not-allowed";
       }
-  
+
       yesButton.addEventListener("click", () => {
         if (hasInput) {
           resolve({ confirmed: true, inputValue: inputBox!.value });
@@ -111,7 +111,7 @@ export class MessageDemoService {
         }
         document.body.removeChild(modal);
       });
-  
+
       const noButton = document.createElement("button");
       noButton.textContent = cancelBtnText;
       noButton.style.backgroundColor = backgroundColor;
@@ -124,7 +124,7 @@ export class MessageDemoService {
         resolve({confirmed:false});
         document.body.removeChild(modal);
       });
-  
+
       dialog.appendChild(text);
       dialog.appendChild(subtext);
       if (hasInput) {
@@ -136,7 +136,7 @@ export class MessageDemoService {
       document.body.appendChild(modal);
     });
   }
-  
+
 
   alert(header: string, message: string, okBtnStyle: 'OUTSET' | 'INSET', backgroundColor: Color, primaryColor: Color): void {
     const modal = document.createElement('div');

@@ -23,6 +23,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.fetchAnnouncements();
         this.countAnnouncements(); // Call the count method on initialization
         this.initChart();
+        this.loadPieChartData();
     }
 
     fetchAnnouncements(): void {
@@ -35,6 +36,57 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 console.error('Error fetching announcements', error);
             }
         );
+    }
+    loadPieChartData(): void {
+        this.announcementService.getPieChart().subscribe(
+            (data: Map<string, BigInt>) => {  // Updated to handle Map<String, BigInt>
+                const labels: string[] = [];
+                const values: number[] = [];
+
+                // Convert Map to plain arrays
+                data.forEach((value, key) => {
+                    labels.push(key);                 // Company names (keys)
+                    values.push(Number(value));       // Convert BigInt to number
+                });
+
+                this.pieChartData = {
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: values,
+                            backgroundColor: this.generateRandomColors(labels.length),
+                            hoverBackgroundColor: this.generateHoverColors(labels.length)
+                        }
+                    ]
+                };
+            },
+            (error) => {
+                console.error('Error loading pie chart data', error);
+            }
+        );
+    }
+
+
+
+
+
+    // Helper methods to generate colors
+    generateRandomColors(count: number): string[] {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            const randomColor = `hsl(${Math.random() * 360}, 100%, 75%)`; // Generate random pastel color
+            colors.push(randomColor);
+        }
+        return colors;
+    }
+
+    generateHoverColors(count: number): string[] {
+        const colors = [];
+        for (let i = 0; i < count; i++) {
+            const randomColor = `hsl(${Math.random() * 360}, 100%, 60%)`; // Generate darker shade
+            colors.push(randomColor);
+        }
+        return colors;
     }
 
     countAnnouncements(): void {
@@ -80,7 +132,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             datasets: [
                 {
                     label: 'Category Count',
-                    data: [10, 15, 7, 12, 5],
+                    data: [10, 15, 7, 12, 5 ,60],
                     backgroundColor: [
                         documentStyle.getPropertyValue('--blue-500'),
                         documentStyle.getPropertyValue('--orange-500'),
@@ -93,10 +145,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         };
 
         this.pieChartData = {
-            labels: ['All Employees', 'Managers', 'HR', 'IT Department', 'Finance'],
             datasets: [
                 {
-                    data: [300, 50, 100, 80, 20],
                     backgroundColor: [
                         documentStyle.getPropertyValue('--blue-500'),
                         documentStyle.getPropertyValue('--orange-500'),
@@ -115,24 +165,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
             ]
         };
 
-        this.donutChartData = {
-            labels: ['Completed', 'In Progress', 'Pending'],
-            datasets: [
-                {
-                    data: [30, 50, 20],
-                    backgroundColor: [
-                        documentStyle.getPropertyValue('--green-500'),
-                        documentStyle.getPropertyValue('--yellow-500'),
-                        documentStyle.getPropertyValue('--red-500')
-                    ],
-                    hoverBackgroundColor: [
-                        documentStyle.getPropertyValue('--green-600'),
-                        documentStyle.getPropertyValue('--yellow-600'),
-                        documentStyle.getPropertyValue('--red-600')
-                    ]
-                }
-            ]
-        };
+
+
 
         this.chartOptions = {
             plugins: {
@@ -144,6 +178,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             },
             scales: {
                 x: {
+                    display: false,
                     ticks: {
                         color: textColorSecondary
                     },
@@ -152,6 +187,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     }
                 },
                 y: {
+                    //display: false,
                     ticks: {
                         color: textColorSecondary
                     },

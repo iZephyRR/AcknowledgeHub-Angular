@@ -1,69 +1,64 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Chart } from 'chart.js';
+import { Announcement } from 'src/app/modules/announcement';
+import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 
 @Component({
     templateUrl: './floatlabeldemo.component.html',
 })
 export class FloatLabelDemoComponent  {
 
-    countries: any[] = [];
+ @ViewChild('barChart', { static: true }) barChart!: ElementRef<HTMLCanvasElement>;
+  private chart!: Chart<"bar", number[], string>;
+  announcementsByMonth: Map<string, Announcement[]>;
 
-    cities: any[];
+  constructor(private announcementService: AnnouncementService) {}
 
-    filteredCountries: any[] = [];
+  ngOnInit(): void {
+    this.announcementService.getAnnouncementsForAugToOct2024().subscribe(
+      (data) => {
+        this.announcementsByMonth = data;
+        const monthlyData = this.processData(data);
 
-    value1: any;
+        const labels = Object.keys(monthlyData); // ['August', 'September', 'October']
+        const values = Object.values(monthlyData); // [number of announcements in August, September, October]
 
-    value2: any;
+        // Initialize the chart
+        this.chart = new Chart(this.barChart.nativeElement, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Announcements',
+                data: values, // The number of announcements per month
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      },
+      (error) => {
+        console.error('Error fetching announcements', error);
+      }
+    );
+  }
 
-    value3: any;
-
-    value4: any;
-
-    value5: any;
-
-    value6: any;
-
-    value7: any;
-
-    value8: any;
-
-    value9: any;
-
-    value10: any;
-
-    value11: any;
-
-    value12: any;
-
-    // constructor(private countryService: CountryService) {
-    //     this.cities = [
-    //         {name: 'New York', code: 'NY'},
-    //         {name: 'Rome', code: 'RM'},
-    //         {name: 'London', code: 'LDN'},
-    //         {name: 'Istanbul', code: 'IST'},
-    //         {name: 'Paris', code: 'PRS'}
-    //     ];
-    // }
-
-    // ngOnInit() {
-    //     this.countryService.getCountries().then(countries => {
-    //         this.countries = countries;
-    //     });
-    // }
-
-    // searchCountry(event: any) {
-    //     // in a real application, make a request to a remote url with the query and
-    //     // return filtered results, for demo we filter at client side
-    //     const filtered: any[] = [];
-    //     const query = event.query;
-    //     // tslint:disable-next-line:prefer-for-of
-    //     for (let i = 0; i < this.countries.length; i++) {
-    //         const country = this.countries[i];
-    //         if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-    //             filtered.push(country);
-    //         }
-    //     }
-
-    //     this.filteredCountries = filtered;
-    // }
+  private processData(data: Map<string, Announcement[]>): { [key: string]: number } {
+    const monthlyData: { [key: string]: number } = {};
+    for (const [month, announcements] of Object.entries(data)) {
+      monthlyData[month] = announcements.length;
+    }
+    return monthlyData;
+  }
 }

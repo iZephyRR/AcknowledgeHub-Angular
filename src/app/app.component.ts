@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+
     this.systemService.showLoading('');
     this.primengConfig.ripple = true;
     this.messageService.requestWindowNotiPermit();
@@ -38,5 +39,6 @@ export class AppComponent implements OnInit {
         }
       }
     });
+
   }
 }

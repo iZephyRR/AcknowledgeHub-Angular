@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { Announcement } from 'src/app/modules/announcement';
 import { Draft } from 'src/app/modules/draft';
@@ -20,6 +20,24 @@ export class AnnouncementService {
   // Fetch all announcements
   getAllAnnouncements(): Observable<Announcement[]> {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
+  }
+  //fetch all announcements for companyid
+  getAllAnnouncementsWithCompanyId(id:string): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByCompanyId`);
+  }
+  //fetch all announcements for individual employee
+  getAnnouncementsForEmployee(): Observable<Announcement[]>{
+    return this.http.get<Announcement[]>(`${this.baseUrl}/get-By-EmployeeId`)
+  }
+
+  getAnnouncementsById(id:string):Observable<Announcement[]>{
+    return this.http.get<Announcement[]>(`${this.baseUrl}/${id}`)
+  }
+
+  
+  //fetch all announcements for departmentid
+  getAllAnnouncementsWithDepartmentId(id:string): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByDepartmentId`);
   }
 
   // Fetch announcements for August to October 2024
@@ -45,9 +63,24 @@ export class AnnouncementService {
   deleteDraft(draftId : number) : Observable<String> {
     return this.http.delete<String>(`${this.baseUrl}/delete-draft/${draftId}`);
   }
-  
+
   countAnnouncements(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/count`); // Adjust the endpoint as necessary
   }
+
+  getPieChart(): Observable<Map<string, BigInt>> {
+    return this.http.get<{ [key: string]: BigInt }>(`${this.baseUrl}/pieChart`).pipe(
+        map(data => {
+            const map = new Map<string, BigInt>();
+            Object.entries(data).forEach(([key, value]) => {
+                map.set(key, value);
+            });
+            return map;
+        })
+    );
+}
+
+
+
 }
 

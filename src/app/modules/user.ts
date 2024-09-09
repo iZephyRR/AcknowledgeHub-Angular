@@ -22,10 +22,14 @@ export interface User {
     telegramUsername:string;
     photoLink:string;
     status:Status;
-  
+    notedAt:string;
+    companyName:string;
+    departmentName:string;
+
 }
 export interface UserProfile {
     employee: User;
     companyName: string;
     departmentName: string;
-  }
+}
+

@@ -1,5 +1,3 @@
-
-
 <p-sidebar [(visible)]="visible" position="right" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'" styleClass="layout-config-sidebar w-20rem">
     <h5>Scale</h5>
     <div class="flex align-items-center">
@@ -7,7 +5,7 @@
         <div class="flex gap-2 align-items-center">
             <i class="pi pi-circle-fill text-300" *ngFor="let s of scales" [ngClass]="{'text-primary-500': s === scale}"></i>
         </div>
-        <button icon="pi pi-plus"  type="button" pButton (click)="incrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem ml-2" [disabled]="scale === scales[scales.length - 1]"></button>
+        <button icon="pi pi-plus" type="button" pButton (click)="incrementScale()" class="p-button-text p-button-rounded w-2rem h-2rem ml-2" [disabled]="scale === scales[scales.length - 1]"></button>
     </div>
 
     <ng-container *ngIf="!minimal">
@@ -20,9 +18,7 @@
             <p-radioButton name="menuMode" value="overlay" [(ngModel)]="menuMode" inputId="mode2"></p-radioButton>
             <label for="mode2">Overlay</label>
         </div>
-    </ng-container>
 
-    <ng-container *ngIf="!minimal">
         <h5>Input Style</h5>
         <div class="flex">
             <div class="field-radiobutton flex-1">
@@ -37,11 +33,105 @@
 
         <h5>Ripple Effect</h5>
         <p-inputSwitch [(ngModel)]="ripple"></p-inputSwitch>
+
+        <!-- <h5>Bootstrap</h5>
+        <div class="grid">
+            <div class="col-3">
+                <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-dark-blue', 'dark')">
+                    <img src="assets/layout/images/themes/bootstrap4-dark-blue.svg" class="w-2rem h-2rem" alt="Bootstrap Dark Blue">
+                </button>
+            </div>
+
+
+            <div class="col-3">
+                <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-dark-purple', 'dark')">
+                    <img src="assets/layout/images/themes/bootstrap4-dark-purple.svg" class="w-2rem h-2rem" alt="Bootstrap Dark Purple">
+                </button>
+            </div>
+        </div> -->
+
+        <h5>Account</h5>
+        <button pButton type="button" label="Logout" icon="pi pi-sign-out" class="p-button-danger p-button-logout mt-3" (click)="logOut()"></button>
     </ng-container>
 
+    <!-- Logout Confirmation Overlay and Dialog -->
+    <div class="confirmation-overlay" *ngIf="showLogoutConfirmation" (click)="cancelLogout()"></div>
+    <div class="confirmation-dialog" *ngIf="showLogoutConfirmation">
+        <h3>Logout Confirmation</h3>
+        <p>Are you sure you want to log out?</p>
+        <div class="flex justify-content-end gap-2 mt-4">
+            <button pButton type="button" label="No" class="p-button-text" (click)="cancelLogout()"></button>
+            <button pButton type="button" label="Yes" class="p-button-danger" (click)="confirmLogout()"></button>
+        </div>
+    </div>
+</p-sidebar>
 
-    <h5>Bootstrap</h5>
-    <div class="grid">
+
+<style>
+
+/* Adjusting the Logout Button to be shorter */
+.p-button-logout {
+    padding: 12px 18px; /* Reduce padding */
+    font-size: 15px;  /* Smaller font size */
+    height: auto;     /* Auto height to fit content */
+    width: auto;      /* Auto width to fit content */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+.layout-config-sidebar h5:last-of-type {
+    margin-bottom: 0.5rem; /* Reduce space below heading */
+}
+
+/* Ensure it still fits nicely within the sidebar */
+.layout-config-sidebar .p-button-logout {
+    margin-left: auto;
+    margin-right: auto;
+}
+.layout-config-sidebar {
+    z-index: 1000; /* Ensure sidebar has a lower z-index */
+}
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000; /* Higher than the sidebar */
+}
+
+.confirmation-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 2000; /* Higher than the overlay */
+}
+
+.confirmation-dialog h3 {
+    margin-top: 0;
+}
+
+.confirmation-dialog p {
+    margin-bottom: 20px;
+}
+
+.confirmation-dialog .flex {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+</style>
+
+    <!-- <div class="grid">
         <div class="col-3">
             <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-light-blue', 'light')">
                 <img src="assets/layout/images/themes/bootstrap4-light-blue.svg" class="w-2rem h-2rem" alt="Bootstrap Light Blue">
@@ -51,13 +141,9 @@
             <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-light-purple', 'light')">
                 <img src="assets/layout/images/themes/bootstrap4-light-purple.svg" class="w-2rem h-2rem" alt="Bootstrap Light Purple">
             </button>
-        </div>
-        <div class="col-3">
-            <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-dark-blue', 'dark')">
-                <img src="assets/layout/images/themes/bootstrap4-dark-blue.svg" class="w-2rem h-2rem" alt="Bootstrap Dark Blue">
-            </button>
-        </div>
-        <div class="col-3">
+        </div> -->
+
+        <!-- <div class="col-3">
             <button class="p-link w-2rem h-2rem" (click)="changeTheme('bootstrap4-dark-purple', 'dark')">
                 <img src="assets/layout/images/themes/bootstrap4-dark-purple.svg" class="w-2rem h-2rem" alt="Bootstrap Dark Purple">
             </button>
@@ -237,4 +323,4 @@
             </button>
         </div>
     </div>
-</p-sidebar>
+</p-sidebar> -->

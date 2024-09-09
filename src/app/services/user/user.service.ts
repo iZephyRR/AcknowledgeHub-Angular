@@ -17,17 +17,27 @@ export class UserService {
   constructor(private http: HttpClient) {
 
   }
-  getRepresentatives() {
-    throw new Error('Method not implemented.');
+  getAllUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/mr/users`);
   }
-  getAllUsers(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/mr/users`);
+
+  getUsersByCompany(): Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getUsersByCompanyId`);
   }
 
   getUserById(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/user/profile`);
   }
 
+
+  getUserWhoNotedWithInOneDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho1DNoted/${announcementId}`);
+  }
+
+  getUserWhoNotedWithInThreeDay(announcementId : string) : Observable<User[]> {
+    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho3DNoted/${announcementId}`);
+  }
+  
   getAllByDepartmentID(id: number): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/hrs/user/by-department/${id}`);
   }
@@ -43,6 +53,7 @@ export class UserService {
   updateAll(users:User[]):Observable<User[]>{
     return this.http.put<User[]>(`${this.baseUrl}/hrs/update-users`,users);
   }
+
 }
 
 
