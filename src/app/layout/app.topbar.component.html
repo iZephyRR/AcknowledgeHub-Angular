@@ -93,10 +93,145 @@
         <p><strong>Company:</strong> {{ user.companyName }}</p>
         <p><strong>Department:</strong> {{ user.departmentName }}</p>
 
-      </div>
+          <!-- Replace the "Change Password" button with a link -->
+<a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
+
     </div>
   </div>
+</div>
+<!-- PrimeNG Dialog -->
+<p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">
+  <form (ngSubmit)="onSave()" class="change-password-form">
+    <div class="p-fluid">
+      <!-- Current Password -->
+      <div class="p-field">
+        <label for="currentPassword">Current Password</label>
+        <input
+          id="currentPassword"
+          [(ngModel)]="currentPassword"
+          name="currentPassword"
+          [type]="showCurrentPassword ? 'text' : 'password'"
+          pInputText
+          required
+          class="password-input"
+        />
+        <div class="p-error" *ngIf="currentPasswordError">
+          {{ currentPasswordError }}
+        </div>
+      </div>
+
+      <!-- New Password -->
+      <div class="p-field">
+        <label for="newPassword">New Password</label>
+        <input
+          id="newPassword"
+          [(ngModel)]="newPassword"
+          name="newPassword"
+          [type]="showNewPassword ? 'text' : 'password'"
+          pInputText
+          required
+          class="password-input"
+        />
+        <div class="p-error" *ngIf="newPasswordError">
+          {{ newPasswordError }}
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="p-field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input
+          id="confirmPassword"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          pInputText
+          required
+          class="password-input"
+        />
+        <div class="p-error" *ngIf="confirmPasswordError">
+          {{ confirmPasswordError }}
+        </div>
+      </div>
+    </div>
+    <p-footer>
+      <div class="button-container">
+        <button type="submit" pButton label="Save" class="p-button-primary"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>
+
   <style>
+      .change-password-link {
+  display: block;
+  text-align: center;
+  color: #007bff;
+  text-decoration: none;
+  padding: 12px 0;
+  margin-top: 10px;
+  font-size: 16px;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  width: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.change-password-link:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+  .change-profile-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    /* Position the button at the bottom, adjust as needed */
+    width: 100%;
+  }
+
+  .change-profile-btn {
+    background-color: #3f99f9;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  .change-password-form {
+  max-width: 500px; /* Set a maximum width to prevent excessive growth */
+  margin: 0 auto; /* Center the form horizontally */
+}
+
+.password-input {
+  width: 100%; /* Ensure the input takes up the full width */
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.p-error {
+  margin-top: 5px;
+  font-size: 0.85rem;
+  color: red;
+}
+
+.p-field {
+  margin-bottom: 1.5rem; /* Gap between input fields */
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center the Save button */
+  margin-top: 1rem;
+}
+
+p-footer {
+  padding: 1rem 0; /* Adjust padding to ensure proper spacing around the footer */
+}
+
   .unread-notification {
     background-color: #00BFFF; /* Light blue background for unread notifications */
     color: white; /* White text for unread notifications */
