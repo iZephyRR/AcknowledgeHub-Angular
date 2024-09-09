@@ -17,8 +17,8 @@ export class CompanyService {
     return this.http.get<Company[]>(`${this.baseUrl}/get-companies`);
   }
 
-  getCompanyById (id : number) : Observable<Company> {
-    return this.http.get<Company>(`${this.baseUrl}/getCompanyById/${id}`);
+  getCompanyById () : Observable<Company> {
+    return this.http.get<Company>(`${this.baseUrl}/getCompanyById`);
   }
 
 }

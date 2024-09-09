@@ -16,6 +16,9 @@ import { InputTextModule } from "primeng/inputtext";
 import { ToolbarModule } from 'primeng/toolbar'; // Import ToolbarModule from PrimeNG
 import { TreeModule } from 'primeng/tree';  // Import TreeModule from PrimeNG
 import { TreeTableModule } from 'primeng/treetable';
+import { CheckboxModule } from 'primeng/checkbox';
+import { DialogModule } from 'primeng/dialog';
+import { TableModule } from 'primeng/table';
 
 
 @NgModule({
@@ -35,10 +38,13 @@ import { TreeTableModule } from 'primeng/treetable';
 		InputTextModule,
 		ToolbarModule,
 		TreeTableModule,
-		TreeModule  // Add TreeModule to imports
+		TreeModule,  // Add TreeModule to imports
+		CheckboxModule,
+		DialogModule,
+		TableModule
 	],
 	declarations: [FormLayoutDemoComponent]
 })
-export class FormLayoutDemoModule { 
-	
+export class FormLayoutDemoModule {
+
 }
