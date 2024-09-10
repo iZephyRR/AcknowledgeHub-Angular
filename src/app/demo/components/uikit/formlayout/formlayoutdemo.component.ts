@@ -75,7 +75,7 @@ export class FormLayoutDemoComponent implements OnInit {
 
   ngOnInit() {
     this.role = this.authService.role;
-    this.companyId = this.authService.companyId;
+    //this.companyId = this.authService.companyId;
     this.loadCategories();
 
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
@@ -148,7 +148,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getCompanyById(): void {
-    this.companyService.getCompanyById().pipe(
+    this.companyService.getById(this.authService.companyId).pipe(
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {

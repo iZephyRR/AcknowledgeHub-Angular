@@ -114,7 +114,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getCompanyById(): void {
-    this.companyService.getCompanyById().pipe(
+    this.companyService.getById(this.authService.companyId).pipe(
       map((company) => this.mapToTreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {

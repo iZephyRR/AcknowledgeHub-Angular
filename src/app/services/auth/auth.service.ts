@@ -157,6 +157,21 @@ export class AuthService {
     return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email: email });
   }
 
+  changePassword2(password: string): Observable<void> {
+    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email:null });
+  }
+  
+  validateCurrentPassword(password: string): Observable<{boolean_RESPONSE:boolean}> {
+    console.log('Validating password with payload:', { password });
+    return this.http.post<{boolean_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
+        catchError(error => {
+            console.error('Password validation error:', error);
+            return throwError(error);
+        })
+    );
+}
+
+
   isExistEmail(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check-email`);
   }
@@ -177,6 +192,8 @@ export class AuthService {
   makePasswordAsDefault(id: number): Observable<string> {
     return this.http.put<string>(`http://localhost:8080/api/v1/ad/make-password-as-default`, id);
   }
+
+  
 
   async logOut(): Promise<void> {
     if ((await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {

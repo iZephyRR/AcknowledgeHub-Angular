@@ -14,15 +14,15 @@ export class CompanyService {
   ) { }
 
   getAll () : Observable<Company[]> {
-    return this.http.get<Company[]>(`${this.baseUrl}/mha/get-companies`);
+    return this.http.get<Company[]>(`${this.baseUrl}/mr/get-companies`);
   }
   
   getAllDTO () : Observable<Company[]> {
-    return this.http.get<Company[]>(`${this.baseUrl}/mha/get-company-dtos`);
+    return this.http.get<Company[]>(`${this.baseUrl}/mr/get-company-dtos`);
   }
 
   getById (id : number) : Observable<Company> {
-    return this.http.get<Company>(`${this.baseUrl}/mr/get-company/${id}`);
+    return this.http.get<Company>(`${this.baseUrl}/user/get-company/${id}`);
   }
 
   getDTOById (id : string) : Observable<Company> {

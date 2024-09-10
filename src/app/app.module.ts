@@ -4,11 +4,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { CommonModule, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { AuthGuard } from './guards/auth.guard';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { ToastModule } from 'primeng/toast';
 import { MessagesModule } from 'primeng/messages';
-import { AppLayoutModule } from './layout/app.layout.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
@@ -17,12 +16,6 @@ import { AuthInterceptor } from './interceptors/auth/auth.interceptor';
 import { TreeModule } from 'primeng/tree';
 import { LoadingComponent } from './demo/components/uikit/loading/loading.component';
 import { environment } from './demo/enviroments/environment';
-
-import { ReversePipe } from './reverse.pipe';  // Ensure correct import
-import { NgxEchartsModule } from 'ngx-echarts';
-import { NbThemeModule, NbLayoutModule } from '@nebular/theme';
-import * as echarts from 'echarts';import { DashboardModule } from './demo/components/dashboard/dashboard.module';
-import { RouterModule } from '@angular/router';
 import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { SafeUrlPipe } from './safe-url.pipe';
@@ -33,17 +26,11 @@ import { AnnouncementDetailsComponent } from './demo/components/uikit/announceme
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 import { DialogModule } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
-
-import { ProgressBarComponent } from './demo/components/uikit/progress-bar/progress-bar.component';
-import { ProgressBarModule } from 'primeng/progressbar';
 import { SystemSettingsComponent } from './demo/components/system-settings/system-settings.component';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './demo/components/auth/login/login.component';
 import { PasswordModule } from 'primeng/password';
-import { DialogModule } from 'primeng/dialog';
 import { RippleModule } from 'primeng/ripple';
-import { ButtonModule } from 'primeng/button';
 import { DashboardComponent } from './demo/components/dashboard/dashboard.component';
 import { ChartModule } from 'primeng/chart';
 import { MenuModule } from 'primeng/menu';
@@ -60,17 +47,28 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { DropdownModule } from 'primeng/dropdown';
 import { TooltipModule } from 'primeng/tooltip';
 import { EditDepartmentComponent } from './demo/components/edit-department/edit-department.component';
+import { AppMenuitemComponent } from './layout/app.menuitem.component';
+import { AppTopBarComponent } from './layout/app.topbar.component';
+import { AppFooterComponent } from './layout/app.footer.component';
+import { AppMenuComponent } from './layout/app.menu.component';
+import { AppSidebarComponent } from './layout/app.sidebar.component';
+import { AppLayoutComponent } from './layout/app.layout.component';
 
 
 @NgModule({
   declarations: [
+    AppMenuitemComponent,
+    AppTopBarComponent,
+    AppFooterComponent,
+    AppMenuComponent,
+    AppSidebarComponent,
+    AppLayoutComponent,
     AppComponent,
     NotfoundComponent,
     LoadingComponent,
     ProgressBarComponent,
- SafeUrlPipe ,
-    AnnouncementDetailsComponent,   
-
+    SafeUrlPipe,
+    AnnouncementDetailsComponent,
     SystemSettingsComponent,
     LoginComponent,
     DashboardComponent,
@@ -80,27 +78,23 @@ import { EditDepartmentComponent } from './demo/components/edit-department/edit-
     EditDepartmentComponent
   ],
   imports: [
-BadgeModule,
-		ChipModule,
+    BadgeModule,
+    ChipModule,
     AppRoutingModule,
-    AppLayoutModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule,
-
     BrowserModule,
     BrowserAnimationsModule,
     ButtonModule,
     CommonModule,
     ChartModule,
-		TooltipModule,
+    TooltipModule,
     MessagesModule,
     ProgressBarModule,
     ToastModule,
     TreeModule,
-
     AngularFireModule.initializeApp(environment.firebaseConfig), // Initialize Firebase
     AngularFirestoreModule, // Firestore module
-    ProfileModule,
     DialogModule,
     FormsModule,
     RippleModule,
@@ -113,14 +107,12 @@ BadgeModule,
     TableModule,
     StyleClassModule,
     PanelMenuModule,
-		SliderModule,
-		ToggleButtonModule,
-		MultiSelectModule,
-		DropdownModule,
-     PdfViewerModule,
-    DashboardModule,
-    NbLayoutModule,
-    NgxEchartsModule.forRoot({ echarts }),
+    SliderModule,
+    ToggleButtonModule,
+    MultiSelectModule,
+    DropdownModule,
+    PdfViewerModule,
+    HttpClientModule
   ],
   providers: [
     {
