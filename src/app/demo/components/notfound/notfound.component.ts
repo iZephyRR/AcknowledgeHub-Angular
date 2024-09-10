@@ -10,10 +10,9 @@ import { SystemService } from 'src/app/services/system/system.service';
     templateUrl: './notfound.component.html'
 })
 export class NotfoundComponent implements OnInit{ 
-constructor(private systemService:SystemService,private messageService:MessageDemoService,public authService:AuthService){}
+constructor(private systemService:SystemService,public authService:AuthService){}
 
     ngOnInit(): void {
         this.systemService.hideLoading();
-       // this.authService.severConnectionTest();
     }
 }

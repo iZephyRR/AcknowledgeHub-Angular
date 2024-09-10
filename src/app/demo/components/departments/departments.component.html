@@ -1,0 +1,63 @@
+<ng-container *ngIf="userUploadValidator.showExcelImport; else dForm">
+	<app-user-upload-validator></app-user-upload-validator>
+</ng-container>
+<ng-template #dForm>
+	<input type="file" #fileInput (change)="userUploadValidator.onFileChange($event)" accept=".xlsx, .xls"
+		style="display: none;" />
+	<div class="grid">
+		<div class="col-12">
+			<div class="card">
+				<h5>{{ company.name}}</h5>
+				<p-table #dt1 [value]="departments" dataKey="id" [rows]="10" [rowHover]="true"
+					styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name','companyName']"
+					responsiveLayout="scroll">
+					<ng-template pTemplate="caption">
+						<div class="flex justify-content-between flex-column sm:flex-row">
+							<button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash"
+								(click)="clear(dt1)"></button>
+							<button pButton label="Add Department" class="p-button-outlined mb-2"
+								(click)="addDepartment()"></button>
+							<span class="p-input-icon-left mb-2">
+								<i class="pi pi-search"></i>
+								<input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
+									placeholder="Search Keyword" class="w-full" />
+							</span>
+						</div>
+					</ng-template>
+					<ng-template pTemplate="header">
+						<tr>
+							<th style="min-width: 12rem">
+								<div class="flex justify-content-between align-items-center">
+									No.
+								</div>
+							</th>
+							<th style="min-width: 12rem">
+								<div class="flex justify-content-between align-items-center">
+									Name
+									<p-columnFilter type="text" field="name" display="menu"
+										placeholder="Search by country"></p-columnFilter>
+								</div>
+							</th>
+						</tr>
+					</ng-template>
+					<ng-template pTemplate="body" let-department let-i="rowIndex">
+						<tr (click)="getEmployees(department.id)" style="cursor: pointer;">
+							<td>
+								{{ i + 1 }}.
+							</td>
+							<td>
+								{{ department.name }}
+							</td>
+						</tr>
+					</ng-template>
+
+					<ng-template pTemplate="emptymessage">
+						<tr>
+							<td colspan="8">No departments found.</td>
+						</tr>
+					</ng-template>
+				</p-table>
+			</div>
+		</div>
+	</div>
+</ng-template>

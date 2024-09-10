@@ -75,7 +75,7 @@ export class MessageDemoService {
         // Set the initial state of the yesButton to disabled
         inputBox.oninput = function () {
           if (inputBox!.value === "") {
-            yesButton.style.opacity = "50%";
+            yesButton.style.opacity = "80%";
             yesButton.disabled = true;
             yesButton.style.cursor = "not-allowed";
           } else {
@@ -99,7 +99,7 @@ export class MessageDemoService {
       // Initially disable the yesButton if there is an input field
       if (hasInput && inputBox!.value === "") {
         yesButton.disabled = true;
-        yesButton.style.opacity = "50%";
+        yesButton.style.opacity = "80%";
         yesButton.style.cursor = "not-allowed";
       }
 

@@ -1,0 +1,100 @@
+<div *ngIf="announcement" class="card-container">
+  <div class="card">
+    <div class="card-header">
+      {{ announcement.title }}
+    </div>
+    <div class="card-body">
+      <p>Created at: {{ announcement.createdAt | date: 'MMM d, y' }}</p>
+      <h5 class="card-title">Content Type: {{ announcement.contentType }}</h5>
+
+      <!-- PDF Viewer -->
+      <pdf-viewer *ngIf="announcement.contentType === 'PDF'" [src]="announcement.pdfLink" [render-text]="true"
+        style="display: block; width: 100%; height: 500px;">
+      </pdf-viewer>
+
+      <!-- Image Viewer -->
+      <img *ngIf="announcement.contentType === 'IMAGE'" [src]="announcement.pdfLink" alt="Image Content"
+        style="display: block; width: 80%; height: auto;" />
+
+      <!-- Video Player -->
+      <video *ngIf="announcement.contentType === 'VIDEO'" [src]="announcement.pdfLink" controls
+        style="display: block; width: 100%; height: 500px;">
+        Your browser does not support the video tag.
+      </video>
+
+      <!-- Audio Player -->
+      <audio *ngIf="announcement.contentType === 'AUDIO'" [src]="announcement.pdfLink" controls
+        style="display: block; width: 100%;">
+        Your browser does not support the audio element.
+      </audio>
+      <!-- Excel Viewer -->
+      <iframe *ngIf="announcement.contentType === 'EXCEL'"
+        [src]="announcement.pdfLink"
+        style="display: block; width: 100%; height: 500px;">
+      </iframe>
+
+
+
+<!-- Button to open the modal -->
+<button type="button" pButton label="Add Comment" (click)="openModal()"></button>
+
+<!-- p-dialog Modal -->
+<p-dialog header="Add a Comment" [(visible)]="showModal" [modal]="true" [closable]="true"
+  [style]="{'width': '40vw'}" (onHide)="clearComment()">
+  <!-- Add Comment Box -->
+  <div class="comment-box">
+    <textarea [(ngModel)]="newComment" placeholder="Write your comment"
+      class="p-inputtext p-component"></textarea>
+    <div class="comment-actions">
+      <button pButton label="Comment" icon="pi pi-check" (click)="addComment()"></button>
+      <button pButton label="Cancel" icon="pi pi-times" class="p-button-secondary"
+        (click)="clearComment()"></button>
+    </div>
+  </div>
+
+  <!-- Display comments -->
+  <div *ngFor="let comment of comments" class="comment-display">
+    <div class="comment-author">
+      <img src="https://via.placeholder.com/40" alt="Profile" />
+      <span>{{ comment.author }}</span>
+    </div>
+    <p>{{ comment.text }}</p>
+  </div>
+</p-dialog>
+      <!-- Styles -->
+      <style>
+        .comment-box {
+          margin-bottom: 20px;
+        }
+
+        .comment-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
+        }
+
+        textarea {
+          width: 100%;
+          height: 80px;
+          padding: 10px;
+          margin-top: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+
+        .comment-display {
+          margin-top: 20px;
+          padding: 15px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        .comment-author {
+          display: flex;
+          align-items: center;
+        }
+
+        .comment-author img {
+          border-radius: 50%;
+          margin-right: 10px;
+        }
+      </style>

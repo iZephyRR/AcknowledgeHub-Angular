@@ -35,7 +35,7 @@ export class LayoutService {
         menuMode: 'static',
         colorScheme: 'light',
         theme: 'lara-light-indigo',
-        scale: 14,
+        scale: 12,
     };
 
     // Using Angular's signal to manage reactive state
@@ -94,19 +94,25 @@ export class LayoutService {
             if (this.state.overlayMenuActive) {
                 this.overlayOpen.next(null);
             }
-        }
-
-        if (this.isDesktop()) {
-            this.state.staticMenuDesktopInactive =
-                !this.state.staticMenuDesktopInactive;
+        } else if (this.isDesktop()) {
+            this.state.staticMenuDesktopInactive = !this.state.staticMenuDesktopInactive;
         } else {
-            this.state.staticMenuMobileActive =
-                !this.state.staticMenuMobileActive;
+            // For mobile, control toggle behavior manually
+            this.state.staticMenuMobileActive = !this.state.staticMenuMobileActive;
 
+            // Add your logic to change it to a dropdown arrow instead of dropping automatically
             if (this.state.staticMenuMobileActive) {
+                // You can trigger the dropdown arrow here, e.g., by setting another state or calling another method.
+                this.showDropdownArrow();
                 this.overlayOpen.next(null);
             }
         }
+    }
+
+    showDropdownArrow() {
+        // Implement your logic for showing the dropdown arrow here
+        console.log('Show dropdown arrow instead of dropping menu automatically');
+        // You may update some state or add additional logic here
     }
 
     async logOut1(): Promise<void> {
