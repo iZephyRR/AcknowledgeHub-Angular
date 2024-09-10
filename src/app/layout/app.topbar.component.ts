@@ -5,7 +5,7 @@ import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { UserService } from '../services/user/user.service';
-import { User } from '../modules/user';
+import { User, UserProfile } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
 import { MessageDemoService } from '../services/message/message.service';
 import { map } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { NotificationService } from '../services/notifications/notification serv
   templateUrl: './app.topbar.component.html'
 })
 export class AppTopBarComponent implements OnInit {
-  user: User;
+  user: UserProfile;
   items!: MenuItem[];
   unreadCount: number = 0; // Unread notification count
   notifications: any[] = []; // General notifications
@@ -32,7 +32,19 @@ export class AppTopBarComponent implements OnInit {
 
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
+  isChangePasswordModalVisible: boolean = false;
 
+  currentPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
+
+  currentPasswordError: string = '';
+  newPasswordError: string = '';
+  confirmPasswordError: string = '';
+
+  showCurrentPassword: boolean = false;
+  showNewPassword: boolean = false;
+  showConfirmPassword: boolean = false;
   constructor(
     public layoutService: LayoutService,
     private userService: UserService,
@@ -52,9 +64,17 @@ export class AppTopBarComponent implements OnInit {
 
   // Fetch user profile
   profile(): void {
-    this.userService.getUserById().subscribe(data => {
-      this.user = data;
-    });
+    this.userService.getProfileInfo().subscribe({
+      next:(data)=>{
+        console.log(data);
+        this.user=data;
+      },
+      error:(err)=>{
+        console.error('Profile error '+err);
+      }
+    }
+    
+  );
   }
 
   // Load general notifications
@@ -123,8 +143,6 @@ export class AppTopBarComponent implements OnInit {
     console.log('Unread Count:', this.unreadCount);
   }
 
-
-
   // Toggle notification dropdown
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
@@ -156,6 +174,86 @@ export class AppTopBarComponent implements OnInit {
   closeProfileCard(): void {
     this.isProfileCardVisible = false;
   }
+
+
+  changePassword() {
+    this.isChangePasswordModalVisible = true;
+  }
+  onSave() {
+    // Reset all error messages
+    this.currentPasswordError = '';
+    this.newPasswordError = '';
+    this.confirmPasswordError = '';
+
+    // Validate current password
+    if (!this.currentPassword) {
+      this.currentPasswordError = 'Current password is required.';
+    }
+
+    // Validate new password
+    if (!this.newPassword) {
+      this.newPasswordError = 'New password is required.';
+    } else if (this.currentPassword === this.newPassword) {
+      this.newPasswordError = 'The new password cannot be the same as the current password.';
+    }
+
+    // Validate confirm password
+    if (!this.confirmPassword) {
+      this.confirmPasswordError = 'Confirm password is required.';
+    } else if (this.newPassword !== this.confirmPassword) {
+      this.confirmPasswordError = 'The new password and confirm password must match.';
+    }
+
+    // If any error exists, return early
+    if (this.currentPasswordError || this.newPasswordError || this.confirmPasswordError) {
+      return;
+    }
+
+    // Proceed with password change after validations
+    this.authService.validateCurrentPassword(this.currentPassword).subscribe({
+      next: (data) => {
+        if (data.boolean_RESPONSE) {
+          this.authService.changePassword2(this.newPassword).subscribe({
+            next: () => {
+              console.log('Password changed successfully!');
+              this.isChangePasswordModalVisible = false;
+            },
+            error: (err) => {
+              console.error('Failed to update password:', err);
+              this.newPasswordError = 'Failed to update password. Please try again.';
+            }
+          });
+        } else {
+          this.currentPasswordError = 'The current password is incorrect. Please try again.';
+        }
+      },
+      error: (err) => {
+        console.error('Current password validation failed:', err);
+        this.currentPasswordError = 'Current password validation failed.';
+      }
+    });
+  }
+  togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
+    if (field === 'current') {
+      this.showCurrentPassword = !this.showCurrentPassword;
+    } else if (field === 'new') {
+      this.showNewPassword = !this.showNewPassword;
+    } else if (field === 'confirm') {
+      this.showConfirmPassword = !this.showConfirmPassword;
+    }
+  }
+
+
+  onCancel() {
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    // this.passwordsMatch = true;
+    // this.newPasswordError = false;
+    // this.passwordValidationError = '';
+    this.isChangePasswordModalVisible = false;
+  }
+
 
   // Getters and setters for layout settings
   get visible(): boolean {
@@ -197,4 +295,5 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick(): void {
     this.layoutService.showConfigSidebar();
   }
+
 }

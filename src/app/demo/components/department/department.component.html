@@ -1,0 +1,103 @@
+<ng-container *ngIf="editDepartmentValidator.showView; else dForm">
+   <app-edit-department></app-edit-department>
+</ng-container>
+<ng-template #dForm>
+<div class="grid">
+	<div class="col-12">
+		<div class="card">
+			<h5>title</h5>
+			<p-table #dt1 [value]="users" dataKey="id" [rows]="10" [rowHover]="true"
+				styleClass="p-datatable-gridlines" [paginator]="true"
+				[globalFilterFields]="['staffId','name','email','role','status']" responsiveLayout="scroll">
+				<ng-template pTemplate="caption">
+					<div class="flex justify-content-between flex-column sm:flex-row">
+						<button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash"
+							(click)="clear(dt1)"></button>
+							<div class="flex justify-content-between flex-column sm:flex-row">
+								<button pButton pRipple type="button" label="Edit" class="p-button-info" icon="pi pi-pencil" style="margin-right: 3px;" (click)="editDepartment()"></button>
+								<span class="p-input-icon-left mb-2">
+									<i class="pi pi-search"></i>
+									<input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
+										placeholder="Search Keyword" class="w-full" />
+								</span>
+							</div>
+					
+					</div>
+				</ng-template>
+				<ng-template pTemplate="header">
+					<tr>
+						<th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								No.
+							</div>
+						</th>
+						<th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								Staff-ID
+								<p-columnFilter type="text" field="staffId" display="menu"
+									placeholder="Search by staff ID"></p-columnFilter>
+							</div>
+						</th>
+                        <th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								Name
+								<p-columnFilter type="text" field="name" display="menu"
+									placeholder="Search by country"></p-columnFilter>
+							</div>
+						</th>
+                        <th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								Email
+								<p-columnFilter type="text" field="email" display="menu"
+									placeholder="Search by email"></p-columnFilter>
+							</div>
+						</th>
+                        <th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								Position
+								<p-columnFilter type="text" field="role" display="menu"
+									placeholder="Search by position"></p-columnFilter>
+							</div>
+						</th>
+                        <th style="min-width: 12rem">
+							<div class="flex justify-content-between align-items-center">
+								Status
+								<p-columnFilter type="text" field="status" display="menu"
+									placeholder="Search by status"></p-columnFilter>
+							</div>
+						</th>
+					</tr>
+				</ng-template>
+				<ng-template pTemplate="body" let-user let-i="rowIndex">
+					<tr style="cursor: pointer;">
+					  <td>
+						{{ i + 1 }}.
+					  </td>
+					  <td>
+						{{ user.staffId }}
+					  </td>
+					  <td>
+						{{ user.name }}
+					  </td>
+					  <td>
+						{{ user.email }}
+					  </td>
+					  <td>
+						{{ user.role }}
+					  </td>
+					  <td>
+						{{ user.status }}
+					  </td>
+					</tr>
+				  </ng-template>
+				  
+				<ng-template pTemplate="emptymessage">
+					<tr>
+						<td colspan="8">No employees found.</td>
+					</tr>
+				</ng-template>
+			</p-table>
+		</div>
+	</div>
+</div>
+</ng-template>

@@ -2,6 +2,7 @@ import { ContentType } from "../constants";
 
 
 export interface Announcement {
+    pdfLink(pdfLink: any): unknown;
     id:number;
     created_at:Date;
     file : string;
@@ -10,3 +11,13 @@ export interface Announcement {
     creater: string;
     contentType: ContentType;
 }
+export enum FileType {
+    AUDIO = 'AUDIO',
+    EXCEL = 'EXCEL',
+    IMAGE = 'IMAGE',
+    PDF = 'PDF',
+    VIDEO = 'VIDEO'
+  }
+
+
+  

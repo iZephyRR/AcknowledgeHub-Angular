@@ -13,12 +13,20 @@ export class CompanyService {
     private authService : AuthService
   ) { }
 
-  getAllCompanies () : Observable<Company[]> {
-    return this.http.get<Company[]>(`${this.baseUrl}/get-companies`);
+  getAll () : Observable<Company[]> {
+    return this.http.get<Company[]>(`${this.baseUrl}/mr/get-companies`);
+  }
+  
+  getAllDTO () : Observable<Company[]> {
+    return this.http.get<Company[]>(`${this.baseUrl}/mr/get-company-dtos`);
   }
 
-  getCompanyById () : Observable<Company> {
-    return this.http.get<Company>(`${this.baseUrl}/getCompanyById`);
+  getById (id : number) : Observable<Company> {
+    return this.http.get<Company>(`${this.baseUrl}/user/get-company/${id}`);
+  }
+
+  getDTOById (id : string) : Observable<Company> {
+    return this.http.get<Company>(`${this.baseUrl}/user/get-company-dto/${id}`);
   }
 
 }

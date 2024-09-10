@@ -1,0 +1,32 @@
+<!-- File Upload Container -->
+<div class="file-upload-card" [ngClass]="{'small-card': userUploadValidator.jsonData.length === 0}">
+  <!-- Data Table Container -->
+  <div *ngIf="userUploadValidator.jsonData.length > 0" class="data-table-container">
+    <div class="header-container">
+      <h3>{{userUploadValidator.company.name}} > {{userUploadValidator.departmentName}}</h3>
+      <div><button pButton pRipple type="button" (click)="cancel()" label="Cancel"
+          class="p-button-outlined p-button-secondary" style="margin-right: 3px;"></button>
+        <button pButton pRipple type="button" [disabled]="userUploadValidator.hasError" label="Save" (click)="saveData()" icon="pi pi-save"
+          class="btn-success"></button>
+      </div>
+
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th *ngFor="let header of userUploadValidator.jsonData[0]">{{ header }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of userUploadValidator.jsonData.slice(1); let i = index">
+          <td *ngFor="let cell of row; let j = index">
+            <input
+             pTooltip="{{userUploadValidator.getFieldError(i + 1, j)?.message}}"
+              [ngClass]="{'warning':userUploadValidator.getFieldError(i + 1, j)?.type=='warning','error':userUploadValidator.getFieldError(i+1,j)?.type=='error' }"
+              [value]="cell==undefined?null:cell" (blur)="userUploadValidator.updateCellValue(i, j, $event)" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

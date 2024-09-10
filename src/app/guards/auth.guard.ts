@@ -1,23 +1,18 @@
-import { ActivatedRouteSnapshot, CanActivate, CanActivateFn, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { catchError, empty, map, Observable, of } from 'rxjs';
 import { AuthService } from '../services/auth/auth.service';
-import { SystemService } from '../services/system/system.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthGuard implements CanActivate {
-
   constructor(
-    private router: Router,
-    private authService: AuthService,
-    private messageService: SystemService
+    private authService: AuthService
   ) { }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean{
-    console.log('Auth guard passed : '+JSON.stringify(this.authService.role));
     return this.authService.check(route.data['roles'] || []);
   }
 }
