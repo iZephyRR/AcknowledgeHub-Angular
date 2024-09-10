@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Table } from 'primeng/table';
-import { Announcement } from 'src/app/modules/announcement';
 import { User } from 'src/app/modules/user';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -116,7 +114,7 @@ export class PanelsDemoComponent implements OnInit {
       const head = [['No', 'Staff Id', 'NotedAt', 'Name', 'Gender', 'Role', 'Department', 'Company']];
       const data = this.users.map((user, index) => [
         index + 1,
-        user.stuffId, // Fixed typo
+        user.staffId, // Fixed typo
         user.notedAt,
         user.name,
         user.gender,

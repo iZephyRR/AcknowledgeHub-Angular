@@ -8,27 +8,29 @@ export interface Representative {
 export interface User {
     id?: bigint;
     name: string;
-    email:string;
-    address:string;
-    gender:Gender;
-    dob:Date;
-    nrc:string;
-    role:Role;
-    companyId:bigint;
-    departmentId:bigint;
-    workEntryDate:Date;
-    staffId:string;
-    telegramUserId:string;
-    telegramUsername:string;
-    photoLink:string;
-    status:Status;
-    notedAt:string;
-    companyName:string;
-    departmentName:string;
+    email: string;
+    address: string;
+    gender: Gender;
+    dob: Date;
+    nrc: string;
+    role: Role;
+    companyId: bigint;
+    departmentId: bigint;
+    workEntryDate: Date;
+    staffId: string;
+    telegramUserId: string;
+    telegramUsername: string;
+    photoLink: string;
+    status: Status;
+    notedAt: string;
+    companyName: string;
+    departmentName: string;
 
 }
 export interface UserProfile {
-    employee: User;
+    name: string;
+    role: Role;
+    email: string;
     companyName: string;
     departmentName: string;
 }

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UniqueFields } from 'src/app/modules/unique-fields';
-import { User } from 'src/app/modules/user';
+import { User, UserProfile } from 'src/app/modules/user';
 import { Users } from 'src/app/modules/user-excel-upload';
 
 @Injectable({
@@ -25,10 +25,13 @@ export class UserService {
     return this.http.get<User[]> (`${this.baseUrl}/getUsersByCompanyId`);
   }
 
-  getUserById(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/user/profile`);
+  getUserById(id:number): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/user/${id}`);
   }
 
+  getProfileInfo():Observable<UserProfile>{
+    return this.http.get<UserProfile>(`${this.baseUrl}/user/profile`);
+  }
 
   getUserWhoNotedWithInOneDay(announcementId : string) : Observable<User[]> {
     return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho1DNoted/${announcementId}`);

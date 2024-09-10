@@ -10,6 +10,7 @@ import { SystemSettingsComponent } from './demo/components/system-settings/syste
 import { LoginComponent } from './demo/components/auth/login/login.component';
 import { DashboardComponent } from './demo/components/dashboard/dashboard.component';
 import { DepartmentsComponent } from './demo/components/departments/departments.component';
+import { DepartmentComponent } from './demo/components/department/department.component';
 
 
 @NgModule({

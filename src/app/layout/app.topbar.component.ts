@@ -5,7 +5,7 @@ import { AppComponent } from '../app.component';
 import { MenuService } from './app.menu.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { UserService } from '../services/user/user.service';
-import { User } from '../modules/user';
+import { User, UserProfile } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
 import { MessageDemoService } from '../services/message/message.service';
 import { map } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { NotificationService } from '../services/notifications/notification serv
   templateUrl: './app.topbar.component.html'
 })
 export class AppTopBarComponent implements OnInit {
-  user: User;
+  user: UserProfile;
   items!: MenuItem[];
   unreadCount: number = 0; // Unread notification count
   notifications: any[] = []; // General notifications
@@ -32,7 +32,7 @@ export class AppTopBarComponent implements OnInit {
 
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
- isChangePasswordModalVisible: boolean = false;
+  isChangePasswordModalVisible: boolean = false;
 
   currentPassword: string = '';
   newPassword: string = '';
@@ -41,7 +41,6 @@ export class AppTopBarComponent implements OnInit {
   currentPasswordError: string = '';
   newPasswordError: string = '';
   confirmPasswordError: string = '';
-
 
   showCurrentPassword: boolean = false;
   showNewPassword: boolean = false;
@@ -65,9 +64,17 @@ export class AppTopBarComponent implements OnInit {
 
   // Fetch user profile
   profile(): void {
-    this.userService.getUserById().subscribe(data => {
-      this.user = data;
-    });
+    this.userService.getProfileInfo().subscribe({
+      next:(data)=>{
+        console.log(data);
+        this.user=data;
+      },
+      error:(err)=>{
+        console.error('Profile error '+err);
+      }
+    }
+    
+  );
   }
 
   // Load general notifications
@@ -168,7 +175,7 @@ export class AppTopBarComponent implements OnInit {
     this.isProfileCardVisible = false;
   }
 
-    
+
   changePassword() {
     this.isChangePasswordModalVisible = true;
   }
@@ -235,7 +242,7 @@ export class AppTopBarComponent implements OnInit {
       this.showConfirmPassword = !this.showConfirmPassword;
     }
   }
- 
+
 
   onCancel() {
     this.currentPassword = '';
@@ -247,7 +254,7 @@ export class AppTopBarComponent implements OnInit {
     this.isChangePasswordModalVisible = false;
   }
 
-    
+
   // Getters and setters for layout settings
   get visible(): boolean {
     return this.layoutService.state.configSidebarVisible;
@@ -288,4 +295,5 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick(): void {
     this.layoutService.showConfigSidebar();
   }
+
 }
