@@ -18,6 +18,7 @@ import { SystemService } from 'src/app/services/system/system.service';
 import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 import { User } from 'src/app/modules/user';
 import { Table } from 'primeng/table';
+import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 
 @Component({
   selector: 'app-form-layout-demo',
@@ -25,13 +26,8 @@ import { Table } from 'primeng/table';
 })
 export class FormLayoutDemoComponent implements OnInit {
 
-  groups: any[] = [
-    { id: 'group1', name: 'Group 1' },
-    { id: 'group2', name: 'Group 2' },
-    { id: 'group3', name: 'Group 3' },
-    { id: 'group4', name: 'Group 4' },
-  ];
-
+  groups: CustomTergetGroup[];
+  canSaveTarget: boolean;
   selectedGroup: string | null = null;
   categories: Category[] = [];
   departments: Department[] = [];
@@ -59,7 +55,7 @@ export class FormLayoutDemoComponent implements OnInit {
   channels: any;
   selectedEmployees: any[] = [];
   viewOption: 'tree' | 'table' = 'tree'; // Default to 'tree'
-  selectAllCompanies : boolean;
+  selectAllCompanies: boolean;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -74,8 +70,20 @@ export class FormLayoutDemoComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.customTargetGroupService.findAllByHRID().subscribe({
+      next: (data) => {
+        console.log(JSON.stringify(data));
+        this.groups = data;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+
+      }
+    });
     this.role = this.authService.role;
-    this.companyId = this.authService.companyId;
+    //this.companyId = this.authService.companyId;
     this.loadCategories();
 
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
@@ -136,7 +144,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(
+    this.companyService.getAll().subscribe(
       data => {
         const mappedTree = this.maptotreeService.mapAllCompaniesToTree(data);
         this.companies = [mappedTree];
@@ -148,7 +156,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   getCompanyById(): void {
-    this.companyService.getCompanyById().pipe(
+    this.companyService.getById(this.authService.companyId).pipe(
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
@@ -179,6 +187,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
+    this.systemService.showProgress('Uploading an announcement...', true, false, 5);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
@@ -188,10 +197,14 @@ export class FormLayoutDemoComponent implements OnInit {
       })
     ).subscribe({
       complete: () => {
-        this.messageService.toast("success", "Announcement Created");
-    //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
-       this.resetForm(form);
-        this.clearPreview();
+        this.systemService.stopProgress().then(async (data) => {
+          await this.saveTarget();
+          this.messageService.toast("success", "Announcement Created");
+          //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
+          this.resetForm(form);
+          this.clearPreview();
+        });
+
       },
       error: () => {
         this.messageService.toast("error", "Can't Create");
@@ -213,7 +226,8 @@ export class FormLayoutDemoComponent implements OnInit {
         this.resetForm(form);
         this.clearPreview();
       },
-      error: () => {
+      error: (err) => {
+        console.error('Draft saving error '+JSON.stringify(err));
         this.messageService.toast("error", "Can't Save");
       }
     });
@@ -267,40 +281,52 @@ export class FormLayoutDemoComponent implements OnInit {
           sendTo: target.data.id,
           receiverType: target.data.type as 'COMPANY' | 'DEPARTMENT'
         }));
-        if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
-          this.selectAllCompanies = true;
-        }
+      if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
+        this.selectAllCompanies = true;
+      }
     }
     if (this.selectedEmployees.length > 0) {
       const employeeTargets = this.selectedEmployees.map(employee => ({
         sendTo: employee.id,
         receiverType: 'EMPLOYEE' as 'EMPLOYEE'
       }));
-  
+
       targets = [...targets, ...employeeTargets];  // Append employees
     }
     return targets;
   }
 
-  async saveTarget(): Promise<void> {
-    const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
-    if (confirmed.confirmed) {
-      this.systemService.showProgress('Saving custom target...', true, false, 3);
-      const title: string = confirmed.inputValue;
-      this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
-        next: () => {
-          this.systemService.stopProgress().then(() => {
-            this.messageService.toast('success', 'Saved a custom target.');
-          });
-        },
-        error: (err) => {
-          console.error(err);
-          this.systemService.stopProgress('ERROR').then(() => {
-            this.messageService.toast('error', 'An unknown error occurred, please contact IT support.');
-          });
-        }
-      });
+  saveTargetToggle(event: any): void {
+    if (event.checked) {
+      this.canSaveTarget = true;
+    } else {
+      this.canSaveTarget = false;
     }
+  }
+
+
+  async saveTarget(): Promise<void> {
+    if (this.canSaveTarget) {
+      const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
+      if (confirmed.confirmed) {
+        this.systemService.showProgress('Saving custom target...', true, false, 3);
+        const title: string = confirmed.inputValue;
+        this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
+          next: () => {
+            this.systemService.stopProgress().then(() => {
+              this.messageService.toast('success', 'Saved a custom target.');
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            this.systemService.stopProgress('ERROR').then(() => {
+              this.messageService.toast('error', 'An unknown error occurred, please contact IT support.');
+            });
+          }
+        });
+      }
+    }
+
   }
 
   onFileChange(event: any): void {

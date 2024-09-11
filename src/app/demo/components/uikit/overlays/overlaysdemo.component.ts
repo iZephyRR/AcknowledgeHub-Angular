@@ -102,7 +102,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getAllCompanies(): void {
-    this.companyService.getAllCompanies().subscribe(
+    this.companyService.getAll().subscribe(
       data => {
         const mappedTree = this.mapToTreeService.mapAllCompaniesToTree(data);
         this.companies = [mappedTree];
@@ -114,7 +114,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   getCompanyById(): void {
-    this.companyService.getCompanyById().pipe(
+    this.companyService.getById(this.authService.companyId).pipe(
       map((company) => this.mapToTreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
