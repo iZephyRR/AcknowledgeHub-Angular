@@ -124,7 +124,7 @@ export class AppMenuComponent implements OnChanges {
                                         routerLink: ['/announcement/list']
                                     },
                                     {
-                                        label: 'Test2',
+                                        label: 'Create custom target group',
                                         icon: 'pi pi-fw pi-list',
                                         routerLink: ['/announcement/file']
                                     },

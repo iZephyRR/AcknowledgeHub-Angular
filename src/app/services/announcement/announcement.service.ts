@@ -17,14 +17,20 @@ export class AnnouncementService {
     return this.http.post<Announcement>(`${this.baseUrl}/create`, announcement);
   }
 
-  // Fetch all announcements
+ // Fetch all announcements
   getAllAnnouncements(): Observable<Announcement[]> {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-all`);
   }
-  //fetch all announcements for companyid
-  getAllAnnouncementsWithCompanyId(id:string): Observable<Announcement[]> {
-    return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByCompanyId`);
+
+  getPreviewByCompany(): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/get-by-company`);
   }
+
+    //fetch all announcements for companyid
+    getAllAnnouncementsWithCompanyId(id:string): Observable<Announcement[]> {
+      return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByCompanyId`);
+    }
+
   //fetch all announcements for individual employee
   getAnnouncementsForEmployee(): Observable<Announcement[]>{
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-By-EmployeeId`)
