@@ -66,10 +66,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         );
     }
 
-
-
-
-
     // Helper methods to generate colors
     generateRandomColors(count: number): string[] {
         const colors = [];

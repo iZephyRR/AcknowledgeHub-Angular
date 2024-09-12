@@ -19,8 +19,7 @@
                         <th style="min-width: 12rem">Created At</th>
                         <th style="min-width: 8rem">Status</th>
                         <th style="min-width: 8rem">Category</th>
-                        <th style="min-width: 8rem">Role<p-columnFilter type="text" field="role" display="menu"
-                                placeholder="Search by name"></p-columnFilter></th>
+                        
                         <th style="min-width: 10rem">Actions</th>
                     </tr>
                 </ng-template>
@@ -33,7 +32,6 @@
                         <td>{{announcement.createdAt | date:'MMM d,y'}}</td>
                         <td>{{announcement.status}}</td>
                         <td>{{announcement.categoryName}}</td>
-                        <td>{{announcement.role}}</td>
                         <td>
                             <button pButton icon="pi pi-eye" label="Show" style="width: 100px;"
                                 (click)="showDetails(announcement)"></button>
