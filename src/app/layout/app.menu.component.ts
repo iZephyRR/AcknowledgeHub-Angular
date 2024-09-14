@@ -13,7 +13,13 @@ import { CompanyService } from '../services/company/company.service';
 export class AppMenuComponent implements OnChanges {
     @Input() inputData: string;
     model: any[] = [];
-    announcements: {
+    companyName: string;
+    mainAnnouncements: {
+        label: string,
+        icon: string,
+        routerLink: string[]
+    }[] = [];
+    subAnnouncements: {
         label: string,
         icon: string,
         routerLink: string[]
@@ -31,26 +37,31 @@ export class AppMenuComponent implements OnChanges {
         private companyService: CompanyService,
         private announcementService: AnnouncementService
     ) {
+        companyService.getName().subscribe({
+            next: (data) => {
+                this.companyName = data.string_RESPONSE;
+            }
+        });
         companyService.getAllDTO().subscribe({
             next: (data) => {
                 data.map(item => {
                     this.companies.push({
                         label: item.name,
                         icon: 'pi pi-fw pi-list',
-                        routerLink: [`/company/${item.id}`]
+                        routerLink: [`/announcement-details/${item.id}`]
                     });
                 })
             },
             error: (err) => {
                 console.error(err);
             }
-        }); announcementService.getAllAnnouncementsWithCompanyId('companyId').subscribe({
+        }); announcementService.getMainPreview().subscribe({
             next: (data) => {
                 data.map(item => {
-                    this.announcements.push({
-                        label: item.title,
+                    this.mainAnnouncements.push({
+                        label: item.label,
                         icon: 'pi pi-fw pi-megaphone',
-                        routerLink: [`/announcement-view/company/${item.id}`]
+                        routerLink: [`/announcement-page/${item.id}`]
                     });
                 })
             },
@@ -59,13 +70,13 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-        announcementService.getAllAnnouncementsWithDepartmentId('departmentId').subscribe({
+        announcementService.getSubPreview().subscribe({
             next: (data) => {
                 data.map(item => {
-                    this.announcements.push({
-                        label: item.title,
+                    this.subAnnouncements.push({
+                        label: item.label,
                         icon: 'pi pi-fw pi-megaphone',
-                        routerLink: [`/announcement-view/department/${item.id}`]
+                        routerLink: [`/announcement-page/${item.id}`]
                     });
                 })
             },
@@ -73,20 +84,20 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-        announcementService.getAnnouncementsForEmployee().subscribe({
-            next: (data) => {
-                data.map(item => {
-                    this.announcements.push({
-                        label: item.title,
-                        icon: 'pi pi-fw pi-megaphone',
-                        routerLink: [`/announcement-view/employee/${item.id}`]
-                    });
-                })
-            },
-            error: (err) => {
-                console.error(err);
-            }
-        });
+        // announcementService.getAnnouncementsForEmployee().subscribe({
+        //     next: (data) => {
+        //         data.map(item => {
+        //             this.mainAnnouncements.push({
+        //                 label: item.title,
+        //                 icon: 'pi pi-fw pi-megaphone',
+        //                 routerLink: [`/announcement-view/employee/${item.id}`]
+        //             });
+        //         })
+        //     },
+        //     error: (err) => {
+        //         console.error(err);
+        //     }
+        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -96,93 +107,15 @@ export class AppMenuComponent implements OnChanges {
 
     }
     private refresh(): void {
-        this.model = this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE','STAFF']) ?
-            [
+        this.model = [
+            ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']) ? [
                 {
                     label: 'Home',
                     items: [
-                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }
+                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/dashboard'] }
                     ]
-                },
-                {
-                    label: 'Pages',
-                    icon: 'pi pi-fw pi-briefcase',
-                    items: [
-                        ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE','STAFF']) ?[
-                            {
-                                label: 'Announcement',
-                                icon: 'pi pi-fw pi-megaphone',
-                                items: [
-                                    {
-                                        label: 'Create Announcement',
-                                        icon: 'pi pi-fw pi-pencil',
-                                        routerLink: ['/announcement/create']
-                                    },
-                                    {
-                                        label: 'Announcement List',
-                                        icon: 'pi pi-fw pi-list',
-                                        routerLink: ['/announcement/list']
-                                    },
-                                    {
-                                        label: 'Create custom target group',
-                                        icon: 'pi pi-fw pi-list',
-                                        routerLink: ['/announcement/file']
-                                    },
-                                    {
-                                        label: 'Announcement reports',
-                                        icon: 'pi pi-fw pi-list',
-                                        routerLink: ['/announcement/reports']
-
-                                    },
-                                    {
-                                        label: 'Announcement floatlabel',
-                                        icon: 'pi pi-fw pi-floatlabel',
-                                        routerLink: ['/announcement/floatlabel']
-                                    }
-                                ]
-                            }
-                        ]:[],
-                        {
-                            label: 'Announcements',
-                            icon: 'pi pi-fw pi-tags',
-                            items: this.announcements
-                        },
-                        {
-                            label: 'Company infomations',
-                            icon: 'pi pi-fw pi-tags',
-                            items: this.companies
-
-                        },
-                        {
-                            label: 'Category',
-                            icon: 'pi pi-fw pi-tags',
-                            routerLink: ['/announcement/category']
-                        },
-                        {
-                            label: 'Draft',
-                            icon: 'pi pi-fw pi-calendar',
-                            routerLink: ['/announcement/drafts']
-                        },
-                        {
-                            label: 'Reports',
-                            icon: 'pi pi-fw pi-calendar',
-                            routerLink: ['/pages/timeline']
-                        },
-                        {
-                            label: 'Employee List',
-                            icon: 'pi pi-fw pi-user',
-                            routerLink: ['/announcement/employeelist']
-
-                        },
-                        {
-                            label: 'Chart List',
-                            icon: 'pi pi-fw pi-list',
-                            routerLink: ['/announcement/charts']
-                        },
-                    ]
-                }
-            ] :
-            [
+                }] : [],
+            ...this.authService.canActivateFor(['ADMIN']) ? [
                 {
                     label: 'Admin dashboard',
                     items: [
@@ -199,6 +132,101 @@ export class AppMenuComponent implements OnChanges {
                         }
                     ]
                 }
-            ];
+            ] :
+                [],
+            {
+                label: 'Pages',
+                icon: 'pi pi-fw pi-briefcase',
+                items: [
+                    ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']) ? [
+                        {
+                            label: 'Announcement',
+                            icon: 'pi pi-fw pi-megaphone',
+                            items: [
+                                {
+                                    label: 'Create Announcement',
+                                    icon: 'pi pi-fw pi-pencil',
+                                    routerLink: ['/announcement/create']
+                                },
+                                {
+                                    label: 'Announcement List',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/announcement/list']
+                                },
+                                {
+                                    label: 'Create custom target group',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/announcement/file']
+                                },
+                                {
+                                    label: 'Announcement reports',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/announcement/reports']
+
+                                },
+                                {
+                                    label: 'Announcement floatlabel',
+                                    icon: 'pi pi-fw pi-floatlabel',
+                                    routerLink: ['/announcement/floatlabel']
+                                }
+                            ]
+                        }
+                        ,
+                        {
+                            label: 'Company infomations',
+                            icon: 'pi pi-fw pi-tags',
+                            items: this.companies
+
+                        },
+                        {
+                            label: 'Draft',
+                            icon: 'pi pi-fw pi-calendar',
+                            routerLink: ['/announcement/drafts']
+                        },
+                        {
+                            label: 'Reports',
+                            icon: 'pi pi-fw pi-calendar',
+                            routerLink: ['/pages/timeline']
+                        }, {
+                            label: 'Employee List',
+                            icon: 'pi pi-fw pi-user',
+                            routerLink: ['/announcement/employeelist']
+
+                        }] : [],
+                    ...this.authService.canActivateFor(['ADMIN', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE', 'STAFF']) ? [
+                        {
+                            label: 'Announcements',
+                            icon: 'pi pi-fw pi-tags',
+                            items: [
+                                {
+                                    label: 'ACE Datasystem',
+                                    icon: 'pi pi-fw pi-calendar',
+                                    items: this.mainAnnouncements
+                                },
+                                ...this.authService.canActivateFor(['HR_ASSISTANCE', 'STAFF']) ? [
+                                    {
+                                        label: this.companyName,
+                                        icon: 'pi pi-fw pi-calendar',
+                                        items:this.subAnnouncements
+                                    }
+                                ] : [],
+                            ]
+                        }
+                    ] : [
+                        {
+                            label: 'Category',
+                            icon: 'pi pi-fw pi-tags',
+                            routerLink: ['/announcement/category']
+                        },
+                        {
+                            label: 'Chart List',
+                            icon: 'pi pi-fw pi-list',
+                            routerLink: ['/announcement/charts']
+                        }],
+                ]
+            }
+
+        ];
+
     }
 }

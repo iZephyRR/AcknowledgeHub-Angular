@@ -33,5 +33,6 @@ export interface UserProfile {
     email: string;
     companyName: string;
     departmentName: string;
+    photoLink : string;
 }
 

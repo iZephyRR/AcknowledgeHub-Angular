@@ -26,6 +26,14 @@ export class AnnouncementService {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-by-company`);
   }
 
+  getMainPreview(): Observable<{id:number, label:string}[]> {
+    return this.http.get<{id:number, label:string}[]>(`${this.baseUrl}/get-main-previews`);
+  }
+
+  getSubPreview(): Observable<{id:number, label:string}[]> {
+    return this.http.get<{id:number, label:string}[]>(`${this.baseUrl}/get-sub-previews`);
+  }
+
     //fetch all announcements for companyid
     getAllAnnouncementsWithCompanyId(id:string): Observable<Announcement[]> {
       return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByCompanyId`);

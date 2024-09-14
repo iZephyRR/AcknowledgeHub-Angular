@@ -53,6 +53,7 @@ import { AppFooterComponent } from './layout/app.footer.component';
 import { AppMenuComponent } from './layout/app.menu.component';
 import { AppSidebarComponent } from './layout/app.sidebar.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
+import { TimeAgoPipe } from './time-ago.pipe';
 
 
 @NgModule({
@@ -75,7 +76,8 @@ import { AppLayoutComponent } from './layout/app.layout.component';
     DepartmentsComponent,
     DepartmentComponent,
     UserUploadValidatorComponent,
-    EditDepartmentComponent
+    EditDepartmentComponent,
+    TimeAgoPipe
   ],
   imports: [
     BadgeModule,

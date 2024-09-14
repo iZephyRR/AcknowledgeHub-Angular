@@ -46,7 +46,7 @@
     <textarea [(ngModel)]="newComment" placeholder="Write your comment"
       class="p-inputtext p-component"></textarea>
     <div class="comment-actions">
-      <button pButton label="Comment" icon="pi pi-check" (click)="addComment()"></button>
+      <button pButton label="Comment" icon="pi pi-check" (click)="addComment(announcement.id)"></button>
       <button pButton label="Cancel" icon="pi pi-times" class="p-button-secondary"
         (click)="clearComment()"></button>
     </div>

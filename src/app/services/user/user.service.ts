@@ -57,6 +57,12 @@ export class UserService {
     return this.http.put<User[]>(`${this.baseUrl}/hrs/update-users`,users);
   }
 
+  uploadProfileImage(imageFile: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<any>(`${this.baseUrl}/user/uploadProfileImage`, formData);
+  }
+
 }
 
 

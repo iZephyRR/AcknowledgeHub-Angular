@@ -22,23 +22,23 @@ import { DepartmentComponent } from './demo/components/department/department.com
                 canActivate: [AuthGuard],
                 children: [
                     {
-                        path: '',
+                        path: 'dashboard',
+                        canActivate:[AuthGuard],
+                        data: {roles:['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']},
                         component: DashboardComponent
                     },
                     {
                         path: 'announcement',
                         canActivate: [AuthGuard],
 
-                        data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },//Just for example. Anyone can change.
+                        data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
  {
-                        path: 'announcement-view',
-                        children: [
-                            { path: 'company/:id', component: AnnouncementDetailsComponent },
-                            { path: 'department/:id', component: AnnouncementDetailsComponent },
-                            { path: 'employee/:id', component: AnnouncementDetailsComponent }
-                        ]
+                        path: 'announcement-page/:id',
+                        canActivate:[AuthGuard],
+                        data:{roles:['ADMIN','MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE','STAFF']},
+                        component: AnnouncementDetailsComponent
                     },
 
                     {

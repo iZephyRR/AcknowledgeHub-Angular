@@ -1,109 +1,86 @@
 <div class="layout-topbar">
-    <a class="layout-topbar-logo" routerLink="">
-      <span>ACE DataSystem</span>
-    </a>
-    <button
-      #menubutton
-      class="p-link layout-menu-button layout-topbar-button"
-      (click)="layoutService.onMenuToggle()"
-    >
-      <i class="pi pi-bars"></i>
-    </button>
+  <a class="layout-topbar-logo" routerLink="">
+    <span>ACE DATA SYSTEM</span>
+  </a>
+  <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
+    <i class="pi pi-bars"></i>
+  </button>
 
 
-    <div
-      #topbarmenu
-      class="layout-topbar-menu"
-      [ngClass]="{
-        'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
-      }"
-    >
-      <!-- Notification Bell Icon -->
+  <div #topbarmenu class="layout-topbar-menu" [ngClass]="{
+      'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
+    }">
+    <!-- Notification Bell Icon -->
 
-      <div class="notification-icon" (click)="toggleNotificationDropdown()">
-        <i class="pi pi-bell"></i>
-        <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    <div class="notification-icon" (click)="toggleNotificationDropdown()">
+      <i class="pi pi-bell"></i>
+      <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    </div>
+
+
+    <div class="notification-dropdown" *ngIf="showNotifications">
+      <div class="notification-header">
+        <h4>Notifications</h4>
+        <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
-      <!-- Notification Dropdown -->
-      <div class="notification-dropdown" *ngIf="showNotifications">
-        <div class="notification-header">
-          <h4>Notifications</h4>
-          <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
-        </div>
-        <div class="notification-items">
-          <!-- Combined Notifications -->
-          <div class="notification-items">
-            <div class="notification-item" *ngFor="let notification of combinedNotifications"
-            (click)="markAsRead(notification)"
-            [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
-         <p class="notification-message">{{ notification.message }}</p>
-       </div>
+      <div class="notification-items">
 
-          </div>
-
-
-
+        <div class="notification-item" *ngFor="let notification of combinedNotifications"
+          (click)="markAsRead(notification)"
+          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
+          <a [routerLink]="['/announcement/create']">
+            <p class="notification-message">{{ notification.message }} {{notification.announcementId}}</p>
+          </a>
+          <!-- <small>{{ notification.timestamp | timeAgo }}</small> -->
         </div>
       </div>
-
+    </div>
     <!-- Profile Button -->
     <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
-      <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+      <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
+      <ng-template #default>
+        <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+      </ng-template>
+
     </button>
     <span class="user-role">{{user.role}}</span>
 
-      <!-- Profile Button -->
-      <button class="p-link layout-topbar-button" (click)="showProfileCard()">
-        <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
-        <span>Profile</span>
-      </button>
-
-      <!-- Config Button -->
-      <button
-        class="layout-config-button layout-topbar-button p-link"
-        type="button"
-        (click)="onConfigButtonClick()"
-      >
-        <i class="pi pi-cog"></i>
-      </button>
-
-      <!-- Logout Button -->
-
-    </div>
+    <!-- logout Button -->
+    <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
+      <i class="pi pi-sign-out"></i>
+    </button>
   </div>
+</div>
 
-  <!-- Profile Sidebar Card -->
- <!-- Profile Sidebar Card -->
-<div *ngIf="isProfileCardVisible" [style]="{'position': 'fixed', 'top': '50px', 'right': '20px', 'z-index': '1000'}">
-    <div class="profile-card"
-      [style]="{'width': '300px', 'height': 'auto', 'padding': '20px', 'border-radius': '10px', 'box-shadow': '0 4px 8px rgba(0, 0, 0, 0.1)'}">
 
-      <button (click)="closeProfileCard()"
-        [style]="{'position': 'absolute', 'right': '10px', 'border': 'none', 'background': 'transparent', 'cursor': 'pointer', 'font-size': '1.2rem'}">
-        &times;
+<!-- Profile Sidebar Card -->
+<div *ngIf="isProfileCardVisible" class="profile-sidebar-card">
+  <div class="profile-card">
+    <button (click)="closeProfileCard()" class="close-btn">
+      &times;
+    </button>
+    <div class="card-header">
+      <img *ngIf="profileImage; else defaultImage" [src]="profileImage" alt="Profile Image" class="profile-img" />
+      <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
+      <ng-template #defaultImage>
+        <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="profile-img" />
+      </ng-template>
+      <button (click)="onChangeProfile()" class="change-profile-btn">
+        <i class="fas fa-edit"></i>
+        Change Profile
       </button>
-      <div class="card-header">
-        <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
-        <button (click)="onChangeProfile()" class="change-profile-btn">
-          <i class="fas fa-edit"></i>
-          Change Profile
-        </button>
-        <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
-
-      </div>
-      <div class="card-body">
-        <h2>{{ user.name }}</h2>
-        <p>{{ user.role }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-        <p><strong>Company:</strong> {{ user.companyName }}</p>
-        <p><strong>Department:</strong> {{ user.departmentName }}</p>
-
-          <!-- Replace the "Change Password" button with a link -->
-<a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
-
+    </div>
+    <div class="card-body">
+      <h2>{{ user.name }}</h2>
+      <p class="role">{{ user.role }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p *ngIf="user.companyName!=null"><strong>Company:</strong> {{ user.companyName }}</p>
+        <p *ngIf="user.departmentName!=null"><strong>Department:</strong> {{ user.departmentName }}</p>
+      <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
     </div>
   </div>
 </div>
+
 <!-- PrimeNG Dialog -->
 <p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">
   <form (ngSubmit)="onSave()" class="change-password-form">
@@ -111,55 +88,33 @@
       <!-- Current Password -->
       <div class="p-field">
         <label for="currentPassword">Current Password</label>
-        <input
-          id="currentPassword"
-          [(ngModel)]="currentPassword"
-          name="currentPassword"
-          [type]="showCurrentPassword ? 'text' : 'password'"
-          pInputText
-          required
-          class="password-input"
-        />
+        <input id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword"
+          [type]="showCurrentPassword ? 'text' : 'password'" pInputText required class="password-input" />
         <div class="p-error" *ngIf="currentPasswordError">
           {{ currentPasswordError }}
         </div>
       </div>
-
+      <br>
       <!-- New Password -->
       <div class="p-field">
         <label for="newPassword">New Password</label>
-        <input
-          id="newPassword"
-          [(ngModel)]="newPassword"
-          name="newPassword"
-          [type]="showNewPassword ? 'text' : 'password'"
-          pInputText
-          required
-          class="password-input"
-        />
+        <input id="newPassword" [(ngModel)]="newPassword" name="newPassword"
+          [type]="showNewPassword ? 'text' : 'password'" pInputText required class="password-input" />
         <div class="p-error" *ngIf="newPasswordError">
           {{ newPasswordError }}
         </div>
       </div>
-
-
+      <br>
       <!-- Confirm Password -->
       <div class="p-field">
         <label for="confirmPassword">Confirm Password</label>
-        <input
-          id="confirmPassword"
-          [(ngModel)]="confirmPassword"
-          name="confirmPassword"
-          [type]="showConfirmPassword ? 'text' : 'password'"
-          pInputText
-          required
-          class="password-input"
-        />
+        <input id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword"
+          [type]="showConfirmPassword ? 'text' : 'password'" pInputText required class="password-input" />
         <div class="p-error" *ngIf="confirmPasswordError">
           {{ confirmPasswordError }}
         </div>
       </div>
-    </div>
+    </div><br>
     <p-footer>
       <div class="button-container">
         <button type="submit" pButton label="Save" class="p-button-primary"></button>
@@ -168,91 +123,125 @@
   </form>
 </p-dialog>
 
-  <style>
-      .change-password-link {
-  display: block;
-  text-align: center;
-  color: #007bff;
-  text-decoration: none;
-  padding: 12px 0;
-  margin-top: 10px;
-  font-size: 16px;
-  border: 1px solid #007bff;
-  border-radius: 8px;
-  width: 100%;
-  transition: background-color 0.3s, color 0.3s;
-}
+<style>
+  .profile-sidebar-card {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    z-index: 1000;
+  }
 
-.change-password-link:hover {
-  background-color: #007bff;
-  color: white;
-}
+  .profile-card {
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.3s ease;
+  }
 
-  .change-profile-container {
-    display: flex;
-    justify-content: center;
+  .profile-card:hover {
+    transform: scale(1.05);
+  }
+
+  .close-btn {
     position: absolute;
-    bottom: 16px;
-    /* Position the button at the bottom, adjust as needed */
-    width: 100%;
+    right: 10px;
+    top: 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #333;
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #007bff;
+    object-fit: cover;
+    margin-bottom: 10px;
   }
 
   .change-profile-btn {
-    background-color: #3f99f9;
-    color: white;
+    background-color: #007bff;
+    color: #ffffff;
     border: none;
+    border-radius: 5px;
     padding: 8px 16px;
-    font-size: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-top: 10px;
+    transition: background-color 0.3s;
   }
-  .change-password-form {
-  max-width: 500px; /* Set a maximum width to prevent excessive growth */
-  margin: 0 auto; /* Center the form horizontally */
-}
 
-.password-input {
-  width: 100%; /* Ensure the input takes up the full width */
-  padding: 0.75rem;
-  font-size: 1rem;
-}
+  .change-profile-btn i {
+    margin-right: 5px;
+  }
 
-.p-error {
-  margin-top: 5px;
-  font-size: 0.85rem;
-  color: red;
-}
+  .change-profile-btn:hover {
+    background-color: #0056b3;
+  }
 
-.p-field {
-  margin-bottom: 1.5rem; /* Gap between input fields */
-}
+  .card-body {
+    text-align: center;
+    padding: 16px;
+  }
 
-.button-container {
-  display: flex;
-  justify-content: center; /* Center the Save button */
-  margin-top: 1rem;
-}
+  .card-body h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 10px 0;
+  }
 
-p-footer {
-  padding: 1rem 0; /* Adjust padding to ensure proper spacing around the footer */
-}
+  .card-body p {
+    margin: 5px 0;
+    color: #666;
+  }
 
-  .user-role {
-    margin-left: 10px;
-    font-size: 16px;
-    color: #000000;
+  .card-body p strong {
+    color: #333;
+  }
+
+  .change-password-link {
+    color: #007bff;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    width: 100%;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .change-password-link:hover {
+    background-color: #007bff;
+    color: #ffffff;
   }
 
   .unread-notification {
-    background-color: #00BFFF; /* Light blue background for unread notifications */
-    color: white; /* White text for unread notifications */
+    background-color: #00BFFF;
+    color: white;
   }
 
   .read-notification {
-    background-color: transparent; /* No background for read notifications */
-    color: inherit; /* Keep text color consistent */
+    background-color: transparent;
+    color: inherit;
   }
+
   .notification-icon {
     position: relative;
     cursor: pointer;
@@ -261,31 +250,37 @@ p-footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: white;
+    background-color: #ffffff;
     border-radius: 50%;
     color: gray;
     transition: transform 0.3s ease, background-color 0.3s ease;
-}
+  }
 
-.notification-badge {
+  .notification-badge {
     position: absolute;
-    top: -4px; /* Adjusted to fine-tune position */
-    right: -9px; /* Adjusted to fine-tune position */
+    top: -4px;
+    /* Adjusted to fine-tune position */
+    right: -9px;
+    /* Adjusted to fine-tune position */
     background-color: red;
     color: white;
-    border-radius: 50%; /* Changed from 40% to 50% to make it fully circular */
-    padding: 0.25rem 0.35rem; /* Slightly increased padding for better visibility */
+    border-radius: 50%;
+    /* Changed from 40% to 50% to make it fully circular */
+    padding: 0.25rem 0.35rem;
+    /* Slightly increased padding for better visibility */
     font-size: 0.85rem;
     z-index: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-width: 20px; /* Ensures the badge maintains a circular shape even with single digits */
-    height: 20px; /* Ensures the badge maintains a circular shape */
-}
+    min-width: 20px;
+    /* Ensures the badge maintains a circular shape even with single digits */
+    height: 20px;
+    /* Ensures the badge maintains a circular shape */
+  }
 
 
- .notification-dropdown {
+  .notification-dropdown {
     position: absolute;
     right: 0;
     top: 100%;
@@ -299,7 +294,7 @@ p-footer {
     z-index: 2;
     display: flex;
     flex-direction: column;
-}
+  }
 
   .notification-header {
     display: flex;
@@ -309,9 +304,12 @@ p-footer {
     border-bottom: 1px solid #ddd;
     background-color: #f0f0f0;
   }
+
   .notification-icon i {
-    font-size: 18px; /* Adjust the size of the icon here */
-}
+    font-size: 18px;
+    /* Adjust the size of the icon here */
+  }
+
   .notification-items {
     flex: 1;
     overflow-y: auto;
@@ -330,7 +328,7 @@ p-footer {
   .notification-icon:hover {
     transform: scale(1.1);
     background-color: #f0f0f0;
-}
+  }
 
   .notification-message {
     font-weight: bold;
@@ -359,6 +357,7 @@ p-footer {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
   }
+
   .change-profile-container {
     display: flex;
     justify-content: center;
@@ -367,6 +366,7 @@ p-footer {
     /* Position the button at the bottom, adjust as needed */
     width: 100%;
   }
+
   .change-profile-btn {
     background-color: #3f99f9;
     color: white;
@@ -377,9 +377,11 @@ p-footer {
     display: flex;
     align-items: center;
   }
+
   .profile-card:hover {
     transform: scale(1.05);
   }
+
   .change-profile-btn i {
     margin-right: 5px;
   }
@@ -388,6 +390,7 @@ p-footer {
     background-color: #0056b3;
     /* Customize hover color */
   }
+
   .card-body {
     padding: 16px;
   }
@@ -441,4 +444,3 @@ p-footer {
     padding-top: 5rem;
   }
 </style>
-

@@ -76,9 +76,9 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.systemService.hideLoading();
+    //this.systemService.hideLoading();
     this.startCountdown();
-    //this.authService.severConnectionTest();
+    this.authService.severConnectionTest();
   }
   ngOnDestroy(): void {
     if (this.countdownInterval) {
