@@ -43,7 +43,7 @@
       </ng-template>
 
     </button>
-    <span class="user-role">{{user.role}}</span>
+    <span class="user-role">{{systemService.changeRoleToNormalCase(user.role)}}</span>
 
     <!-- logout Button -->
     <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">

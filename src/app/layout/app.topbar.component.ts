@@ -14,6 +14,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { from, Observable, throwError } from 'rxjs';
 import { Notification } from '../modules/notification.model'; // Correct path for Notification
+import { SystemService } from '../services/system/system.service';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
@@ -62,7 +63,8 @@ export class AppTopBarComponent implements OnInit {
     private cd: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     public authService: AuthService,
-    private firestore: AngularFirestore
+    private firestore: AngularFirestore,
+    public systemService:SystemService
   ) { }
 
   ngOnInit(): void {
@@ -313,6 +315,7 @@ export class AppTopBarComponent implements OnInit {
       }
     });
   }
+
   togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
     if (field === 'current') {
       this.showCurrentPassword = !this.showCurrentPassword;
@@ -323,7 +326,6 @@ export class AppTopBarComponent implements OnInit {
     }
   }
 
-
   onCancel() {
     this.currentPassword = '';
     this.newPassword = '';
@@ -333,7 +335,6 @@ export class AppTopBarComponent implements OnInit {
     // this.passwordValidationError = '';
     this.isChangePasswordModalVisible = false;
   }
-
 
   // Getters and setters for layout settings
   get visible(): boolean {
@@ -375,5 +376,4 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick(): void {
     this.layoutService.showConfigSidebar();
   }
-
 }
