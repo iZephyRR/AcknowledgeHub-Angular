@@ -132,23 +132,23 @@ export class AuthService {
         }),
         catchError((error) => {
           if (error.status == 403) {
-            this.messageService.alert('Session Expired','Session was expired and you will need to login again.','OUTSET','WHITE','RED');
+            this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
             this.session.clear();
             this.router.navigate(['/login']);
           } else {
             console.log('Internal server error..' + (error.status));
             this.router.navigate(['/error']);
           }
-            this.systemService.hideLoading();
+          this.systemService.hideLoading();
           return of(false);
         })
       );
     } else {
-      if(this.systemService.currentRout()!='/login'){
-          this.messageService.toast('warn', 'Login first!');
+      if (this.systemService.currentRout() != '/login') {
+        this.messageService.toast('warn', 'Login first!');
       }
       this.systemService.hideLoading();
-       this.router.navigate(['/login']);
+      this.router.navigate(['/login']);
       return false;
     }
   }
@@ -158,26 +158,27 @@ export class AuthService {
   }
 
   changePassword2(password: string): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email:null });
+    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email: null });
   }
-  
-  validateCurrentPassword(password: string): Observable<{boolean_RESPONSE:boolean}> {
-    console.log('Validating password with payload:', { password });
-    return this.http.post<{boolean_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
-        catchError(error => {
-            console.error('Password validation error:', error);
-            return throwError(error);
-        })
-    );
-}
 
+  validateCurrentPassword(password: string): Observable<{ boolean_RESPONSE: boolean }> {
+    console.log('Validating password with payload:', { password });
+    return this.http.post<{ boolean_RESPONSE: boolean }>(`http://localhost:8080/api/v1/user/check-password`, password).pipe(
+      catchError(error => {
+        console.error('Password validation error:', error);
+        return throwError(error);
+      })
+    );
+  }
 
   isExistEmail(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check-email`);
   }
+
   findNameByEmail(email: string) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`, email);
   }
+
   isPasswordDefault(email: string) {
     return this.http.post<{ boolean_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
   }
@@ -189,11 +190,11 @@ export class AuthService {
   changeDefaultPassword(password: string): Observable<{ string_RESPONSE: string }> {
     return this.http.put<{ string_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`, password);
   }
+
   makePasswordAsDefault(id: number): Observable<string> {
     return this.http.put<string>(`http://localhost:8080/api/v1/ad/make-password-as-default`, id);
   }
 
-  
 
   async logOut(): Promise<void> {
     if ((await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {

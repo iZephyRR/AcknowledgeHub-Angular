@@ -14,17 +14,17 @@ export interface User {
     dob: Date;
     nrc: string;
     role: Role;
-    companyId: bigint;
-    departmentId: bigint;
+    companyId?: bigint;
+    departmentId?: bigint;
     workEntryDate: Date;
     staffId: string;
-    telegramUserId: string;
+    telegramUserId?: string;
     telegramUsername: string;
-    photoLink: string;
+    photoLink?: string;
     status: Status;
-    notedAt: string;
-    companyName: string;
-    departmentName: string;
+    notedAt?: string;
+    companyName?: string;
+    departmentName?: string;
 
 }
 export interface UserProfile {

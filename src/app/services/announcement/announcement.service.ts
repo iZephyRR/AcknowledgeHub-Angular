@@ -40,7 +40,7 @@ export class AnnouncementService {
     return this.http.get<Announcement[]>(`${this.baseUrl}/${id}`)
   }
 
-  
+
   //fetch all announcements for departmentid
   getAllAnnouncementsWithDepartmentId(id:string): Observable<Announcement[]> {
     return this.http.get<Announcement[]>(`${this.baseUrl}/getAnnouncementsByDepartmentId`);
