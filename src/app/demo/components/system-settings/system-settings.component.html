@@ -1,12 +1,49 @@
 <div class="container">
-<h3>System Setting</h3>
-<br>
-<div class="body">
-<div class="row">
-    <label for="item1">Default Password</label>
-    <div class="input">{{defaultPassword}} <i (click)="editDefaultPassword()" class="pi pi-pencil"></i></div>
-</div>
-<hr>
-</div>
+    <h3>System Setting</h3>
+    <br>
+    <div class="body">
+        <div class="row">
+            <label for="defaultPassword">Default Password</label>
+            <div class="input-right">
+                {{defaultPassword}} 
+                <i (click)="editDefaultPassword()" class="pi pi-pencil"></i>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <label for="item2">Add Main HR account</label>
+            <button pButton pRipple class="p-button-primary" [disabled]="existsMainHR" [label]="existsMainHR?'Already added main HR':'Add main HR'" (click)="showDialog()"></button>
+        </div>
+        <hr>
+        <div class="row">
+            <label for="item3">Rest system</label>
+            <p-inputSwitch [(ngModel)]="isServerInResting" (onChange)="restServer()"></p-inputSwitch>
+        </div>
+        <hr>
+    </div>
 </div>
 
+<!-- Modal dialog for adding Main HR account -->
+<p-dialog [(visible)]="canShow" [modal]="true" [closable]="false" [dismissableMask]="true"  [style]="{width: '400px'}">
+    <div class="row hr-row">
+        <label for="item2"><strong>Add Main HR Account</strong></label>
+        <i class="pi pi-times" (click)="closeDialog()" style="cursor: pointer;"></i>
+    </div>
+    <div class="p-fluid">
+        <div class="p-field">
+            <label for="name">Name</label>
+            <input id="name" type="text" pInputText [(ngModel)]="mainHR.name" />
+        </div>
+        <div class="p-field">
+            <label for="email">Email</label>
+            <input id="email" type="email" pInputText [(ngModel)]="mainHR.email" />
+        </div>
+        <div class="p-field">
+            <label for="staff_id">Staff ID</label>
+            <input id="staff_id" type="text" pInputText [(ngModel)]="mainHR.staffId" />
+        </div>
+    </div>
+    <p-footer>
+        <button pButton label="Save" icon="pi pi-check" (click)="addMainHR()"></button>
+    </p-footer>
+</p-dialog>

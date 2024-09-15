@@ -58,7 +58,7 @@ import { DepartmentComponent } from './demo/components/department/department.com
                         path: 'ad',
                         children: [
                             {
-                                path: 'setting',
+                                path: 'settings',
                                 canActivate:[AuthGuard],
                                 data:{roles:['ADMIN']},
                                 component: SystemSettingsComponent

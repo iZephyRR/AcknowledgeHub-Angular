@@ -84,20 +84,6 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-        // announcementService.getAnnouncementsForEmployee().subscribe({
-        //     next: (data) => {
-        //         data.map(item => {
-        //             this.mainAnnouncements.push({
-        //                 label: item.title,
-        //                 icon: 'pi pi-fw pi-megaphone',
-        //                 routerLink: [`/announcement-view/employee/${item.id}`]
-        //             });
-        //         })
-        //     },
-        //     error: (err) => {
-        //         console.error(err);
-        //     }
-        // });
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -122,13 +108,7 @@ export class AppMenuComponent implements OnChanges {
                         {
                             label: 'System Settings',
                             icon: 'pi pi-fw pi-cog',
-                            items: [
-                                {
-                                    label: 'Authentication',
-                                    icon: 'pi pi-fw pi-user',
-                                    routerLink: ['/announcement/table']
-                                },
-                            ]
+                            routerLink: ['/ad/settings']
                         }
                     ]
                 }

@@ -9,6 +9,7 @@ import { MessageDemoService } from '../message/message.service';
 import { Role } from 'src/app/constants';
 import { NavigationEnd, Router } from '@angular/router';
 import { Login } from 'src/app/modules/login';
+import { User } from 'src/app/modules/user';
 
 @Injectable({
   providedIn: 'root'
@@ -160,9 +161,9 @@ export class AuthService {
   changePassword2(password: string): Observable<void> {
     return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email:null });
   }
+
   
   validateCurrentPassword(password: string): Observable<{boolean_RESPONSE:boolean}> {
-    console.log('Validating password with payload:', { password });
     return this.http.post<{boolean_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
         catchError(error => {
             console.error('Password validation error:', error);
@@ -171,13 +172,14 @@ export class AuthService {
     );
 }
 
-
   isExistEmail(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check-email`);
   }
+
   findNameByEmail(email: string) {
     return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`, email);
   }
+
   isPasswordDefault(email: string) {
     return this.http.post<{ boolean_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
   }
@@ -189,11 +191,10 @@ export class AuthService {
   changeDefaultPassword(password: string): Observable<{ string_RESPONSE: string }> {
     return this.http.put<{ string_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`, password);
   }
+
   makePasswordAsDefault(id: number): Observable<string> {
     return this.http.put<string>(`http://localhost:8080/api/v1/ad/make-password-as-default`, id);
   }
-
-  
 
   async logOut(): Promise<void> {
     if ((await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {
@@ -215,8 +216,16 @@ export class AuthService {
   uploadFile(): Observable<void> {
     return this.http.get<void>(`${this.baseUrl}/test`);
   }
+
   static isDomainAvailable(domain: string): boolean {
     return Array.from(this.ALLOWED_DOMAINS).some(allowedDomain => domain.endsWith(allowedDomain));
   }
 
+  isServerInResting():Observable<boolean>{
+    return this.http.get<boolean>(`http://localhost:8080/api/v1/ad/rest-system`);
+  }
+
+  restServer():Observable<void>{
+    return this.http.post<void>(`http://localhost:8080/api/v1/ad/rest-system`,{});
+  }
 }

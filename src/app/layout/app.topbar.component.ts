@@ -37,6 +37,12 @@ export class AppTopBarComponent implements OnInit {
   @Input() announcementId: number;
   @Input() day: number = 1;
 
+  visibleNotifications: Notification[] = []; // Only the visible notifications
+  pageSize: number = 5; // Number of notifications to load per "See more"
+  currentPage: number = 0; // Track the current page
+  canLoadMore: boolean = false;
+  loading: boolean = false; // Loading state
+
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
   isChangePasswordModalVisible: boolean = false;
@@ -64,7 +70,7 @@ export class AppTopBarComponent implements OnInit {
     private sanitizer: DomSanitizer,
     public authService: AuthService,
     private firestore: AngularFirestore,
-    public systemService:SystemService
+    public systemService: SystemService
   ) { }
 
   ngOnInit(): void {
@@ -162,11 +168,11 @@ export class AppTopBarComponent implements OnInit {
   }
 
   updateCombinedNotifications(): void {
-
     this.combinedNotifications = [...this.notifications, ...this.notedNotifications]
       .sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
     this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
     this.loadNotificationsFromLocalStorage();
+    this.loadInitialVisibleNotifications(); // Load the initial set of visible notifications
   }
 
   saveNotificationsToLocalStorage(): void {
@@ -334,6 +340,35 @@ export class AppTopBarComponent implements OnInit {
     // this.newPasswordError = false;
     // this.passwordValidationError = '';
     this.isChangePasswordModalVisible = false;
+  }
+
+  loadMoreNotifications(): void {
+    if (this.loading) return; // Prevent multiple clicks while loading
+
+    this.loading = true;
+    setTimeout(() => {
+      this.currentPage++;
+      const newNotifications = this.combinedNotifications.slice(
+        this.visibleNotifications.length,
+        this.pageSize * this.currentPage
+      );
+      this.visibleNotifications = [...this.visibleNotifications, ...newNotifications];
+      this.checkCanLoadMore();
+      this.loading = false; // Reset loading state
+      this.cd.detectChanges();
+    }, 1500); // 3 seconds delay
+  }
+
+  checkCanLoadMore(): void {
+    const totalLoaded = this.currentPage * this.pageSize + this.visibleNotifications.length;
+    this.canLoadMore = totalLoaded < this.combinedNotifications.length;
+  }
+
+
+  loadInitialVisibleNotifications(): void {
+    this.currentPage = 1; // First page
+    this.visibleNotifications = this.combinedNotifications.slice(0, this.pageSize);
+    this.checkCanLoadMore(); // Check if there are more notifications to load
   }
 
   // Getters and setters for layout settings

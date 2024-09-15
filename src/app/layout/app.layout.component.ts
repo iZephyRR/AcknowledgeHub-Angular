@@ -10,7 +10,7 @@ import { AuthService } from '../services/auth/auth.service';
     selector: 'app-layout',
     templateUrl: './app.layout.component.html'
 })
-export class AppLayoutComponent implements OnDestroy,OnInit {
+export class AppLayoutComponent implements OnDestroy, OnInit {
 
     overlayMenuOpenSubscription: Subscription;
 
@@ -22,13 +22,13 @@ export class AppLayoutComponent implements OnDestroy,OnInit {
 
     @ViewChild(AppTopBarComponent) appTopbar!: AppTopBarComponent;
 
-    constructor(public layoutService: LayoutService, public renderer: Renderer2, public router: Router,private authService:AuthService) {
+    constructor(public layoutService: LayoutService, public renderer: Renderer2, public router: Router, private authService: AuthService) {
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', event => {
-                    const isOutsideClicked = !(this.appSidebar.el.nativeElement.isSameNode(event.target) || this.appSidebar.el.nativeElement.contains(event.target) 
+                    const isOutsideClicked = !(this.appSidebar.el.nativeElement.isSameNode(event.target) || this.appSidebar.el.nativeElement.contains(event.target)
                         || this.appTopbar.menuButton.nativeElement.isSameNode(event.target) || this.appTopbar.menuButton.nativeElement.contains(event.target));
-                    
+
                     if (isOutsideClicked) {
                         this.hideMenu();
                     }
@@ -58,14 +58,14 @@ export class AppLayoutComponent implements OnDestroy,OnInit {
             });
     }
     ngOnInit(): void {
-if(this.authService.role=='ADMIN'){
-     this.router.navigate(['/ad/setting']);
-}else if(this.authService.role=='STAFF'){
-    this.router.navigate(['/']);
-}else{
-    this.router.navigate(['/dashboard'])
-}
-       
+        if (this.authService.role == 'ADMIN') {
+            this.router.navigate(['/ad/settings']);
+        } else if (this.authService.role == 'STAFF') {
+            this.router.navigate(['/']);
+        } else {
+            this.router.navigate(['/dashboard'])
+        }
+
 
     }
 
