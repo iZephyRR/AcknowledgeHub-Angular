@@ -54,10 +54,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     datasets: [
                         {
                             data: values,
-                            backgroundColor: this.generateRandomColors(labels.length),
-                            hoverBackgroundColor: this.generateHoverColors(labels.length)
+                            // backgroundColor: this.generateRandomColors(labels.length),
+                            // hoverBackgroundColor: this.generateHoverColors(labels.length)
                         }
                     ]
+                };
+                this.chartOptions = {
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem: any) {                                   
+                                    return `${tooltipItem.raw}%`;
+                                }
+                            }
+                        }
+                    }
                 };
             },
             (error) => {
@@ -65,10 +76,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             }
         );
     }
-
-
-
-
 
     // Helper methods to generate colors
     generateRandomColors(count: number): string[] {

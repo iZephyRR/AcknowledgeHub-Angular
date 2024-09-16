@@ -18,21 +18,18 @@ import { SystemService } from 'src/app/services/system/system.service';
 import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 import { User } from 'src/app/modules/user';
 import { Table } from 'primeng/table';
+import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 
 @Component({
   selector: 'app-form-layout-demo',
   templateUrl: './formlayoutdemo.component.html',
 })
+
 export class FormLayoutDemoComponent implements OnInit {
 
-  groups: any[] = [
-    { id: 'group1', name: 'Group 1' },
-    { id: 'group2', name: 'Group 2' },
-    { id: 'group3', name: 'Group 3' },
-    { id: 'group4', name: 'Group 4' },
-  ];
-
-  selectedGroup: string | null = null;
+  groups: CustomTergetGroup[];
+  canSaveTarget: boolean;
+  selectedGroup: number | null = null;
   categories: Category[] = [];
   departments: Department[] = [];
   companies: TreeNode[] = [];
@@ -59,7 +56,9 @@ export class FormLayoutDemoComponent implements OnInit {
   channels: any;
   selectedEmployees: any[] = [];
   viewOption: 'tree' | 'table' = 'tree'; // Default to 'tree'
-  selectAllCompanies : boolean;
+  selectAllCompanies: boolean;
+  isEmailSelected: boolean = false;
+  currentDate: string = '';
 
   constructor(
     private announcementService: AnnouncementService,
@@ -71,9 +70,24 @@ export class FormLayoutDemoComponent implements OnInit {
     private systemService: SystemService,
     private maptotreeService: MaptotreeService,
     private userService: UserService
-  ) { }
+  ) {
+    const now = new Date();
+    this.currentDate = now.toISOString().slice(0, 16);
+   }
 
   ngOnInit() {
+    this.customTargetGroupService.findAllByHRID().subscribe({
+      next: (data) => {
+        console.log(JSON.stringify(data));
+        this.groups = data;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+
+      }
+    });
     this.role = this.authService.role;
     //this.companyId = this.authService.companyId;
     this.loadCategories();
@@ -179,8 +193,10 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
+    //this.systemService.showProgress('Uploading an announcement...', true, false, 5);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
+    console.log("group : ", this.selectedGroup);
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
         console.error('Error status:', error.status);
@@ -188,10 +204,13 @@ export class FormLayoutDemoComponent implements OnInit {
       })
     ).subscribe({
       complete: () => {
-        this.messageService.toast("success", "Announcement Created");
-    //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
-       this.resetForm(form);
-        this.clearPreview();
+        this.systemService.stopProgress().then(async (data) => {
+          await this.saveTarget();
+          this.messageService.toast("success", "Announcement Created");
+          //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
+          this.resetForm(form);
+          this.clearPreview();
+        });
       },
       error: () => {
         this.messageService.toast("error", "Can't Create");
@@ -213,7 +232,8 @@ export class FormLayoutDemoComponent implements OnInit {
         this.resetForm(form);
         this.clearPreview();
       },
-      error: () => {
+      error: (err) => {
+        console.error('Draft saving error '+JSON.stringify(err));
         this.messageService.toast("error", "Can't Save");
       }
     });
@@ -229,6 +249,7 @@ export class FormLayoutDemoComponent implements OnInit {
     const offset = new Date().getTimezoneOffset();
     if (this.scheduleOption === 'later') {
       const correctedDate = new Date(new Date(this.scheduleDate).getTime() - offset * 60000);
+      console.log("date : ", correctedDate);
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString());
     } else {
@@ -236,8 +257,12 @@ export class FormLayoutDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString());
     }
-    console.log("channel : ", JSON.stringify(this.selectedChannels));
-    formData.append("channel", JSON.stringify(this.selectedChannels));
+    console.log("is email selected: ", this.isEmailSelected);
+    if (this.isEmailSelected) {
+      formData.append("isEmailSelected", 'emailSelected');
+    } else {
+      formData.append("isEmailSelected", 'noEmailSelected');
+    }
     console.log("target : ", this.targetData);
     formData.append('target', JSON.stringify(this.targetData));
     console.log("select all companies : ", this.selectAllCompanies);
@@ -267,40 +292,58 @@ export class FormLayoutDemoComponent implements OnInit {
           sendTo: target.data.id,
           receiverType: target.data.type as 'COMPANY' | 'DEPARTMENT'
         }));
-        if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
-          this.selectAllCompanies = true;
-        }
+      if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
+        this.selectAllCompanies = true;
+      }
     }
     if (this.selectedEmployees.length > 0) {
       const employeeTargets = this.selectedEmployees.map(employee => ({
         sendTo: employee.id,
         receiverType: 'EMPLOYEE' as 'EMPLOYEE'
       }));
-  
-      targets = [...targets, ...employeeTargets];  // Append employees
+      targets = [...targets, ...employeeTargets];
+    }
+    if (this.selectedGroup) {
+      const groupTarget = {
+        sendTo: this.selectedGroup,  // Since it's a string
+        receiverType: 'CUSTOM' as 'CUSTOM',
+      };
+      targets = [...targets, groupTarget];
     }
     return targets;
   }
 
-  async saveTarget(): Promise<void> {
-    const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
-    if (confirmed.confirmed) {
-      this.systemService.showProgress('Saving custom target...', true, false, 3);
-      const title: string = confirmed.inputValue;
-      this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
-        next: () => {
-          this.systemService.stopProgress().then(() => {
-            this.messageService.toast('success', 'Saved a custom target.');
-          });
-        },
-        error: (err) => {
-          console.error(err);
-          this.systemService.stopProgress('ERROR').then(() => {
-            this.messageService.toast('error', 'An unknown error occurred, please contact IT support.');
-          });
-        }
-      });
+  saveTargetToggle(event: any): void {
+    if (event.checked) {
+      this.canSaveTarget = true;
+    } else {
+      this.canSaveTarget = false;
     }
+  }
+
+
+  async saveTarget(): Promise<void> {
+    if (this.canSaveTarget) {
+      const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
+      if (confirmed.confirmed) {
+        this.systemService.showProgress('Saving custom target...', true, false, 3);
+        const title: string = confirmed.inputValue;
+        this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
+          next: () => {
+            this.systemService.stopProgress().then(() => {
+              this.messageService.toast('success', 'Saved a custom target.');
+            });
+          },
+          error: (err) => {
+            console.error(err);
+            this.systemService.stopProgress('ERROR').then(() => {
+              this.messageService.toast('error', 'An unknown error occurred, please contact IT support.');
+            });
+          }
+        });
+      }
+    }
+
   }
 
   onFileChange(event: any): void {

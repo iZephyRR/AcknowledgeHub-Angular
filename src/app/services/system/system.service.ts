@@ -3,6 +3,7 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { HttpEvent } from '@angular/common/http';
+import { Role } from 'src/app/constants';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class SystemService {
   private blockBackground = signal(false);
   private message = signal('');
   //Current rout
-  public currentRout=signal('');
+  public currentRout = signal('');
 
   showLoading(message: string, hideBackground?: boolean): void {
     this.loading.set(true);
@@ -126,5 +127,20 @@ export class SystemService {
     return this.message();
   }
 
-
+  changeRoleToNormalCase(role: Role): string {
+    switch (role) {
+      case 'ADMIN':
+        return 'Admin'
+      case 'MAIN_HR':
+        return 'Main HR'
+      case 'MAIN_HR_ASSISTANCE':
+        return 'Main HR assistance'
+      case 'HR_ASSISTANCE':
+        return 'HR assistance'
+      case 'STAFF':
+        return 'Staff'
+      default:
+        return role;
+    }
+  }
 }

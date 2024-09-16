@@ -12,13 +12,13 @@
                     <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
                         placeholder="Select a category" optionLabel="name" optionValue="id" required></p-dropdown>
                 </div>
-
+                <br>
                 <!-- Title Field -->
                 <div class="form-group">
                     <label for="title">Title</label>
                     <input type="text" id="title" name="title" [(ngModel)]="title" required />
                 </div>
-
+                <br>
                 <!-- PDF File Upload -->
                 <div class="form-group">
                     <label for="pdf-file">Announcement</label>
@@ -48,13 +48,13 @@
                         </div>
                     </div>
                 </div>
-
+                <br>
                 <!-- Target Select View -->
                 <div class="form-group">
                     <div class="target-group d-flex justify-content-between align-items-center">
                         <label for="createdGroups">Target:</label>
                         <p-dropdown id="createdGroups" name="createdGroups" [(ngModel)]="selectedGroup"
-                            [options]="groups" placeholder="Select Created Groups" optionLabel="name" optionValue="id"
+                            [options]="groups" placeholder="Select Created Groups" optionLabel="title" optionValue="id"
                             [filter]="true" [showClear]="true" class="dropdown">
                         </p-dropdown>
                     </div>
@@ -138,15 +138,14 @@
                         </div>
                     </div>
                 </div>
-
+                <br>
                 <div class="form-group">
-                    <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0"
-                        (onChange)="saveTarget()" class="p-checkbox-success">
+                    <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0" on
+                        (onChange)="saveTargetToggle($event)" class="p-checkbox-success">
                     </p-checkbox>
                 </div>
-
+                <br>
                 <!-- Schedule Options -->
-
                 <div class="form-group">
                     <label>Schedule:</label>
                     <div class="schedule-options">
@@ -162,37 +161,30 @@
                         </div>
                     </div>
                 </div>
-
+                <br>
                 <!-- Date Picker (hidden by default) -->
                 <div class="form-group" *ngIf="showDatePicker">
                     <label for="schedule-date">Select Date and Time</label>
                     <input type="datetime-local" id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate"
-                        min="{{ currentDate }}" required />
+                        [min]="currentDate" required />
                 </div>
-
+                <br>
                 <!-- Channel Options -->
                 <div class="form-group">
                     <label>Channel: (DEFAULT : TELEGRAM) </label>
                     <div class="channel-options d-flex align-items-center">
-                        <div class="form-check me-3"> <!-- Added margin-end class for spacing -->
-                            <p-checkbox name="channel" value="telegram" [(ngModel)]="selectedChannels"
-                                inputId="telegram" label="Telegram" class="me-3">
-                            </p-checkbox>
-                        </div>
                         <div class="form-check">
-                            <p-checkbox name="channel" value="email" [(ngModel)]="selectedChannels" inputId="email"
+                            <p-checkbox name="channel" [binary]="true" [(ngModel)]="isEmailSelected" inputId="email"
                                 label="Email">
                             </p-checkbox>
                         </div>
-                    </div>                                        
+                    </div>
                 </div>
-
-
+                <br>
                 <!-- Submit Button -->
                 <div class="form-group">
-                    <button pButton pRipple type="submit"
-                        [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length)"
-                        label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
+                    <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length && !selectedGroup)
+                        || !filePreview " label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
                     <button pButton pRipple type="button"
                         [disabled]="sendAnnouncement.invalid || !selectedTargets.length || viewOption === 'table'"
                         label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save"

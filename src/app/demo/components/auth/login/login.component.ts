@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { catchError, Subscription, throwError, timer } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
-import { OTPMail } from 'src/app/modules/otp-mails';
+import { Mail } from 'src/app/modules/mails';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
 import { DepartmentService } from 'src/app/services/department/department.service';
@@ -46,6 +46,10 @@ export class LoginComponent implements OnInit {
   otp6: string = '';
   combinedOTP: string = '';
   errorMessage: string | null = null;
+  remainingTime: number = 120; // 120 seconds countdown
+  isCountingDown: boolean = true; // Controls the countdown display
+  countdownInterval: any; // Reference to the countdown interval
+  private countdownSubscription: Subscription | null = null;
 
   constructor(
     public layoutService: LayoutService,
@@ -57,14 +61,15 @@ export class LoginComponent implements OnInit {
     public departmentService:DepartmentService
   ) { }
 
+
   canClickOTP(): boolean {
     this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    return (this.combinedOTP.length > 5);
+    return this.combinedOTP.length === 6; 
   }
 
-  showOTPDialog() {
-    this.displayOtpDialog = true;
-  }
+  // showOTPDialog() {
+  //   this.displayOtpDialog = true;
+  // }
 
   hideOTPDialog(): void {
     this.displayOtpDialog = false;
@@ -72,39 +77,36 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     //this.systemService.hideLoading();
+    this.startCountdown();
     this.authService.severConnectionTest();
   }
-
-  onInput(event: Event, nextInput: HTMLInputElement | null) {
-    const input = event.target as HTMLInputElement;
-
-    // Move to the next input if the current input has a value
-    if (input.value && nextInput) {
-      nextInput.focus();
+  ngOnDestroy(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval); // Clear interval when component is destroyed
     }
   }
 
-  onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, prevInput: HTMLInputElement | null) {
-    const key = event.key;
-
-    if (key === 'Backspace') {
-      if (currentInput.value === '') {
-        // Move to the previous input if the current input is empty and backspace is pressed
-        if (prevInput) {
-          prevInput.focus();
-        }
-      } else {
-        // Clear the current input and keep focus on it
-        currentInput.value = '';
-        event.preventDefault(); // Prevent the cursor from moving backward
-      }
+  onInput(event: Event, nextInput: HTMLInputElement | null): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value.length > 0 && nextInput) {
+      nextInput.focus();
     }
+    this.updateCombinedOTP();
+  }
+
+  onInputKeydown(event: KeyboardEvent, currentInput: HTMLInputElement, previousInput: HTMLInputElement | null): void {
+    if (event.key === 'Backspace' && !currentInput.value && previousInput) {
+      previousInput.focus();
+    }
+    this.updateCombinedOTP();
+  }
+
+  updateCombinedOTP(): void {
+    this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
   }
 
   onSubmit(): void {
     this.systemService.showLoading('Logging in..');
-    this.layoutService.state.configSidebarVisible = false;
-
     if (this.login.email != undefined && this.login.email != '' && this.login.password != undefined && this.login.password != '') {
       this.authService.login(this.login).pipe(
         catchError(error => {
@@ -130,9 +132,9 @@ export class LoginComponent implements OnInit {
                   setTimeout(() => {
                     this.systemService.showLoading('Sending OTP...');
                   }, 0);
-                  OTPMail.action = 'FIRST_LOGIN';
+                  Mail.action = 'FIRST_LOGIN';
                   this.email = this.login.email;
-                  this.messageService.sendEmail(OTPMail.firstLogin(this.email, this.name)).subscribe({
+                  this.messageService.sendEmail(Mail.firstLogin(this.email, this.name)).subscribe({
                     complete: () => {
                       this.systemService.hideLoading();
                       this.otpDialogMessage = 'We have sent an OTP to your email ' + this.maskEmail(this.email) + '.';
@@ -166,10 +168,10 @@ export class LoginComponent implements OnInit {
 
   verifyOtp(): void {
     // let otp = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    console.log('Storaged otp : ' + OTPMail.otp);
+    console.log('Storaged otp : ' + Mail.otp);
     console.log('Input otp : ' + this.combinedOTP);
-    console.log(this.combinedOTP == (OTPMail.otp + ''));
-    if (this.combinedOTP == (OTPMail.otp + '')) {
+    console.log(this.combinedOTP == (Mail.otp + ''));
+    if (this.combinedOTP == (Mail.otp + '')) {
       this.hideOTPDialog();
       this.displayResetPasswordDialog = true;
       this.errorMessage = '';
@@ -195,29 +197,72 @@ export class LoginComponent implements OnInit {
     }
     return email; // Return the original email if it's too short to mask
   }
-
   resendCode(name: string): void {
+    if (this.isCountingDown) return; // Prevent multiple clicks
+  
+    // Show loading and send OTP
     this.systemService.showLoading('Resending OTP...');
     this.hideOTPDialog();
-    this.messageService.toast('info', 'Resending OTP...')
-    console.log('Resending otp..');
-    OTPMail.action == 'FIRST_LOGIN' ?
-      this.messageService.sendEmail(OTPMail.firstLogin(this.email, name)).subscribe({
-        complete: () => {
-          this.systemService.hideLoading();
-          this.otpDialogMessage = 'We have resent a new OTP to your email ' + this.maskEmail(this.email) + '.'
-          this.showOTPDialog();
-        }
-      }) :
-      this.messageService.sendEmail(OTPMail.forgotPassword(this.email, name)).subscribe({
-        complete: () => {
-          this.systemService.hideLoading();
-          this.otpDialogMessage = 'We have resent a new OTP to your email ' + this.maskEmail(this.email) + '.'
-          this.showOTPDialog();
-        }
-      });
+    this.messageService.toast('info', 'Resending OTP...');
+    console.log('Resending OTP...');
+  
+    const otpEmail =
+    Mail.action === 'FIRST_LOGIN'
+        ? Mail.firstLogin(this.email, name)
+        : Mail.forgotPassword(this.email, name);
+    this.sendOtpEmail(otpEmail);
   }
-
+  
+  private sendOtpEmail(otpEmail: any): void {
+    this.messageService.sendEmail(otpEmail).subscribe({
+      complete: () => {
+        this.systemService.hideLoading();
+        this.otpDialogMessage =
+          'We have resent a new OTP to your email ' + this.maskEmail(this.email) + '.';
+        this.showOTPDialog(); // Start the countdown when the dialog is shown
+      },
+      error: (err) => {
+        console.error('Error while resending OTP:', err);
+        this.systemService.hideLoading();
+      },
+    });
+  }
+  
+  private showOTPDialog(): void {
+    
+      this.displayOtpDialog = true;
+    
+  
+    this.startCountdown(); // Start countdown when OTP dialog is displayed
+  }
+  
+  private startCountdown(): void {
+    this.isCountingDown = true;
+    this.remainingTime = 120; // Set initial time to 120 seconds
+  
+    // Unsubscribe if there was a previous countdown
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
+  
+    // Timer that emits values every 1 second
+    this.countdownSubscription = timer(0, 1000).subscribe((secondsElapsed) => {
+      this.remainingTime = 120 - secondsElapsed;
+  
+      if (this.remainingTime <= 0) {
+        this.isCountingDown = false; // Stop countdown when time is up
+        this.stopCountdown();
+      }
+    });
+  }
+  
+  private stopCountdown(): void {
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
+  }
+  
+  
   sendPasswordChangeOTP(): void {
     this.systemService.showLoading('Sending OTP..');
     console.log("Email : " + this.email);
@@ -232,8 +277,8 @@ export class LoginComponent implements OnInit {
                 console.log('Responsed data : ' + data.string_RESPONSE);
                 this.name = data.string_RESPONSE;
                 this.hideForgotPasswordDialog();
-                OTPMail.action = 'FORGOT_PASSWORD';
-                this.messageService.sendEmail(OTPMail.forgotPassword(this.email, this.name)).subscribe({
+                Mail.action = 'FORGOT_PASSWORD';
+                this.messageService.sendEmail(Mail.forgotPassword(this.email, this.name)).subscribe({
                   complete: () => {
                     this.systemService.hideLoading();
                     this.otpDialogMessage = 'We have sent an OTP to your email ' + this.maskEmail(this.email) + '.'

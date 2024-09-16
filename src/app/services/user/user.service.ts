@@ -57,6 +57,19 @@ export class UserService {
     return this.http.put<User[]>(`${this.baseUrl}/hrs/update-users`,users);
   }
 
+  uploadProfileImage(imageFile: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    return this.http.post<any>(`${this.baseUrl}/user/uploadProfileImage`, formData);
+  }
+
+  addMainHR(mainHR:{name:string, email:string, staffId:string}):Observable<User>{
+    return this.http.post<User>(`${this.baseUrl}/ad/main-hr`,mainHR);
+  }
+
+  existsMainHR():Observable<boolean>{
+    return this.http.get<boolean>(`${this.baseUrl}/ad/exists-main-hr`);
+  }
 }
 
 

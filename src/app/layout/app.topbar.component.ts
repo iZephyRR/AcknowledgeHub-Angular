@@ -8,9 +8,13 @@ import { UserService } from '../services/user/user.service';
 import { User, UserProfile } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
 import { MessageDemoService } from '../services/message/message.service';
-import { map } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { NotificationService } from '../services/notifications/notification service';
-
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { from, Observable, throwError } from 'rxjs';
+import { Notification } from '../modules/notification.model'; // Correct path for Notification
+import { SystemService } from '../services/system/system.service';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
@@ -19,16 +23,25 @@ export class AppTopBarComponent implements OnInit {
   user: UserProfile;
   items!: MenuItem[];
   unreadCount: number = 0; // Unread notification count
-  notifications: any[] = []; // General notifications
-  notedNotifications: any[] = []; // Noted notifications
-  combinedNotifications: any[] = []; // Combined list for rendering
+  notifications: Notification[] = []; // General notifications
+  notedNotifications: Notification[] = []; // Noted notifications
+  combinedNotifications: Notification[] = []; // Combined list for rendering
   showNotifications: boolean = false; // Toggle for notification dropdown
-
+  profileImage: SafeUrl | null = null;
   @ViewChild('menubutton') menuButton!: ElementRef;
   @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
   @ViewChild('topbarmenu') menu!: ElementRef;
+  @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
 
   @Input() minimal: boolean = false;
+  @Input() announcementId: number;
+  @Input() day: number = 1;
+
+  visibleNotifications: Notification[] = []; // Only the visible notifications
+  pageSize: number = 5; // Number of notifications to load per "See more"
+  currentPage: number = 0; // Track the current page
+  canLoadMore: boolean = false;
+  loading: boolean = false; // Loading state
 
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
@@ -45,6 +58,8 @@ export class AppTopBarComponent implements OnInit {
   showCurrentPassword: boolean = false;
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  selectedFile: File | null = null;
+
   constructor(
     public layoutService: LayoutService,
     private userService: UserService,
@@ -52,39 +67,52 @@ export class AppTopBarComponent implements OnInit {
     private notificationService: NotificationService,
     public messageService: MessageDemoService,
     private cd: ChangeDetectorRef,
-    public authService: AuthService
+    private sanitizer: DomSanitizer,
+    public authService: AuthService,
+    private firestore: AngularFirestore,
+    public systemService: SystemService
   ) { }
 
   ngOnInit(): void {
     // Load profile and notifications on init
     this.profile();
     this.loadNotifications();
+    this.notificationService.loadNotifications();
     this.loadNotedNotifications();
+    this.notificationService.notifications$.subscribe(notifications => {
+      this.notifications = notifications;
+      this.updateCombinedNotifications();
+    });
   }
-
   // Fetch user profile
   profile(): void {
     this.userService.getProfileInfo().subscribe({
-      next:(data)=>{
+      next: (data) => {
         console.log(data);
-        this.user=data;
+        this.user = data;
+        this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
       },
-      error:(err)=>{
-        console.error('Profile error '+err);
+      error: (err) => {
+        console.error('Profile error ' + err);
       }
     }
-    
-  );
+
+    );
   }
 
   // Load general notifications
   loadNotifications(): void {
     this.notificationService.notifications$.subscribe({
-      next: (notifications) => {
+      next: (notifications: Notification[]) => {
         this.notifications = notifications.map(notification => ({
           ...notification,
-          message: `Announcement ${notification.announcementId} was sent on ${new Date(notification.noticeAt).toLocaleDateString()} "${notification.category}" by "${notification.SenderName}(${notification.Sender})"`,
-        }));
+          announcementId: notification.announcementId,
+          message: notification.SenderName && notification.Sender ?
+            `${notification.SenderName} (${notification.Sender}) posted an announcement "${notification.title}" on ${new Date(notification.noticeAt).toLocaleDateString()}` :
+            `Announcement posted on ${new Date(notification.noticeAt).toLocaleDateString()}`
+        })).sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
+
+        console.log('Processed Notifications:', this.notifications);
         this.updateCombinedNotifications();
         this.cd.detectChanges();
       },
@@ -93,54 +121,81 @@ export class AppTopBarComponent implements OnInit {
   }
 
   // Load noted notifications
-  loadNotedNotifications(): void {
-    this.notificationService.notifications$.pipe(
-      map(notifications => notifications.filter(notification => notification.noticeAt !== notification.timestamp))
-    ).subscribe({
-      next: (notedNotifications) => {
-        console.log('Fetched Noted Notifications:', notedNotifications);
-
-        this.notedNotifications = notedNotifications.map(notification => {
-          const acknowledgedUsers = notification.acknowledgedUsers || [];
-          console.log('Acknowledged Users:', acknowledgedUsers); // Debug
-
-          let message: string;
-
-          if (Array.isArray(acknowledgedUsers)) {
-            if (acknowledgedUsers.length > 1) {
-              message = `${acknowledgedUsers[0]} and ${acknowledgedUsers.length - 1} others have noted the announcement.`;
-            } else if (acknowledgedUsers.length === 1) {
-              message = `${acknowledgedUsers[0]} has noted the announcement.`;
-            } else {
-              // Handle case where there are no acknowledged users
-              message = 'No users have noted this announcement.';
-            }
-          } else {
-            console.warn('acknowledgedUsers is not an array or is missing:', acknowledgedUsers);
-            message = 'Data format issue: acknowledgedUsers is not an array.';
+  fetchAnnouncementId(userId: string): Observable<string> {
+    return from(
+      this.firestore.collection('notifications')
+        .ref
+        .where('userId', '==', +userId)
+        .orderBy('announcementId', 'desc')
+        .orderBy('noticeAt', 'desc')
+        .orderBy('timestamp', 'desc')
+        .limit(1)
+        .get()
+        .then(snapshot => {
+          if (snapshot.empty) {
+            throw new Error('No announcements found for user.');
           }
-
-          return { ...notification, message };
-        }).filter(n => n !== null); // Filter out null messages
-
-        console.log('Noted Notifications with Messages:', this.notedNotifications);
-
-        this.updateCombinedNotifications();
-        this.cd.detectChanges();
-      },
-      error: (err) => console.error('Failed to fetch noted notifications:', err),
-    });
+          const announcement = snapshot.docs[0].data();
+          return announcement['announcementId'] as string;
+        })
+    ).pipe(
+      catchError(err => {
+        console.error('Error fetching announcement ID:', err);
+        return throwError(() => new Error('Failed to fetch announcement ID.'));
+      })
+    );
   }
 
 
+  loadNotedNotifications(): void {
+    this.notificationService.getNotedNotifications()
+      .subscribe(
+        (notedNotifications: Notification[]) => {
+          this.notedNotifications = notedNotifications;
 
-  // Update combined notifications and unread count
+          console.log('Noted Notifications:', this.notedNotifications);
+
+          if (this.notedNotifications.length > 0) {
+            console.log('First noted message:', this.notedNotifications[0].message);
+          }
+
+          this.updateCombinedNotifications();
+        },
+        (error) => {
+          console.error('Error loading noted notifications:', error);
+        }
+      );
+  }
+
   updateCombinedNotifications(): void {
-    this.combinedNotifications = [...this.notifications, ...this.notedNotifications];
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications]
+      .sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
     this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
+    this.loadNotificationsFromLocalStorage();
+    this.loadInitialVisibleNotifications(); // Load the initial set of visible notifications
+  }
 
-    console.log('Combined Notifications:', this.combinedNotifications);
-    console.log('Unread Count:', this.unreadCount);
+  saveNotificationsToLocalStorage(): void {
+    const readNotifications = this.combinedNotifications.map(notification => ({
+      id: notification.id,
+      isRead: notification.isRead
+    }));
+    localStorage.setItem('notifications', JSON.stringify(readNotifications));
+  }
+
+  loadNotificationsFromLocalStorage(): void {
+    const savedNotifications = localStorage.getItem('notifications');
+    if (savedNotifications) {
+      const readStatusList = JSON.parse(savedNotifications);
+      this.combinedNotifications.forEach(notification => {
+        const readStatus = readStatusList.find((n: any) => n.id === notification.id);
+        if (readStatus) {
+          notification.isRead = readStatus.isRead;
+        }
+      });
+
+      this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
+    }
   }
 
   // Toggle notification dropdown
@@ -149,21 +204,21 @@ export class AppTopBarComponent implements OnInit {
   }
 
   // Mark individual notification as read
-  markAsRead(notification: any): void {
+  markAsRead(notification: Notification): void {
     if (!notification.isRead) {
-      this.notificationService.markAsRead(notification.id);
       notification.isRead = true;
       this.unreadCount--;
-      this.cd.detectChanges(); // Ensure the view is updated
+      this.saveNotificationsToLocalStorage();
+      this.cd.detectChanges();
     }
   }
 
-  // Mark all notifications as read
   markAllAsRead(): void {
-    this.notificationService.markAllAsRead();
-    this.unreadCount = 0;
     this.combinedNotifications.forEach(notification => notification.isRead = true);
+    this.unreadCount = 0;
+    this.saveNotificationsToLocalStorage();
     this.cd.detectChanges();
+    this.showNotifications = false;
   }
 
   // Show or hide the profile card
@@ -175,6 +230,39 @@ export class AppTopBarComponent implements OnInit {
     this.isProfileCardVisible = false;
   }
 
+  onChangeProfile(): void {
+    if (this.fileInput) {
+      console.log(this.fileInput); // Debugging: ensure it's defined
+      this.fileInput.nativeElement.click();
+    } else {
+      console.error('File input element is not available.');
+    }
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+      // Preview the selected image
+      const objectURL = URL.createObjectURL(this.selectedFile);
+      this.profileImage = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+      this.uploadProfileImage();
+    }
+  }
+
+  uploadProfileImage() {
+    console.log("in upload profile image");
+    if (this.selectedFile) {
+      this.userService.uploadProfileImage(this.selectedFile).subscribe({
+        next: (response) => {
+          this.messageService.toast("success", "Upload Profile Successful");
+        },
+        error: (error) => {
+          this.messageService.toast("error", "Upload Failed");
+        }
+      });
+    }
+  }
 
   changePassword() {
     this.isChangePasswordModalVisible = true;
@@ -233,6 +321,7 @@ export class AppTopBarComponent implements OnInit {
       }
     });
   }
+
   togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
     if (field === 'current') {
       this.showCurrentPassword = !this.showCurrentPassword;
@@ -242,7 +331,6 @@ export class AppTopBarComponent implements OnInit {
       this.showConfirmPassword = !this.showConfirmPassword;
     }
   }
-
 
   onCancel() {
     this.currentPassword = '';
@@ -254,6 +342,34 @@ export class AppTopBarComponent implements OnInit {
     this.isChangePasswordModalVisible = false;
   }
 
+  loadMoreNotifications(): void {
+    if (this.loading) return; // Prevent multiple clicks while loading
+
+    this.loading = true;
+    setTimeout(() => {
+      this.currentPage++;
+      const newNotifications = this.combinedNotifications.slice(
+        this.visibleNotifications.length,
+        this.pageSize * this.currentPage
+      );
+      this.visibleNotifications = [...this.visibleNotifications, ...newNotifications];
+      this.checkCanLoadMore();
+      this.loading = false; // Reset loading state
+      this.cd.detectChanges();
+    }, 1500); // 3 seconds delay
+  }
+
+  checkCanLoadMore(): void {
+    const totalLoaded = this.currentPage * this.pageSize + this.visibleNotifications.length;
+    this.canLoadMore = totalLoaded < this.combinedNotifications.length;
+  }
+
+
+  loadInitialVisibleNotifications(): void {
+    this.currentPage = 1; // First page
+    this.visibleNotifications = this.combinedNotifications.slice(0, this.pageSize);
+    this.checkCanLoadMore(); // Check if there are more notifications to load
+  }
 
   // Getters and setters for layout settings
   get visible(): boolean {
@@ -295,5 +411,4 @@ export class AppTopBarComponent implements OnInit {
   onConfigButtonClick(): void {
     this.layoutService.showConfigSidebar();
   }
-
 }

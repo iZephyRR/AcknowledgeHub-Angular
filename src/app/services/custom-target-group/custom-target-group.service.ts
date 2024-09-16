@@ -19,6 +19,10 @@ export class CustomTargetGroupService {
     return this.http.get<CustomTergetGroup>(`${CustomTargetGroupService.baseUrl}/${id}`);
   }
 
+  findAllByHRID():Observable<CustomTergetGroup[]>{
+    return this.http.get<CustomTergetGroup[]>(`${CustomTargetGroupService.baseUrl}/by-hr`)
+  }
+
   findAll():Observable<CustomTergetGroup[]>{
     return this.http.get<CustomTergetGroup[]>(`${CustomTargetGroupService.baseUrl}`);
   }

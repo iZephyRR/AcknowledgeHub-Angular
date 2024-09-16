@@ -1,14 +1,102 @@
-.body{
-    padding-inline-end: 200px;
-}
-.row{
+/* Align input-right content to the right */
+.input-right {
     display: flex;
-    
-    justify-content: space-between;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    text-align: right;
 }
-.input{
-    margin-left: 5px;
-}
-i{
+
+/* Optional: Add some spacing to the pencil icon */
+.input-right i {
+    margin-left: 10px;
     cursor: pointer;
+    color: #333;
+    font-size: 18px;
+}
+
+/* Row styling to align label on the left and content on the right */
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+label {
+    flex: 0 0 200px; /* Adjust width of the label */
+    font-weight: bold;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+/* Heading style */
+h3 {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Adjust row spacing and input box alignment */
+.input {
+    flex: 1;
+    padding-left: 15px;
+}
+
+/* Modal dialog styles */
+.p-dialog .ui-dialog-content {
+    padding: 20px;
+}
+
+/* Align close icon and label closer to top of the modal */
+.hr-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.hr-row label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.hr-row i {
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Adjust input field spacing */
+.p-field {
+    margin-bottom: 15px;
+}
+
+.p-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.p-field input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Footer styles in modal */
+.p-footer {
+    text-align: right;
+    padding-top: 10px;
+}
+
+.p-button {
+    margin-left: 10px;
 }
