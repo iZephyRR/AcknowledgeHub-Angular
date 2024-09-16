@@ -37,25 +37,31 @@ export class AppMenuComponent implements OnChanges {
         private companyService: CompanyService,
         private announcementService: AnnouncementService
     ) {
+        this.companies.push({
+            label:'Add new company',
+            icon:'',
+            routerLink:['/company']
+        });
         companyService.getName().subscribe({
             next: (data) => {
-                this.companyName = data.string_RESPONSE;
+                this.companyName = data.STRING_RESPONSE;
             }
         });
         companyService.getAllDTO().subscribe({
             next: (data) => {
-                data.map(item => {
+                data.forEach(item => {
                     this.companies.push({
                         label: item.name,
                         icon: 'pi pi-fw pi-list',
-                        routerLink: [`/announcement-details/${item.id}`]
+                        routerLink: [`/company/${item.id}`]
                     });
-                })
+                });
             },
             error: (err) => {
                 console.error(err);
             }
-        }); announcementService.getMainPreview().subscribe({
+        });
+         announcementService.getMainPreview().subscribe({
             next: (data) => {
                 data.map(item => {
                     this.mainAnnouncements.push({
@@ -77,6 +83,7 @@ export class AppMenuComponent implements OnChanges {
                         label: item.label,
                         icon: 'pi pi-fw pi-megaphone',
                         routerLink: [`/announcement-page/${item.id}`]
+                        
                     });
                 })
             },
@@ -90,7 +97,9 @@ export class AppMenuComponent implements OnChanges {
         if (changes['inputData']) {
             this.refresh();
         }
-
+    }
+    test():void{
+        console.log("Testing");
     }
     private refresh(): void {
         this.model = [
@@ -150,8 +159,7 @@ export class AppMenuComponent implements OnChanges {
                                     routerLink: ['/announcement/floatlabel']
                                 }
                             ]
-                        }
-                        ,
+                        },
                         {
                             label: 'Company infomations',
                             icon: 'pi pi-fw pi-tags',

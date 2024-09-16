@@ -5,3 +5,10 @@ export interface Company {
     name : string;
     departments?: Department[];
 }
+
+export interface HR{
+    hrName: string;
+    hrEmail: string;
+    staffId: string;
+    companyName:string;
+}

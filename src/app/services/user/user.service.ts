@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { HR } from 'src/app/modules/company';
 import { UniqueFields } from 'src/app/modules/unique-fields';
 import { User, UserProfile } from 'src/app/modules/user';
 import { Users } from 'src/app/modules/user-excel-upload';
@@ -63,7 +64,7 @@ export class UserService {
     return this.http.post<any>(`${this.baseUrl}/user/uploadProfileImage`, formData);
   }
 
-  addMainHR(mainHR:{name:string, email:string, staffId:string}):Observable<User>{
+  addMainHR(mainHR:HR):Observable<User>{
     return this.http.post<User>(`${this.baseUrl}/ad/main-hr`,mainHR);
   }
 

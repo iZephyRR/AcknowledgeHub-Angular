@@ -5,7 +5,8 @@
         <div class="row">
             <label for="defaultPassword">Default Password</label>
             <div class="input-right">
-                {{defaultPassword}} 
+                <span>{{ isPasswordVisible ? defaultPassword : '*'.repeat(defaultPassword.length) }}</span>
+                <i (click)="togglePasswordVisibility()" class="pi" [ngClass]="isPasswordVisible ? 'pi-eye-slash' : 'pi-eye'"></i>
                 <i (click)="editDefaultPassword()" class="pi pi-pencil"></i>
             </div>
         </div>
@@ -32,15 +33,19 @@
     <div class="p-fluid">
         <div class="p-field">
             <label for="name">Name</label>
-            <input id="name" type="text" pInputText [(ngModel)]="mainHR.name" />
+            <input id="name" type="text" pInputText [(ngModel)]="mainHR.hrName" />
         </div>
         <div class="p-field">
             <label for="email">Email</label>
-            <input id="email" type="email" pInputText [(ngModel)]="mainHR.email" />
+            <input id="email" type="email" pInputText [(ngModel)]="mainHR.hrEmail" />
         </div>
         <div class="p-field">
             <label for="staff_id">Staff ID</label>
             <input id="staff_id" type="text" pInputText [(ngModel)]="mainHR.staffId" />
+        </div>
+        <div class="p-field">
+            <label for="company_name">Company Name</label>
+            <input id="company_name" type="text" pInputText [(ngModel)]="mainHR.companyName" />
         </div>
     </div>
     <p-footer>

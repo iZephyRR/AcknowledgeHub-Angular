@@ -7,11 +7,19 @@
     text-align: right;
 }
 
-/* Optional: Add some spacing to the pencil icon */
+.input-right span {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
 .input-right i {
     margin-left: 10px;
     cursor: pointer;
     color: #333;
+    font-size: 18px;
+}
+
+.pi-eye, .pi-eye-slash {
     font-size: 18px;
 }
 

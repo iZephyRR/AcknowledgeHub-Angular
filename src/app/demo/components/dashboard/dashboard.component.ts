@@ -29,13 +29,44 @@ export class DashboardComponent implements OnInit, OnDestroy {
     fetchAnnouncements(): void {
         this.subscription = this.announcementService.getAllAnnouncements().subscribe(
             data => {
-                this.announcements = data;
-                this.updateCharts(data);
+                this.announcements = data.map(announcement => ({
+                    ...announcement,
+                    createdAt: this.parseDate(announcement.createdAt)
+                }));
+                this.updateCharts(this.announcements);
             },
             error => {
                 console.error('Error fetching announcements', error);
             }
         );
+    }
+
+    // Method to parse and validate date
+    parseDate(dateInput: any): Date | null {
+        let parsedDate: Date;
+        if (Array.isArray(dateInput) ) { // && dateInput.length <= 6
+            parsedDate = new Date(
+                dateInput[0], // year
+                dateInput[1] - 1, // month (0-based index)
+                dateInput[2], // day
+                dateInput[3], // hours
+                dateInput[4] // minutes
+            );
+        } else {
+            // Handle string format or other formats
+            parsedDate = new Date(dateInput);
+        }
+        
+        // Log the parsed date for debugging
+        // console.log('Parsed date:', parsedDate);
+
+        // Check if the parsed date is valid
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate;
+        } else {
+            console.warn('Invalid date string:', dateInput);
+            return null;
+        }
     }
     loadPieChartData(): void {
         this.announcementService.getPieChart().subscribe(

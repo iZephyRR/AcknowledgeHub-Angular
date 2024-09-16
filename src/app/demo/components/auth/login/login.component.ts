@@ -123,9 +123,9 @@ export class LoginComponent implements OnInit {
       )
         .subscribe({
           next: async (response) => {
-            if (response.string_RESPONSE.startsWith('NAME_')) {
+            if (response.STRING_RESPONSE.startsWith('NAME_')) {
               this.isFirstTime = true;
-              this.name = response.string_RESPONSE;
+              this.name = response.STRING_RESPONSE.substring(5);
               this.systemService.hideLoading();
               if ((await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')).confirmed) {
                 if (AuthService.isDomainAvailable(this.login.email)) {
@@ -149,7 +149,7 @@ export class LoginComponent implements OnInit {
                 }
               }
             } else {
-              this.session.add('token', response.string_RESPONSE);
+              this.session.add('token', response.STRING_RESPONSE);
               console.log('saved token : ' + this.session.get('token'));
               this.messageService.toast('success', 'Successfully logged in!');
               this.router.navigate(['/']);
@@ -269,13 +269,13 @@ export class LoginComponent implements OnInit {
     this.authService.isPasswordDefault(this.email).subscribe({
       next: (data) => {
         console.log(data);
-        if (!data.boolean_RESPONSE) {
+        if (!data.STRING_RESPONSE) {
           this.authService.findNameByEmail(this.email).subscribe({
             next: (data) => {
-              console.log('findNameByEmail ' + data.string_RESPONSE);
+              console.log('findNameByEmail ' + data.STRING_RESPONSE);
               if (AuthService.isDomainAvailable(this.email)) {
-                console.log('Responsed data : ' + data.string_RESPONSE);
-                this.name = data.string_RESPONSE;
+                console.log('Responsed data : ' + data.STRING_RESPONSE);
+                this.name = data.STRING_RESPONSE;
                 this.hideForgotPasswordDialog();
                 Mail.action = 'FORGOT_PASSWORD';
                 this.messageService.sendEmail(Mail.forgotPassword(this.email, this.name)).subscribe({

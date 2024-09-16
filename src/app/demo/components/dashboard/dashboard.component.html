@@ -75,21 +75,22 @@
                 <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th>Title</th>
-                            <th>Category</th>
                             <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt"></p-sortIcon></th>
-                            <th>Role</th>
+                            <th>Title</th>
+                            <th>Created By</th>
+                            <th>Category</th>                           
                             <th>View</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-announcement>
                         <tr>
+                            <td>{{ announcement.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
                             <td>{{ announcement.title }}</td>
-                            <td>{{ announcement.categoryName }}</td>
-                            <td>{{ announcement.createdAt | date:'medium' }}</td>
-                            <td>{{ announcement.role }}</td>
+                            <td>{{ announcement.createdBy }}({{ announcement.role }})</td>
+                            <td>{{ announcement.categoryName }}</td>                            
                             <td>
-                                <button pButton pRipple type="button" icon="pi pi-search" class="p-button p-component p-button-text p-button-icon-only"></button>
+                                <button pButton pRipple type="button" icon="pi pi-search"
+                                    class="p-button p-component p-button-text p-button-icon-only"></button>
                             </td>
                         </tr>
                     </ng-template>

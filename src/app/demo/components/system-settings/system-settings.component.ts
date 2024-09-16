@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HR } from 'src/app/modules/company';
+import { Mail } from 'src/app/modules/mails';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
@@ -10,14 +12,17 @@ import { UserService } from 'src/app/services/user/user.service';
   styleUrl: './system-settings.component.scss'
 })
 export class SystemSettingsComponent implements OnInit {
-  defaultPassword: string;
+  
+  defaultPassword: string = '';
+  isPasswordVisible: boolean = false;
   canShow: boolean;
   existsMainHR: boolean;
   isServerInResting: boolean;
   mainHR = {} as {
-    name: string,
-    email: string,
-    staffId: string
+    hrName: string,
+    hrEmail: string,
+    staffId: string,
+    companyName:string
   };
   constructor(
     private messageService: MessageDemoService,
@@ -38,7 +43,7 @@ export class SystemSettingsComponent implements OnInit {
     });
     this.authService.getDefaultPassword().subscribe({
       next: (data) => {
-        this.defaultPassword = data.string_RESPONSE;
+        this.defaultPassword = data.STRING_RESPONSE;
       }
     });
     this.authService.isServerInResting().subscribe({
@@ -51,13 +56,16 @@ export class SystemSettingsComponent implements OnInit {
     });
   }
 
+  togglePasswordVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
   async editDefaultPassword(): Promise<void> {
     const confirmed = await this.messageService.confirmed('Enter a new default password.', '', 'OK', 'Cancel', 'WHITE', 'GOLD', true);
     if (confirmed.confirmed) {
       this.authService.changeDefaultPassword(confirmed.inputValue).subscribe({
         next: (data) => {
-          console.log('response ' + data.string_RESPONSE);
-          this.defaultPassword = data.string_RESPONSE;
+          console.log('response ' + data.STRING_RESPONSE);
+          this.defaultPassword = data.STRING_RESPONSE;
         },
         complete: () => {
           this.messageService.toast('info', 'System default password changed.');
@@ -65,22 +73,32 @@ export class SystemSettingsComponent implements OnInit {
         error: () => {
           this.messageService.toast('error', 'Couldn\'t change default password.');
         }
+        
       });
     }
   }
 
   addMainHR(): void {
-    this.systemSevice.showProgress('Adding Main HR account...', true, false, 3);
-    console.log('before save ' + JSON.stringify(this.mainHR));
+    this.systemSevice.showProgress('Adding Main HR account...', true, false, 5);
     this.userService.addMainHR(this.mainHR).subscribe({
       next: (data) => {
         console.log('after save ' + JSON.stringify(data));
       },
       complete: () => {
-        this.systemSevice.stopProgress().then((data) => {
-          this.messageService.toast('success', 'Added main HR account.');
-          this.refresh();
-          this.closeDialog();
+        this.messageService.sendEmail(Mail.addedMainHR(this.mainHR.hrEmail, this.mainHR.hrName, this.defaultPassword)).subscribe({
+          complete: () => {
+            this.systemSevice.stopProgress().then((data) => {
+              this.messageService.toast('success', 'Added main HR account.');
+              this.refresh();
+              this.closeDialog();
+            });
+          },
+          error: (err) => {
+            this.systemSevice.stopProgress().then((data) => {
+              this.messageService.toast('error', 'Registered main HR account but an error occured on sending email.');
+            });
+            console.error(err);
+          }
         });
       },
       error: (err) => {
@@ -93,11 +111,7 @@ export class SystemSettingsComponent implements OnInit {
   }
 
   closeDialog(): void {
-    this.mainHR = {} as {
-      name: string,
-      email: string,
-      staffId: string
-    };
+    this.mainHR = {} as HR;
     this.canShow = false;
   }
 
@@ -107,12 +121,11 @@ export class SystemSettingsComponent implements OnInit {
 
   async restServer(): Promise<void> {
     const confirmed = await this.messageService.confirmed('Comfimation to rest system', 'Enter your password to containue', 'OK', 'Cancel', 'WHITE', 'GRAY', true);
-
     if (confirmed.confirmed) {
       this.authService.validateCurrentPassword(confirmed.inputValue).subscribe({
         next: (data) => {
-          if (data.boolean_RESPONSE) {
-            this.systemSevice.showProgress('Trying to '+(this.isServerInResting?'run':'rest')+' system...', true, true, 3);
+          if (data.BOOLEAN_RESPONSE) {
+            this.systemSevice.showProgress('Trying to ' + (this.isServerInResting ? 'run' : 'rest') + ' system...', true, true, 3);
             this.authService.restServer().subscribe({
               complete: () => {
                 this.systemSevice.stopProgress().then((data) => {

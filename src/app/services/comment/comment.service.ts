@@ -18,5 +18,9 @@ export class CommentService {
     return this.http.post<Comment>(`${this.apiUrl}/add`, comment);
   }
 
+  getCommentsByAnnouncement(announcementId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/getById/${announcementId}`);
+  }
+
   // Other methods (e.g., getComments, deleteComment) can be added here as needed
 }

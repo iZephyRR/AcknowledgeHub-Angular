@@ -57,12 +57,11 @@ export class AnnouncementDetailsComponent implements OnInit {
    openModal() {
     this.showModal = true;
   }
-
   addComment(announcementId : number) {
     if (this.newComment.trim()) {
       // Create the comment object using the Comment model
       const comment: Comment = {
-        author : this.authService.userId,
+        //author : this.authService.userId,
         content: this.newComment,
         announcementId: announcementId  // Set the actual announcement ID
       };
@@ -85,7 +84,6 @@ export class AnnouncementDetailsComponent implements OnInit {
   clearComment() {
     this.newComment = ''; 
   }
-
  
 }
 

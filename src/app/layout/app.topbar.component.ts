@@ -300,7 +300,7 @@ export class AppTopBarComponent implements OnInit {
     // Proceed with password change after validations
     this.authService.validateCurrentPassword(this.currentPassword).subscribe({
       next: (data) => {
-        if (data.boolean_RESPONSE) {
+        if (data.BOOLEAN_RESPONSE) {
           this.authService.changePassword2(this.newPassword).subscribe({
             next: () => {
               console.log('Password changed successfully!');

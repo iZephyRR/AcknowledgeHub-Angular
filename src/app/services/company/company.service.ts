@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Company } from 'src/app/modules/company';
+import { Company, HR } from 'src/app/modules/company';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -29,8 +29,12 @@ export class CompanyService {
     return this.http.get<Company>(`${this.baseUrl}/user/get-company-dto/${id}`);
   }
 
-  getName(): Observable<{ string_RESPONSE: string }> {
-    return this.http.get<{ string_RESPONSE: string }>(`${this.baseUrl}/user/get-company-name`);
+  getName(): Observable<{ STRING_RESPONSE: string }> {
+    return this.http.get<{ STRING_RESPONSE: string }>(`${this.baseUrl}/user/get-company-name`);
+  }
+
+  save(hr:HR):Observable<Company>{
+    return this.http.post<Company>(`${this.baseUrl}/mr/company`,hr);
   }
 
 }

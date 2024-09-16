@@ -85,7 +85,7 @@ export class AuthService {
   }
 
   login(credentials: Login) {
-    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
+    return this.http.post<{ STRING_RESPONSE: string }>(`${this.baseUrl}/login`, credentials);
   }
 
   canActivateFor(roles: Role[]) {
@@ -163,8 +163,8 @@ export class AuthService {
   }
 
   
-  validateCurrentPassword(password: string): Observable<{boolean_RESPONSE:boolean}> {
-    return this.http.post<{boolean_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
+  validateCurrentPassword(password: string): Observable<{BOOLEAN_RESPONSE:boolean}> {
+    return this.http.post<{BOOLEAN_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
         catchError(error => {
             console.error('Password validation error:', error);
             return throwError(error);
@@ -177,19 +177,19 @@ export class AuthService {
   }
 
   findNameByEmail(email: string) {
-    return this.http.post<{ string_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`, email);
+    return this.http.post<{ STRING_RESPONSE: string }>(`${this.baseUrl}/find-name-by-email`, email);
   }
 
   isPasswordDefault(email: string) {
-    return this.http.post<{ boolean_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
+    return this.http.post<{ STRING_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
   }
 
-  getDefaultPassword(): Observable<{ string_RESPONSE: string }> {
-    return this.http.get<{ string_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`);
+  getDefaultPassword(): Observable<{ STRING_RESPONSE: string }> {
+    return this.http.get<{ STRING_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`);
   }
 
-  changeDefaultPassword(password: string): Observable<{ string_RESPONSE: string }> {
-    return this.http.put<{ string_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`, password);
+  changeDefaultPassword(password: string): Observable<{ STRING_RESPONSE: string }> {
+    return this.http.put<{ STRING_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`, password);
   }
 
   makePasswordAsDefault(id: number): Observable<string> {
