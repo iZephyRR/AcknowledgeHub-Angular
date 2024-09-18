@@ -31,20 +31,18 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
                     {
                         path: 'announcement',
                         canActivate: [AuthGuard],
-
                         data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
                     {
                         path: 'announcement-page/:id',
                         canActivate: [AuthGuard],
-                        data: { roles: ['ADMIN', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE', 'STAFF'] },
                         component: AnnouncementDetailsComponent
                     },
                     {
                         path: 'company',
                         canActivate: [AuthGuard],
-                        data: { roles: ['MAIN_HR'] },
+                        data: { roles: ['MAIN_HR','HR','HR_ASSISTANCE'] },
                         component: AddCompanyComponent
                     },
                     {

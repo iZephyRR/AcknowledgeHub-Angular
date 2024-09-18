@@ -1,15 +1,16 @@
-import { ContentType } from "../constants";
+import { AnnouncementResponseCondition, ContentType } from "../constants";
 
 
 export interface Announcement {
-    pdfLink(pdfLink: any): unknown;
-    id:number;
-    file : string;
-    title : string;
-    categoryName : string;
+    pdfLink: string;
+    id: number;
+    file: string;
+    title: string;
+    categoryName: string;
     creater: string;
     contentType: ContentType;
-    createdAt:Date;
+    createdAt: Date;
+    announcementResponseCondition: AnnouncementResponseCondition;
 }
 export enum FileType {
     AUDIO = 'AUDIO',
@@ -17,7 +18,6 @@ export enum FileType {
     IMAGE = 'IMAGE',
     PDF = 'PDF',
     VIDEO = 'VIDEO'
-  }
+}
 
 
-  

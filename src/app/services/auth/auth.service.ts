@@ -102,10 +102,20 @@ export class AuthService {
       },
       complete: () => {
         this.systemService.hideLoading();
-        this.systemService.restartPage();
+        this.restartPage();
       }
     });
   }
+  restartPage(): void {
+    if (this.role == 'ADMIN') {
+      this.router.navigate(['/ad/settings']);
+    } else if (this.role == 'STAFF') {
+      this.router.navigate(['/']);
+    } else {
+      this.router.navigate(['/dashboard'])
+    }
+  }
+  
 
   check(allowedRoles: Role[]): Observable<boolean> | boolean {
     this.showNotFound = false;
@@ -133,23 +143,23 @@ export class AuthService {
         }),
         catchError((error) => {
           if (error.status == 403) {
-            this.messageService.alert('Session Expired','Session was expired and you will need to login again.','OUTSET','WHITE','RED');
+            this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
             this.session.clear();
             this.router.navigate(['/login']);
           } else {
             console.log('Internal server error..' + (error.status));
             this.router.navigate(['/error']);
           }
-            this.systemService.hideLoading();
+          this.systemService.hideLoading();
           return of(false);
         })
       );
     } else {
-      if(this.systemService.currentRout()!='/login'){
-          this.messageService.toast('warn', 'Login first!');
+      if (this.systemService.currentRout() != '/login') {
+        this.messageService.toast('warn', 'Login first!');
       }
       this.systemService.hideLoading();
-       this.router.navigate(['/login']);
+      this.router.navigate(['/login']);
       return false;
     }
   }
@@ -159,18 +169,18 @@ export class AuthService {
   }
 
   changePassword2(password: string): Observable<void> {
-    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email:null });
+    return this.http.put<void>(`${this.baseUrl}/change-password`, { password: password, email: null });
   }
 
-  
-  validateCurrentPassword(password: string): Observable<{BOOLEAN_RESPONSE:boolean}> {
-    return this.http.post<{BOOLEAN_RESPONSE:boolean}>(`http://localhost:8080/api/v1/user/check-password`,  password ).pipe(
-        catchError(error => {
-            console.error('Password validation error:', error);
-            return throwError(error);
-        })
+
+  validateCurrentPassword(password: string): Observable<{ BOOLEAN_RESPONSE: boolean }> {
+    return this.http.post<{ BOOLEAN_RESPONSE: boolean }>(`http://localhost:8080/api/v1/user/check-password`, password).pipe(
+      catchError(error => {
+        console.error('Password validation error:', error);
+        return throwError(error);
+      })
     );
-}
+  }
 
   isExistEmail(email: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check-email`);
@@ -185,7 +195,7 @@ export class AuthService {
   }
 
   getDefaultPassword(): Observable<{ STRING_RESPONSE: string }> {
-    return this.http.get<{ STRING_RESPONSE: string }>(`http://localhost:8080/api/v1/ad/default-password`);
+    return this.http.get<{ STRING_RESPONSE: string }>(`http://localhost:8080/api/v1/user/default-password`);
   }
 
   changeDefaultPassword(password: string): Observable<{ STRING_RESPONSE: string }> {
@@ -221,11 +231,11 @@ export class AuthService {
     return Array.from(this.ALLOWED_DOMAINS).some(allowedDomain => domain.endsWith(allowedDomain));
   }
 
-  isServerInResting():Observable<boolean>{
+  isServerInResting(): Observable<boolean> {
     return this.http.get<boolean>(`http://localhost:8080/api/v1/ad/rest-system`);
   }
 
-  restServer():Observable<void>{
-    return this.http.post<void>(`http://localhost:8080/api/v1/ad/rest-system`,{});
+  restServer(): Observable<void> {
+    return this.http.post<void>(`http://localhost:8080/api/v1/ad/rest-system`, {});
   }
 }

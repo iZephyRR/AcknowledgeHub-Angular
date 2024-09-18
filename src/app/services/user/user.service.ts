@@ -14,7 +14,6 @@ export class UserService {
 
   private baseUrl = 'http://localhost:8080/api/v1';
 
-
   constructor(private http: HttpClient) {
 
   }
@@ -70,6 +69,10 @@ export class UserService {
 
   existsMainHR():Observable<boolean>{
     return this.http.get<boolean>(`${this.baseUrl}/ad/exists-main-hr`);
+  }
+
+  countEmployee(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/hrs/employee-count`); // Adjust the endpoint as necessary
   }
 }
 

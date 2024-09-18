@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
     this.systemService.showLoading('');
     this.primengConfig.ripple = true;
     this.messageService.requestWindowNotiPermit();
-    // this.messageService.sentWindowNotification('Title', { body: 'Testing' ,icon:'assets\\demo\\images\\avatar\\amyelsner.png'}); 
+     this.messageService.sentWindowNotification('Title', { body: 'Testing' ,icon:'assets\\demo\\images\\avatar\\amyelsner.png'}); 
     this.routerSubscription = this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.systemService.currentRout.set(event.urlAfterRedirects);

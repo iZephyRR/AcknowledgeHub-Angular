@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Announcement } from 'src/app/modules/announcement';
@@ -13,21 +14,23 @@ import * as XLSX from 'xlsx';
   templateUrl: './announcementdetails.component.html',
 })
 export class AnnouncementDetailsComponent implements OnInit {
-  announcement: Announcement[] = [];
+  announcement: Announcement;
   private routerSubscription: Subscription;
   showModal: boolean = false;
   newComment: string = '';
   //comments: { author: string; text: string }[] = [];
-  data: any[] = []; 
-  comments : Comment[] = [];
+  data: any[] = [];
+  comments: Comment[] = [];
+  safePdfLink: SafeResourceUrl;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private announcementService: AnnouncementService,
-    private commentService : CommentService,
-    private authService : AuthService
-  ) {}
+    private commentService: CommentService,
+    private authService: AuthService,
+    private sanitizer: DomSanitizer
+  ) { }
 
   ngOnInit(): void {
     this.getAnnouncements();
@@ -41,23 +44,60 @@ export class AnnouncementDetailsComponent implements OnInit {
   getAnnouncements(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.announcementService.getAnnouncementsById(id).subscribe({
-        next: (data) => {
-          this.announcement = data;
-          console.log(this.announcement);
-          
+      this.announcementService.getAnnouncementById(id).subscribe({
+        next: (data: Announcement) => {
+          console.log("anno " + JSON.stringify(data));
+          this.announcement = {
+            ...data,
+            createdAt: this.parseDate(data.createdAt) // Directly modify the createdAt property
+          };
+          this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(this.announcement.pdfLink);
+          if (this.announcement.contentType === 'EXCEL') {
+            const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(this.announcement.pdfLink)}&embedded=true`;
+            this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(googleViewerUrl);
+          }
         },
         error: (err) => {
+          this.authService.showNotFound = true;
+          this.authService.xShowNotFound = true;
           console.error('Error fetching announcement details:', err);
         },
       });
     }
   }
+  parseDate(dateInput: any): Date | null {
+    let parsedDate: Date;
+    if (Array.isArray(dateInput)) { // && dateInput.length <= 6
+      parsedDate = new Date(
+        dateInput[0], // year
+        dateInput[1] - 1, // month (0-based index)
+        dateInput[2], // day
+        dateInput[3], // hours
+        dateInput[4] // minutes
+      );
+    } else {
+      // Handle string format or other formats
+      parsedDate = new Date(dateInput);
+    }
 
-   openModal() {
-    this.showModal = true;
+    // Log the parsed date for debugging
+    // console.log('Parsed date:', parsedDate);
+
+    // Check if the parsed date is valid
+    if (!isNaN(parsedDate.getTime())) {
+      return parsedDate;
+    } else {
+      console.warn('Invalid date string:', dateInput);
+      return null;
+    }
   }
-  addComment(announcementId : number) {
+
+  openModal() {
+    this.showModal = true;
+    this.getComments();
+  }
+
+  addComment(announcementId: number) {
     if (this.newComment.trim()) {
       // Create the comment object using the Comment model
       const comment: Comment = {
@@ -81,10 +121,27 @@ export class AnnouncementDetailsComponent implements OnInit {
     }
   }
 
-  clearComment() {
-    this.newComment = ''; 
+  getComments() {
+    const id = this.route.snapshot.paramMap.get('id');
+    this.commentService.getCommentsByAnnouncement(id).subscribe ({
+      next : (data) => {
+        console.log("comments: ", data);
+        this.comments = data.map(comment => ({
+          ...comment,
+          createdAt: this.parseDate(comment.createdAt),
+          safePhotoLink: this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${comment.photoLink}`)
+      }));
+      },
+      error: (err) => {
+        console.error('Error fetching comment:', err);
+      }
+    });
   }
- 
+
+  clearComment() {
+    this.newComment = '';
+  }
+
 }
 
 

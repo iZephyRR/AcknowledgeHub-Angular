@@ -55,6 +55,8 @@ import { AppSidebarComponent } from './layout/app.sidebar.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
 import { TimeAgoPipe } from './time-ago.pipe';
 import { AddCompanyComponent } from './demo/components/add-company/add-company.component';
+import { TableDemoComponent } from './demo/components/uikit/table/tabledemo.component';
+import { RatingModule } from 'primeng/rating';
 
 
 @NgModule({
@@ -79,7 +81,8 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
     UserUploadValidatorComponent,
     EditDepartmentComponent,
     TimeAgoPipe,
-    AddCompanyComponent
+    AddCompanyComponent,
+    TableDemoComponent
   ],
   imports: [
     BadgeModule,
@@ -116,7 +119,10 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
     MultiSelectModule,
     DropdownModule,
     PdfViewerModule,
-    HttpClientModule
+    HttpClientModule,
+    RatingModule,
+    SliderModule,
+    InputTextModule
   ],
   providers: [
     {

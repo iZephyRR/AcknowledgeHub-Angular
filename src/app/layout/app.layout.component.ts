@@ -58,15 +58,7 @@ export class AppLayoutComponent implements OnDestroy, OnInit {
             });
     }
     ngOnInit(): void {
-        if (this.authService.role == 'ADMIN') {
-            this.router.navigate(['/ad/settings']);
-        } else if (this.authService.role == 'STAFF') {
-            this.router.navigate(['/']);
-        } else {
-            this.router.navigate(['/dashboard'])
-        }
-
-
+     
     }
 
     hideMenu() {

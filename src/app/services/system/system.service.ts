@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { HttpEvent } from '@angular/common/http';
 import { Role } from 'src/app/constants';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -105,11 +106,6 @@ export class SystemService {
   getLoadingMessage() {
     return this.loadingMessage();
   }
-
-  restartPage(): void {
-    this.router.navigate(['/']);
-  }
-
 
   getShowValue(): boolean {
     return this.showValue();

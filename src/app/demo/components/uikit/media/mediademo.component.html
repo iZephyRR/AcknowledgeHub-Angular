@@ -20,25 +20,23 @@
                         <th style="min-width: 8rem">Status</th>
                         <th style="min-width: 8rem">Category</th>
                         
-                        <th style="min-width: 10rem">Actions</th>
+                        <!-- <th style="min-width: 10rem">Actions</th> -->
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-announcement let-i="rowIndex">
-                    <tr>
+                    <tr  (click)="showDetails(announcement)">
                         <td>{{i + 1}}</td>
                         <td>{{announcement.title}}</td>
                         <td>{{announcement.createdBy}}</td>
                         <td>{{announcement.createdAt | date:'MMM d,y'}}</td>
                         <td>{{announcement.status}}</td>
                         <td>{{announcement.categoryName}}</td>
-                        <td>
+                        <!-- <td>
                             <button pButton icon="pi pi-eye" label="Show" style="width: 100px;"
                                 (click)="showDetails(announcement)"></button>
 
-                            <!-- <a [href]="announcement.fileUrl" target="_blank" rel="noopener noreferrer">
-                                <button pButton icon="pi pi-external-link" label="Show" style="width: 100px;"></button>
-                            </a> -->
+                           
                         </td>
                         <td>
                             <a [routerLink]="['/announcement/notedOneDay',announcement.id]" rel="noopener noreferrer">
@@ -49,7 +47,7 @@
                             <a [routerLink]="['/announcement/notedThreeDay',announcement.id]"  rel="noopener noreferrer">
                                 <button pButton icon="pi pi-external-link" label="Within Three Day" style="width: 100px;"></button>
                             </a>
-                        </td>
+                        </td> -->
                     </tr>
                 </ng-template>
 
@@ -193,7 +191,6 @@
                 resize: vertical;
               
             }
-
             
             .reply-box-buttons button {
                 margin-right: 5px;

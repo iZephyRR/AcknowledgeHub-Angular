@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Comment } from 'src/app/modules/comment';
+import { Comment, CommentList } from 'src/app/modules/comment';
 
 
 @Injectable({
@@ -9,7 +9,7 @@ import { Comment } from 'src/app/modules/comment';
 })
 export class CommentService {
 
-  private apiUrl = 'http://localhost:8080/api/comments';  // Base URL for your Spring Boot API
+  private apiUrl = 'http://localhost:8080/api/v1/comments';  // Base URL for your Spring Boot API
 
   constructor(private http: HttpClient) { }
 
@@ -18,8 +18,8 @@ export class CommentService {
     return this.http.post<Comment>(`${this.apiUrl}/add`, comment);
   }
 
-  getCommentsByAnnouncement(announcementId: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/getById/${announcementId}`);
+  getCommentsByAnnouncement(announcementId: string): Observable<CommentList[]> {
+    return this.http.get<CommentList[]>(`${this.apiUrl}/getById/${announcementId}`);
   }
 
   // Other methods (e.g., getComments, deleteComment) can be added here as needed

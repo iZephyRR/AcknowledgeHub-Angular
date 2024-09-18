@@ -76,10 +76,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.systemService.hideLoading();
     this.startCountdown();
     this.authService.severConnectionTest();
   }
+
   ngOnDestroy(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval); // Clear interval when component is destroyed
@@ -130,7 +130,7 @@ export class LoginComponent implements OnInit {
               if ((await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')).confirmed) {
                 if (AuthService.isDomainAvailable(this.login.email)) {
                   setTimeout(() => {
-                    this.systemService.showLoading('Sending OTP...');
+                    this.systemService.showLoading('Sending OTP...',true);
                   }, 0);
                   Mail.action = 'FIRST_LOGIN';
                   this.email = this.login.email;
@@ -150,9 +150,8 @@ export class LoginComponent implements OnInit {
               }
             } else {
               this.session.add('token', response.STRING_RESPONSE);
-              console.log('saved token : ' + this.session.get('token'));
               this.messageService.toast('success', 'Successfully logged in!');
-              this.router.navigate(['/']);
+              this.authService.restartPage();
             }
             this.isValid = true;
             this.systemService.hideLoading();
@@ -161,7 +160,6 @@ export class LoginComponent implements OnInit {
         );
     } else {
       this.systemService.hideLoading();
-      console.log('required.')
       this.isValid = false;
     }
   }
@@ -197,6 +195,7 @@ export class LoginComponent implements OnInit {
     }
     return email; // Return the original email if it's too short to mask
   }
+
   resendCode(name: string): void {
     if (this.isCountingDown) return; // Prevent multiple clicks
   
@@ -229,10 +228,7 @@ export class LoginComponent implements OnInit {
   }
   
   private showOTPDialog(): void {
-    
       this.displayOtpDialog = true;
-    
-  
     this.startCountdown(); // Start countdown when OTP dialog is displayed
   }
   

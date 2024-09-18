@@ -52,7 +52,6 @@ export class FormLayoutDemoComponent implements OnInit {
   loading: boolean = false;
   filter: string = ''; // Updated to string for search functionality
   displayByOneEmployeeDialog: boolean;
-  selectedChannels: string[] = ['telegram'];
   channels: any;
   selectedEmployees: any[] = [];
   viewOption: 'tree' | 'table' = 'tree'; // Default to 'tree'
@@ -166,7 +165,9 @@ export class FormLayoutDemoComponent implements OnInit {
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
+        console.log(treeNode);
         this.companies = [treeNode];
+        
       },
       error => {
         console.error('Error fetching companies data:', error);
@@ -366,7 +367,7 @@ export class FormLayoutDemoComponent implements OnInit {
 
   resetForm(form: NgForm): void {
     form.reset();
-    this.selectedChannels = ['telegram'];
+    this.selectedTargets = [];
     this.clearPreview();
     this.selectedCategory = '';
     this.scheduleOption = 'now';
@@ -385,9 +386,5 @@ export class FormLayoutDemoComponent implements OnInit {
 
   isAudio(): boolean {
     return this.filename?.match(/\.(mp3|wav|ogg)$/i) !== null;
-  }
-  saveDraft(): void {
-    console.log('Draft saved');
-    // Additional logic to save the draft
   }
 }

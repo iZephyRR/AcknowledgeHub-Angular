@@ -46,8 +46,15 @@ export class Mail {
         return{
             address: address,
             subject:' Important Login Information from Acknowledge Hub',
-            message:'Dear '+name+',<br><br>I hope this message finds you well.<br><br>We are pleased to inform you that your  account has been successfully created. As part of our team, your role as Main HR is vital, and we are excited to have you onboard.<br><br>Please find below your login credentials:<br><br>Username - '+address+'<br>Temporary Password - '+defaultPassword+'<br>For security reasons, we recommend that you log in and change your password as soon as possible. Should you need any assistance or have any questions, feel free to reach out to our support team.<br><br>Thank you for your commitment, and we look forward to working closely with you through Acknowledge Hub.<br><br>Warm regards,<br>Acknowledge Hub Team'
+            message:'Dear '+name+',<br><br>I hope this message finds you well.<br><br>We are pleased to inform you that your account has been successfully created. As part of our team, your role as Main HR is vital, and we are excited to have you onboard.<br><br>Please find below your login credentials:<br><br>Username - '+address+'<br>Temporary Password - '+defaultPassword+'<br>For security reasons, we recommend that you log in and change your password as soon as possible. Should you need any assistance or have any questions, feel free to reach out to our support team.<br><br>Thank you for your commitment, and we look forward to working closely with you through Acknowledge Hub.<br><br>Warm regards,<br>Acknowledge Hub Team'
         }
     }
 
+    static addedCompany(address:string, name: string, defaultPassword:string):Email{
+        return{
+            address: address,
+            subject:' Important Login Information from Acknowledge Hub',
+            message:'Dear '+name+',<br><br>I hope this message finds you well.<br><br>We are pleased to inform you that your account has been successfully created. As part of our team, your role as HR is vital, and we are excited to have you onboard.<br><br>Please find below your login credentials:<br><br>Username - '+address+'<br>Temporary Password - '+defaultPassword+'<br>For security reasons, we recommend that you log in and change your password as soon as possible. Should you need any assistance or have any questions, feel free to reach out to our support team.<br><br>Thank you for your commitment, and we look forward to working closely with you through Acknowledge Hub.<br><br>Warm regards,<br>Acknowledge Hub Team'
+        }
+    }
 }

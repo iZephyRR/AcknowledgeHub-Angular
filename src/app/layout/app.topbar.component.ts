@@ -20,7 +20,7 @@ import { SystemService } from '../services/system/system.service';
   templateUrl: './app.topbar.component.html'
 })
 export class AppTopBarComponent implements OnInit {
-  user: UserProfile;
+  user: UserProfile={} as UserProfile;
   items!: MenuItem[];
   unreadCount: number = 0; // Unread notification count
   notifications: Notification[] = []; // General notifications
@@ -75,6 +75,7 @@ export class AppTopBarComponent implements OnInit {
 
   ngOnInit(): void {
     // Load profile and notifications on init
+    
     this.profile();
     this.loadNotifications();
     this.notificationService.loadNotifications();
@@ -88,16 +89,13 @@ export class AppTopBarComponent implements OnInit {
   profile(): void {
     this.userService.getProfileInfo().subscribe({
       next: (data) => {
-        console.log(data);
         this.user = data;
         this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
       },
       error: (err) => {
         console.error('Profile error ' + err);
       }
-    }
-
-    );
+    });
   }
 
   // Load general notifications
@@ -111,7 +109,6 @@ export class AppTopBarComponent implements OnInit {
             `${notification.SenderName} (${notification.Sender}) posted an announcement "${notification.title}" on ${new Date(notification.noticeAt).toLocaleDateString()}` :
             `Announcement posted on ${new Date(notification.noticeAt).toLocaleDateString()}`
         })).sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
-
         console.log('Processed Notifications:', this.notifications);
         this.updateCombinedNotifications();
         this.cd.detectChanges();

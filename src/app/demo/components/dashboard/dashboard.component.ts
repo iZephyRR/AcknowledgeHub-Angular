@@ -2,6 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { Announcement } from 'src/app/modules/announcement';
+import { Company } from 'src/app/modules/company';
+import { User } from 'src/app/modules/user';
+import { CompanyService } from 'src/app/services/company/company.service';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,14 +20,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     donutChartData: any;
     chartOptions: any;
     subscription!: Subscription;
+    company: Company[] = [];
+    employee: User[]=[];
+    employeeCount:number;
+    companyCount: number;
 
-    constructor(private announcementService: AnnouncementService) {}
+    constructor(
+        private announcementService: AnnouncementService,
+        private companyService:CompanyService,
+        private userService:UserService
+    ) {}
 
     ngOnInit(): void {
         this.fetchAnnouncements();
         this.countAnnouncements(); // Call the count method on initialization
         this.initChart();
         this.loadPieChartData();
+        this.countCompany();
+        this.countEmployee();
     }
 
     fetchAnnouncements(): void {
@@ -241,5 +255,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    countCompany():void{
+        this.companyService.countCompany().subscribe(
+            {
+                next:(data)=>{
+                    this.companyCount=data;
+                }
+            }
+        );
+    }
+    countEmployee():void{
+        this.userService.countEmployee().subscribe(
+            {
+                next:(data)=>{
+                    this.employeeCount=data;
+                }
+            }
+        );
     }
 }

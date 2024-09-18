@@ -150,15 +150,10 @@
 
                     <!-- channel option -->
                     <div class="form-group">
-                        <label>Channel:</label>
+                        <label>Channel: (DEFAULT : TELEGRAM) </label>
                         <div class="channel-options d-flex align-items-center">
-                            <div class="form-check me-3"> <!-- Added margin-end class for spacing -->
-                                <p-checkbox name="channel" value="telegram" [(ngModel)]="selectedChannels"
-                                    inputId="telegram" label="Telegram" class="me-3">
-                                </p-checkbox>
-                            </div>
                             <div class="form-check">
-                                <p-checkbox name="channel" value="email" [(ngModel)]="selectedChannels" inputId="email"
+                                <p-checkbox name="channel" [binary]="true" [(ngModel)]="isEmailSelected" inputId="email"
                                     label="Email">
                                 </p-checkbox>
                             </div>

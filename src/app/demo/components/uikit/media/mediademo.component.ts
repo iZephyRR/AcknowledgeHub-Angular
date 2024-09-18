@@ -28,7 +28,6 @@ export class MediaDemoComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Fetching announcements from the service
     this.announcementService.getPreviewByCompany().subscribe(
       (data) => {
         console.log('Fetched announcements:', data);

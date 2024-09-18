@@ -25,7 +25,7 @@ export class CompanyService {
     return this.http.get<Company>(`${this.baseUrl}/user/get-company/${id}`);
   }
 
-  getDTOById(id: string): Observable<Company> {
+  getDTOById(id: number): Observable<Company> {
     return this.http.get<Company>(`${this.baseUrl}/user/get-company-dto/${id}`);
   }
 
@@ -35,6 +35,10 @@ export class CompanyService {
 
   save(hr:HR):Observable<Company>{
     return this.http.post<Company>(`${this.baseUrl}/mr/company`,hr);
+  }
+
+  countCompany(): Observable<number> {
+    return this.http.get<number>(`${this.baseUrl}/hrs/company-count`);
   }
 
 }

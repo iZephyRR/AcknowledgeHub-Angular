@@ -27,7 +27,7 @@ export class SystemSettingsComponent implements OnInit {
   constructor(
     private messageService: MessageDemoService,
     private authService: AuthService,
-    private systemSevice: SystemService,
+    private systemService: SystemService,
     private userService: UserService
 
   ) { }
@@ -79,7 +79,7 @@ export class SystemSettingsComponent implements OnInit {
   }
 
   addMainHR(): void {
-    this.systemSevice.showProgress('Adding Main HR account...', true, false, 5);
+    this.systemService.showProgress('Adding Main HR account...', true, false, 7);
     this.userService.addMainHR(this.mainHR).subscribe({
       next: (data) => {
         console.log('after save ' + JSON.stringify(data));
@@ -87,14 +87,14 @@ export class SystemSettingsComponent implements OnInit {
       complete: () => {
         this.messageService.sendEmail(Mail.addedMainHR(this.mainHR.hrEmail, this.mainHR.hrName, this.defaultPassword)).subscribe({
           complete: () => {
-            this.systemSevice.stopProgress().then((data) => {
+            this.systemService.stopProgress().then((data) => {
               this.messageService.toast('success', 'Added main HR account.');
               this.refresh();
               this.closeDialog();
             });
           },
           error: (err) => {
-            this.systemSevice.stopProgress().then((data) => {
+            this.systemService.stopProgress().then((data) => {
               this.messageService.toast('error', 'Registered main HR account but an error occured on sending email.');
             });
             console.error(err);
@@ -102,7 +102,7 @@ export class SystemSettingsComponent implements OnInit {
         });
       },
       error: (err) => {
-        this.systemSevice.stopProgress('ERROR').then((data) => {
+        this.systemService.stopProgress('ERROR').then((data) => {
           this.messageService.toast('error', 'An error occured when adding main HR acount.');
         });
         console.error(err);
@@ -125,10 +125,10 @@ export class SystemSettingsComponent implements OnInit {
       this.authService.validateCurrentPassword(confirmed.inputValue).subscribe({
         next: (data) => {
           if (data.BOOLEAN_RESPONSE) {
-            this.systemSevice.showProgress('Trying to ' + (this.isServerInResting ? 'run' : 'rest') + ' system...', true, true, 3);
+            this.systemService.showProgress('Trying to ' + (this.isServerInResting ? 'run' : 'rest') + ' system...', true, true, 3);
             this.authService.restServer().subscribe({
               complete: () => {
-                this.systemSevice.stopProgress().then((data) => {
+                this.systemService.stopProgress().then((data) => {
                   if (!this.isServerInResting) {
                     this.messageService.toast('info', 'System is resting now.');
                   } else {
@@ -139,7 +139,7 @@ export class SystemSettingsComponent implements OnInit {
               },
               error: (err) => {
                 console.error(err);
-                this.systemSevice.stopProgress('ERROR').then((data) => {
+                this.systemService.stopProgress('ERROR').then((data) => {
                   this.messageService.alert('Cannot rest system', '', 'INSET', 'WHITE', 'RED');
                   this.refresh();
                 });

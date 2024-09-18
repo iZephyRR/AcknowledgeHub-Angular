@@ -38,13 +38,16 @@ export class AppMenuComponent implements OnChanges {
         private announcementService: AnnouncementService
     ) {
         this.companies.push({
-            label:'Add new company',
-            icon:'',
-            routerLink:['/company']
+            label: 'Add new company',
+            icon: '',
+            routerLink: ['/company']
         });
         companyService.getName().subscribe({
             next: (data) => {
                 this.companyName = data.STRING_RESPONSE;
+            },
+            complete:()=>{
+                this.refresh();
             }
         });
         companyService.getAllDTO().subscribe({
@@ -61,7 +64,8 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-         announcementService.getMainPreview().subscribe({
+        
+        announcementService.getMainPreview().subscribe({
             next: (data) => {
                 data.map(item => {
                     this.mainAnnouncements.push({
@@ -83,7 +87,7 @@ export class AppMenuComponent implements OnChanges {
                         label: item.label,
                         icon: 'pi pi-fw pi-megaphone',
                         routerLink: [`/announcement-page/${item.id}`]
-                        
+
                     });
                 })
             },
@@ -98,9 +102,7 @@ export class AppMenuComponent implements OnChanges {
             this.refresh();
         }
     }
-    test():void{
-        console.log("Testing");
-    }
+
     private refresh(): void {
         this.model = [
             ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']) ? [
@@ -160,12 +162,21 @@ export class AppMenuComponent implements OnChanges {
                                 }
                             ]
                         },
-                        {
-                            label: 'Company infomations',
-                            icon: 'pi pi-fw pi-tags',
-                            items: this.companies
+                        ...this.authService.role == 'MAIN_HR' ? [
+                            {
+                                label: 'Company infomations',
+                                icon: 'pi pi-fw pi-tags',
+                                items: this.companies
+                            }
+                        ] :
+                            [
+                                {
+                                    label: 'Company infomations',
+                                    icon: 'pi pi-fw pi-tags',
+                                    routerLink: ['/company']
+                                }
+                            ],
 
-                        },
                         {
                             label: 'Draft',
                             icon: 'pi pi-fw pi-calendar',
@@ -181,7 +192,7 @@ export class AppMenuComponent implements OnChanges {
                             routerLink: ['/announcement/employeelist']
 
                         }] : [],
-                    ...this.authService.canActivateFor(['ADMIN', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE', 'STAFF']) ? [
+                    ...this.authService.canActivateFor([ 'ADMIN', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE', 'STAFF']) ? [
                         {
                             label: 'Announcements',
                             icon: 'pi pi-fw pi-tags',
@@ -195,7 +206,7 @@ export class AppMenuComponent implements OnChanges {
                                     {
                                         label: this.companyName,
                                         icon: 'pi pi-fw pi-calendar',
-                                        items:this.subAnnouncements
+                                        items: this.subAnnouncements
                                     }
                                 ] : [],
                             ]
@@ -213,8 +224,6 @@ export class AppMenuComponent implements OnChanges {
                         }],
                 ]
             }
-
         ];
-
     }
 }

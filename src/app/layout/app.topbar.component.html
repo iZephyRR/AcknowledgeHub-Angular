@@ -6,7 +6,6 @@
     <i class="pi pi-bars"></i>
   </button>
 
-
   <div #topbarmenu class="layout-topbar-menu" [ngClass]="{
       'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
     }">
@@ -46,14 +45,15 @@
         </div>
       </div>
       <!-- Profile Button -->
-      <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
-        <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
-        <ng-template #default>
-          <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
-        </ng-template>
-
-      </button>
-      <span class="user-role">{{systemService.changeRoleToNormalCase(user.role)}}</span>
+      <div style="display: flex; align-items: center;">
+        <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
+          <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
+          <ng-template #default>
+            <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+          </ng-template>
+        </button>
+        <span class="user-role">{{systemService.changeRoleToNormalCase(user.role)}}</span>
+      </div>
 
       <!-- logout Button -->
       <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
@@ -149,6 +149,17 @@
       z-index: 1000;
     }
 
+    .notification-badge {
+      position: absolute;
+      top: -1px;
+      right: -2px;
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 0.40rem 0.45rem;
+      font-size: 0.85rem;
+    }
+
     .layout-topbar-logo {
       font-size: 1.25rem;
       color: #333;
@@ -205,7 +216,6 @@
       height: 30px;
       border-radius: 50%;
       object-fit: cover;
-      margin-right: 8px;
     }
 
     .change-profile-container {
@@ -259,7 +269,7 @@
     }
 
     .user-role {
-      margin-left: 10px;
+      margin-right: 10px;
       font-size: 16px;
       color: #000000;
     }
