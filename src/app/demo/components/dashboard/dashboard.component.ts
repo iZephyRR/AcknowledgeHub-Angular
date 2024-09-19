@@ -2,10 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { Announcement } from 'src/app/modules/announcement';
-import { Company } from 'src/app/modules/company';
-import { User } from 'src/app/modules/user';
-import { CompanyService } from 'src/app/services/company/company.service';
-import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,29 +15,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     pieChartData: any;
     donutChartData: any;
     chartOptions: any;
-    subscription!: Subscription;
-    company: Company[] = [];
-    employee: User[]=[];
-    employeeCount:number;
-    companyCount: number;
-
-    constructor(
-        private announcementService: AnnouncementService,
-        private companyService:CompanyService,
-        private userService:UserService
-    ) {}
+    subscriptions: Subscription[] = []; // Use an array to manage multiple subscriptions
+    notedPercentages: { departmentName: string, percentage: number }[] = [];
+    
+    constructor(private announcementService: AnnouncementService) {}
 
     ngOnInit(): void {
         this.fetchAnnouncements();
-        this.countAnnouncements(); // Call the count method on initialization
+        this.countAnnouncements();
         this.initChart();
         this.loadPieChartData();
-        this.countCompany();
-        this.countEmployee();
     }
 
     fetchAnnouncements(): void {
-        this.subscription = this.announcementService.getAllAnnouncements().subscribe(
+        const subscription = this.announcementService.getAllAnnouncements().subscribe(
             data => {
                 this.announcements = data.map(announcement => ({
                     ...announcement,
@@ -53,26 +40,25 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 console.error('Error fetching announcements', error);
             }
         );
+        this.subscriptions.push(subscription);
     }
 
-    // Method to parse and validate date
+    // Improved parseDate method
     parseDate(dateInput: any): Date | null {
         let parsedDate: Date;
-        if (Array.isArray(dateInput) ) { // && dateInput.length <= 6
+
+        if (Array.isArray(dateInput) && dateInput.length >= 3) {
             parsedDate = new Date(
-                dateInput[0], // year
+                dateInput[0],  // year
                 dateInput[1] - 1, // month (0-based index)
-                dateInput[2], // day
-                dateInput[3], // hours
-                dateInput[4] // minutes
+                dateInput[2],  // day
+                dateInput[3] || 0, // hours (default to 0 if not provided)
+                dateInput[4] || 0  // minutes (default to 0 if not provided)
             );
         } else {
             // Handle string format or other formats
             parsedDate = new Date(dateInput);
         }
-        
-        // Log the parsed date for debugging
-        // console.log('Parsed date:', parsedDate);
 
         // Check if the parsed date is valid
         if (!isNaN(parsedDate.getTime())) {
@@ -82,9 +68,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
             return null;
         }
     }
+
     loadPieChartData(): void {
-        this.announcementService.getPieChart().subscribe(
-            (data: Map<string, BigInt>) => {  // Updated to handle Map<String, BigInt>
+        const subscription = this.announcementService.getPieChart().subscribe(
+            (data: Map<string, BigInt>) => {
                 const labels: string[] = [];
                 const values: number[] = [];
 
@@ -94,24 +81,43 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     values.push(Number(value));       // Convert BigInt to number
                 });
 
+                // Define pie chart data with labels and datasets
                 this.pieChartData = {
                     labels: labels,
                     datasets: [
                         {
                             data: values,
-                            // backgroundColor: this.generateRandomColors(labels.length),
-                            // hoverBackgroundColor: this.generateHoverColors(labels.length)
+                            backgroundColor: this.generateRandomColors(labels.length),
+                            hoverBackgroundColor: this.generateHoverColors(labels.length)
                         }
                     ]
                 };
+
+                // Updated chart options to ensure no scales and correct legends/tooltip
                 this.chartOptions = {
                     plugins: {
+                        legend: {
+                            position: 'top',  // Position of the legend
+                            labels: {
+                                color: getComputedStyle(document.documentElement).getPropertyValue('--text-color')
+                            }
+                        },
                         tooltip: {
                             callbacks: {
-                                label: function(tooltipItem: any) {                                   
+                                label: function (tooltipItem: any) {
                                     return `${tooltipItem.raw}%`;
                                 }
                             }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            display: false  // Disable Y-axis (not needed for pie chart)
+                        },
+                        x: {
+                            display: false  // Disable X-axis (optional for pie chart)
                         }
                     }
                 };
@@ -120,9 +126,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 console.error('Error loading pie chart data', error);
             }
         );
+        this.subscriptions.push(subscription);
     }
 
-    // Helper methods to generate colors
+    getNotedPercentageByDepartment() {
+        this.announcementService.getNotedPercentageByDepartment().subscribe(data => {
+            this.notedPercentages = Object.keys(data).map(key => ({
+              departmentName: key,
+              percentage: data[key]
+            }));
+          });
+    }
+
+
     generateRandomColors(count: number): string[] {
         const colors = [];
         for (let i = 0; i < count; i++) {
@@ -142,7 +158,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }
 
     countAnnouncements(): void {
-        this.announcementService.countAnnouncements().subscribe(
+        const subscription = this.announcementService.countAnnouncements().subscribe(
             (count: number) => {
                 this.announcementCount = count; // Store the result in the property
             },
@@ -150,22 +166,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
                 console.error('Error counting announcements', error);
             }
         );
+        this.subscriptions.push(subscription);
     }
 
     updateCharts(announcements: Announcement[]): void {
-        // Process the announcements data to update the charts accordingly
-        // This part depends on how you'd like to visualize the data in the charts
-        // For example, you could count the number of announcements per category for the bar chart
-        // Or analyze the status for the donut chart, etc.
+        // Update the charts dynamically based on the announcements data
     }
 
-    initChart() {
+    initChart(): void {
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--text-color');
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-        // Example of initial static chart data; this can be updated dynamically in `updateCharts`
+        // Initialize static chart data
         this.lineChartData = {
             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
             datasets: [
@@ -184,7 +198,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             datasets: [
                 {
                     label: 'Category Count',
-                    data: [10, 15, 7, 12, 5 ,60],
+                    data: [10, 15, 7, 12, 5, 60],
                     backgroundColor: [
                         documentStyle.getPropertyValue('--blue-500'),
                         documentStyle.getPropertyValue('--orange-500'),
@@ -217,9 +231,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             ]
         };
 
-
-
-
         this.chartOptions = {
             plugins: {
                 legend: {
@@ -228,51 +239,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
                     }
                 }
             },
-            scales: {
-                x: {
-                    display: false,
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
-                },
-                y: {
-                    //display: false,
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
-                }
-            }
+
         };
     }
 
     ngOnDestroy(): void {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
-    countCompany():void{
-        this.companyService.countCompany().subscribe(
-            {
-                next:(data)=>{
-                    this.companyCount=data;
-                }
-            }
-        );
-    }
-    countEmployee():void{
-        this.userService.countEmployee().subscribe(
-            {
-                next:(data)=>{
-                    this.employeeCount=data;
-                }
-            }
-        );
+        this.subscriptions.forEach(subscription => subscription.unsubscribe()); // Unsubscribe from all subscriptions
     }
 }

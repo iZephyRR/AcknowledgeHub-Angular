@@ -12,7 +12,7 @@
                         <label for="title">Title</label>
                         <input type="text" id="title" name="title" [(ngModel)]="title" required />
                     </div>
-                    
+
                     <div class="category-group">
                         <label for="category">Category</label>
                         <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
@@ -26,12 +26,12 @@
                 <div class="form-group d-flex align-items-center">
                     <div class="pdf-upload-group flex-grow-1">
                         <label for="pdf-file">Announcement</label>
-                        
-                           
-                                <button type="button" pButton label="Open" icon="pi pi-folder-open"
-                                    class="p-button-secondary" (click)="fileInput.click()"></button>
-                        
-                       
+
+
+                        <button type="button" pButton label="Open" icon="pi pi-folder-open" class="p-button-secondary"
+                            (click)="fileInput.click()"></button>
+
+
 
                         <!-- Hidden file input -->
                         <input type="file" id="media" name="media"
@@ -70,12 +70,12 @@
                         <label>
                             <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
                                 (change)="onViewChange('tree')">
-                            Show Tree View
+                            Company & Department View
                         </label>
                         <label>
                             <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
                                 (change)="onViewChange('table')">
-                            Show User List Table
+                            Employee List View
                         </label>
                     </div>
 
@@ -91,7 +91,8 @@
                     <div *ngIf="viewOption === 'table'">
                         <div class="by-one-employee-container">
                             <div class="user-list-container">
-                                <div class="search-bar-container d-flex align-items-center justify-content-between mb-3">
+                                <div
+                                    class="search-bar-container d-flex align-items-center justify-content-between mb-3">
                                     <!-- Search Bar -->
                                     <div class="d-flex align-items-center" style="margin-top: 5px;">
                                         <input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
@@ -147,7 +148,7 @@
                     <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0" on
                         (onChange)="saveTargetToggle($event)" class="p-checkbox-success">
                     </p-checkbox>
-                    
+
                     <!-- Channel Options beside the Save Target -->
                     <div class="channel-options d-flex align-items-center ml-4">
                         <label>Channel:Default Telegram</label>
@@ -188,11 +189,11 @@
                     <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length && !selectedGroup)
                         || !filePreview " label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
                     <button pButton pRipple type="button"
-                        [disabled]="(sendAnnouncement.invalid || viewOption === 'table')"
+                        [disabled]="sendAnnouncement.invalid || viewOption !== 'tree' || selectedTargets.length === 0 || selectedGroup"
                         label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save"
                         class="btn-success"></button>
-                        &nbsp;
-                        <button pButton pRipple type="reset" (click)="clearPreview()" label="Reset" icon="pi pi-refresh"
+                    &nbsp;
+                    <button pButton pRipple type="reset" (click)="clearPreview()" label="Reset" icon="pi pi-refresh"
                         class="btn-secondary"></button>
                 </div>
             </form>
@@ -274,7 +275,7 @@
     }
 
     /* Card Header Styles */
-.card-header {
+    .card-header {
         padding: 20px;
         text-align: center;
     }
@@ -538,44 +539,48 @@
             /* Smaller font size on smaller screens */
         }
     }
- /* Form Layout Adjustment */
+
+    /* Form Layout Adjustment */
 
 
-.category-group {
-    margin-left: 30px;
-    /* Pushes the category group to the right */
-}
-
-.title-group {
-    margin-right: 20px;
-    /* Adds spacing between title and category */
-}
-.title-group input[type="text"] {
-    width: 420px; /* Ensures the input takes up the full width of its container */
-}
-
-
-.pdf-upload-group {
-    flex: 1;
-    /* Ensures the PDF upload section takes up available space */
-}
-.d-flex {
-    display: flex;
-    /* Apply flex display */
-}
-
-.align-items-center {
-    align-items: center;
-    /* Vertically center items */
-}
-
-
-
-@media (max-width: 768px) {
-    .d-flex {
-        flex-direction: column;
-        /* Stack elements vertically on smaller screens */
+    .category-group {
+        margin-left: 30px;
+        /* Pushes the category group to the right */
     }
 
-}
+    .title-group {
+        margin-right: 20px;
+        /* Adds spacing between title and category */
+    }
+
+    .title-group input[type="text"] {
+        width: 420px;
+        /* Ensures the input takes up the full width of its container */
+    }
+
+
+    .pdf-upload-group {
+        flex: 1;
+        /* Ensures the PDF upload section takes up available space */
+    }
+
+    .d-flex {
+        display: flex;
+        /* Apply flex display */
+    }
+
+    .align-items-center {
+        align-items: center;
+        /* Vertically center items */
+    }
+
+
+
+    @media (max-width: 768px) {
+        .d-flex {
+            flex-direction: column;
+            /* Stack elements vertically on smaller screens */
+        }
+
+    }
 </style>

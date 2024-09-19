@@ -20,4 +20,11 @@ export enum FileType {
     VIDEO = 'VIDEO'
 }
 
+export interface ScheduleList {
+    id : number;
+    title : string;
+    createdAt : Date;
+    contentType: ContentType;
+}
+
 

@@ -20,25 +20,20 @@ export class AppComponent implements OnInit {
     public systemService: SystemService,
     private router: Router,
     public authService: AuthService,
-    private userService:UserService
+    private userService: UserService
   ) { }
 
   ngOnInit() {
-
     this.systemService.showLoading('');
+    //this.authService.restartPage();
+    this.authService.severConnectionTest();
     this.primengConfig.ripple = true;
     this.messageService.requestWindowNotiPermit();
-     this.messageService.sentWindowNotification('Title', { body: 'Testing' ,icon:'assets\\demo\\images\\avatar\\amyelsner.png'}); 
+   // this.messageService.sentWindowNotification('Title', { body: 'Testing', icon: 'assets\\demo\\images\\avatar\\amyelsner.png' });
     this.routerSubscription = this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd) {
-        this.systemService.currentRout.set(event.urlAfterRedirects);
-        if (!this.authService.xShowNotFound) {
-          this.authService.showNotFound = false;
-        } else {
-          this.authService.xShowNotFound = false;
-        }
-      }
+       if (event instanceof NavigationEnd) {
+         this.systemService.currentRout.set(event.urlAfterRedirects);
+       }
     });
-
   }
 }

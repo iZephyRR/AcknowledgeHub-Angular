@@ -95,7 +95,9 @@ export class SystemSettingsComponent implements OnInit {
           },
           error: (err) => {
             this.systemService.stopProgress().then((data) => {
-              this.messageService.toast('error', 'Registered main HR account but an error occured on sending email.');
+              this.messageService.message('error', 'Registered main HR account but an error occured on sending email.');
+              this.refresh();
+              this.closeDialog();
             });
             console.error(err);
           }
@@ -103,7 +105,8 @@ export class SystemSettingsComponent implements OnInit {
       },
       error: (err) => {
         this.systemService.stopProgress('ERROR').then((data) => {
-          this.messageService.toast('error', 'An error occured when adding main HR acount.');
+          this.messageService.message('error', 'An error occured when adding main HR acount.');
+          this.refresh();
         });
         console.error(err);
       }
@@ -120,16 +123,16 @@ export class SystemSettingsComponent implements OnInit {
   }
 
   async restServer(): Promise<void> {
-    const confirmed = await this.messageService.confirmed('Comfimation to rest system', 'Enter your password to containue', 'OK', 'Cancel', 'WHITE', 'GRAY', true);
+    const confirmed = await this.messageService.confirmed('Comfimation to ' + (!this.isServerInResting ? 'run' : 'rest') + ' system', 'Enter your password to containue', 'OK', 'Cancel', 'WHITE', 'GRAY', true);
     if (confirmed.confirmed) {
       this.authService.validateCurrentPassword(confirmed.inputValue).subscribe({
         next: (data) => {
           if (data.BOOLEAN_RESPONSE) {
-            this.systemService.showProgress('Trying to ' + (this.isServerInResting ? 'run' : 'rest') + ' system...', true, true, 3);
+            this.systemService.showProgress('Trying to ' + (!this.isServerInResting ? 'run' : 'rest') + ' system...', true, true, 3);
             this.authService.restServer().subscribe({
               complete: () => {
                 this.systemService.stopProgress().then((data) => {
-                  if (!this.isServerInResting) {
+                  if (this.isServerInResting) {
                     this.messageService.toast('info', 'System is resting now.');
                   } else {
                     this.messageService.toast('info', 'System is running now.');

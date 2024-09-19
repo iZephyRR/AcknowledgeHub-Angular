@@ -8,31 +8,39 @@ import { UserService } from '../services/user/user.service';
 import { User, UserProfile } from '../modules/user';
 import { AuthService } from '../services/auth/auth.service';
 import { MessageDemoService } from '../services/message/message.service';
-import { catchError, map } from 'rxjs/operators';
-import { NotificationService } from '../services/notifications/notification service';
+import { catchError, filter, map } from 'rxjs/operators';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-import { from, Observable, throwError } from 'rxjs';
-import { Notification } from '../modules/notification.model'; // Correct path for Notification
+import { from, fromEvent, Observable, of, Subscription, throwError } from 'rxjs';
 import { SystemService } from '../services/system/system.service';
+import { NotificationService } from '../services/notifications/notification service';
+import { Notification } from '../modules/notification.model';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
 })
 export class AppTopBarComponent implements OnInit {
-  user: UserProfile={} as UserProfile;
+  user: UserProfile = {} as UserProfile;
   items!: MenuItem[];
-  unreadCount: number = 0; // Unread notification count
+  unreadCount: number = 0;
+  unreadChatCount:number = 0;
+
+   // Unread notification count
   notifications: Notification[] = []; // General notifications
   notedNotifications: Notification[] = []; // Noted notifications
+  commentNotifications:Notification[]=[];
   combinedNotifications: Notification[] = []; // Combined list for rendering
-  showNotifications: boolean = false; // Toggle for notification dropdown
+  showNotifications: boolean = false;
+  showChatNotifications: boolean =false;// Toggle for notification dropdown
   profileImage: SafeUrl | null = null;
+  clickOutsideSubscription!: Subscription; // Subscription for click events
+
   @ViewChild('menubutton') menuButton!: ElementRef;
   @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
   @ViewChild('topbarmenu') menu!: ElementRef;
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
-
+  @ViewChild('notificationDropdown') notificationDropdown!: ElementRef;
+  @ViewChild('profileDropdown') profileDropdown!: ElementRef;
   @Input() minimal: boolean = false;
   @Input() announcementId: number;
   @Input() day: number = 1;
@@ -74,28 +82,31 @@ export class AppTopBarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // Load profile and notifications on init
-    
+    this.loadChatNotificationsFromLocalStorage();
     this.profile();
     this.loadNotifications();
     this.notificationService.loadNotifications();
     this.loadNotedNotifications();
+    this.loadNotificationsForComment();
     this.notificationService.notifications$.subscribe(notifications => {
       this.notifications = notifications;
       this.updateCombinedNotifications();
     });
   }
-  // Fetch user profile
+
   profile(): void {
     this.userService.getProfileInfo().subscribe({
       next: (data) => {
+        console.log(data);
         this.user = data;
         this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
       },
       error: (err) => {
         console.error('Profile error ' + err);
       }
-    });
+    }
+
+    );
   }
 
   // Load general notifications
@@ -109,6 +120,7 @@ export class AppTopBarComponent implements OnInit {
             `${notification.SenderName} (${notification.Sender}) posted an announcement "${notification.title}" on ${new Date(notification.noticeAt).toLocaleDateString()}` :
             `Announcement posted on ${new Date(notification.noticeAt).toLocaleDateString()}`
         })).sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
+
         console.log('Processed Notifications:', this.notifications);
         this.updateCombinedNotifications();
         this.cd.detectChanges();
@@ -117,7 +129,25 @@ export class AppTopBarComponent implements OnInit {
     });
   }
 
-  // Load noted notifications
+  loadNotificationsForComment(): void {
+    console.log("Attempting to load comment notifications...");
+    this.notificationService.loadCommentsNotifications().subscribe(
+      (commentNotifications: Notification[]) => {
+        console.log("Comment notifications fetched successfully:", commentNotifications); // Check here
+        this.commentNotifications = commentNotifications;
+        this.unreadChatCount = this.commentNotifications.filter(notification => !notification.isRead).length;
+
+        if (this.commentNotifications.length > 0) {
+          console.log('First comment message:', this.commentNotifications[0].message);
+        }
+        this.updateCombinedNotifications();
+      },
+      (error) => {
+        console.error('Error loading comment notifications:', error); // Ensure you see this log in case of an error
+      }
+    );
+  }
+
   fetchAnnouncementId(userId: string): Observable<string> {
     return from(
       this.firestore.collection('notifications')
@@ -165,7 +195,7 @@ export class AppTopBarComponent implements OnInit {
   }
 
   updateCombinedNotifications(): void {
-    this.combinedNotifications = [...this.notifications, ...this.notedNotifications]
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications,...this.commentNotifications]
       .sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
     this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
     this.loadNotificationsFromLocalStorage();
@@ -198,7 +228,39 @@ export class AppTopBarComponent implements OnInit {
   // Toggle notification dropdown
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
+    this.isProfileCardVisible = false; // Close profile when opening notifications
   }
+
+  toggleChatDropdown(): void {
+    this.showChatNotifications = !this.showChatNotifications;
+    this.isProfileCardVisible = false; // Close profile when opening notifications
+  }
+
+
+  closeDropdowns(event: MouseEvent): void {
+    const clickedInsideNotification = this.notificationDropdown?.nativeElement.contains(event.target);
+    const clickedInsideProfile = this.profileDropdown?.nativeElement.contains(event.target);
+
+    if (!clickedInsideNotification) {
+      this.showNotifications = false;
+    }
+
+    if (!clickedInsideProfile) {
+      this.isProfileCardVisible = false;
+    }
+  }
+
+  addOutsideClickListener(): void {
+    fromEvent(document, 'click')
+      .pipe(filter(() => this.showNotifications || this.isProfileCardVisible)) // Only listen if dropdowns are open
+      .subscribe((event: MouseEvent) => this.closeDropdowns(event));
+  }
+
+  removeOutsideClickListener(): void {
+    // Make sure to clean up the listener
+    fromEvent(document, 'click').subscribe().unsubscribe();
+  }
+
 
   // Mark individual notification as read
   markAsRead(notification: Notification): void {
@@ -221,6 +283,7 @@ export class AppTopBarComponent implements OnInit {
   // Show or hide the profile card
   showProfileCard(): void {
     this.isProfileCardVisible = !this.isProfileCardVisible;
+    this.showNotifications = false; // Close notifications when opening profile
   }
 
   closeProfileCard(): void {
@@ -341,25 +404,36 @@ export class AppTopBarComponent implements OnInit {
 
   loadMoreNotifications(): void {
     if (this.loading) return; // Prevent multiple clicks while loading
-
+  
     this.loading = true;
+  
+    // Simulate an async loading delay (e.g., fetching from the server)
     setTimeout(() => {
       this.currentPage++;
+  
+      // Get the next set of notifications
       const newNotifications = this.combinedNotifications.slice(
         this.visibleNotifications.length,
         this.pageSize * this.currentPage
       );
+  
+      // Add new notifications to the visible list
       this.visibleNotifications = [...this.visibleNotifications, ...newNotifications];
+  
+      // Check if we can load more
       this.checkCanLoadMore();
+  
       this.loading = false; // Reset loading state
       this.cd.detectChanges();
-    }, 1500); // 3 seconds delay
+    }, 1500); // Simulate 1.5 seconds delay
   }
+  
 
   checkCanLoadMore(): void {
-    const totalLoaded = this.currentPage * this.pageSize + this.visibleNotifications.length;
-    this.canLoadMore = totalLoaded < this.combinedNotifications.length;
+    // Check if there are more notifications to load than what's currently visible
+    this.canLoadMore = this.visibleNotifications.length < this.combinedNotifications.length;
   }
+  
 
 
   loadInitialVisibleNotifications(): void {
@@ -367,6 +441,45 @@ export class AppTopBarComponent implements OnInit {
     this.visibleNotifications = this.combinedNotifications.slice(0, this.pageSize);
     this.checkCanLoadMore(); // Check if there are more notifications to load
   }
+
+  markAsReadChat(notification: Notification): void {
+    if (!notification.isRead) {
+      notification.isRead = true;
+      this.unreadChatCount--;
+      this.saveChatNotificationsToLocalStorage();
+      this.cd.detectChanges();
+    }
+  }
+
+  markAllAsReadChat(): void {
+    this.commentNotifications.forEach(notification => notification.isRead = true);
+    this.unreadChatCount = 0;
+    this.saveChatNotificationsToLocalStorage();
+    this.cd.detectChanges();
+    this.showChatNotifications = false;
+  }
+
+  saveChatNotificationsToLocalStorage(): void {
+    const readChatNotifications = this.commentNotifications.map(notification => ({
+      id: notification.id,
+      isRead: notification.isRead
+    }));
+    localStorage.setItem('chatNotifications', JSON.stringify(readChatNotifications));
+  }
+
+loadChatNotificationsFromLocalStorage(): void {
+  const savedChatNotifications = localStorage.getItem('chatNotifications');
+  if (savedChatNotifications) {
+    const readChatStatusList = JSON.parse(savedChatNotifications);
+    this.commentNotifications.forEach(notification => {
+      const readStatus = readChatStatusList.find((n: any) => n.id === notification.id);
+      if (readStatus) {
+        notification.isRead = readStatus.isRead;
+      }
+    });
+    this.unreadChatCount = this.commentNotifications.filter(notification => !notification.isRead).length;
+  }
+}
 
   // Getters and setters for layout settings
   get visible(): boolean {

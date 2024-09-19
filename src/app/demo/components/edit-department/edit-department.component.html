@@ -1,9 +1,9 @@
 <!-- File Upload Container -->
-<div class="file-upload-card" [ngClass]="{'small-card': editDepartmentValidator.apiJsonData.length === 0}">
+<div class="file-upload-card" [ngClass]="{'small-card': editDepartmentValidator.showData.length === 0}">
   <!-- Data Table Container -->
   <input type="file" #fileInput (change)="editDepartmentValidator.onFileChange($event)" accept=".xlsx, .xls"
   style="display: none;" />
-  <div *ngIf="editDepartmentValidator.apiJsonData.length > 0" class="data-table-container">
+  <div *ngIf="editDepartmentValidator.showData.length > 0" class="data-table-container">
     <div class="header-container">
       <h3></h3>
       <div><button pButton pRipple type="button" (click)="cancel()" label="Cancel"
@@ -18,15 +18,15 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th *ngFor="let header of editDepartmentValidator.apiJsonData[0]">{{ header }}</th>
+          <th *ngFor="let header of editDepartmentValidator.showData[0]">{{ header }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of editDepartmentValidator.apiJsonData.slice(1); let i = index">
+        <tr *ngFor="let row of editDepartmentValidator.showData.slice(1); let i = index">
           <td *ngFor="let cell of row; let j = index">
             <input
              pTooltip="{{editDepartmentValidator.getFieldError(i + 1, j)?.message}}"
-              [ngClass]="{'warning':editDepartmentValidator.getFieldError(i + 1, j)?.type=='warning','error':editDepartmentValidator.getFieldError(i+1,j)?.type=='error' }"
+              [ngClass]="{'warning':editDepartmentValidator.getFieldError(i + 1, j)?.type=='warning','error':editDepartmentValidator.getFieldError(i+1,j)?.type=='error','changed':editDepartmentValidator.getFieldError(i+1,j)?.type=='changed'  }"
               [value]="cell==undefined?null:cell" (blur)="editDepartmentValidator.updateCellValue(i, j, $event)" />
           </td>
         </tr>

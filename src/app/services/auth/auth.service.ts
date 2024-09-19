@@ -44,6 +44,11 @@ export class AuthService {
     this.baseUrl = "http://localhost:8080/api/v1/auth";
   }
 
+  private clearAuthData(): void {
+    this.role = null;
+    this._companyId = null;
+  }
+
   private set role(role: Role) {
     this._role = role;
   }
@@ -96,30 +101,92 @@ export class AuthService {
     this.systemService.showLoading('', true);
     this.http.get<void>(this.baseUrl + '/sever-connection-test').subscribe({
       error: (err) => {
-        console.error(err);
+        if (err.status == 403) {
+          this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
+          this.session.clear();
+          this.router.navigate(['/login']);
+        } else {
+          console.log('Internal server error..' + (err.status));
+          this.router.navigate(['/error']);
+        }
         this.systemService.hideLoading();
-        this.router.navigate(['/error']);
       },
       complete: () => {
         this.systemService.hideLoading();
-        this.restartPage();
+        this.collectData();
+      // this.restartPage();
       }
     });
   }
+
   restartPage(): void {
-    if (this.role == 'ADMIN') {
-      this.router.navigate(['/ad/settings']);
-    } else if (this.role == 'STAFF') {
-      this.router.navigate(['/']);
-    } else {
-      this.router.navigate(['/dashboard'])
+    this.http.get<CheckAuth>(`${this.baseUrl}/check`).subscribe({
+      next: (data) => {
+        this.role = data.role;
+      },
+      complete: () => {
+        console.log(this.role);
+        if (this.isLogin()) {
+          switch (this.role) {
+            case 'ADMIN':
+              this.router.navigate(['/ad/settings']);
+              break;
+            case 'MAIN_HR':
+            case 'HR':
+            case 'HR_ASSISTANCE':
+            case 'MAIN_HR_ASSISTANCE':
+              this.router.navigate(['/dashboard']);
+              break;
+            case 'STAFF':
+              this.router.navigate(['/']);
+              break;
+            default:
+              this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
+              this.session.clear();
+              this.router.navigate(['/login']);
+          }
+        } else {
+          this.router.navigate(['/login']);
+        }
+      },
+      error: (error) => {
+        if (error.status == 403) {
+          this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
+          this.session.clear();
+          this.router.navigate(['/login']);
+        } else {
+          console.log('Internal server error..' + (error.status));
+          this.router.navigate(['/error']);
+        }
+      }
+    });
+  }
+
+  private collectData(): void {
+    this.http.get<CheckAuth>(`${this.baseUrl}/check`).subscribe({
+      next: (data) => {
+        this.role = data.role;
+      },
+      error: (error) => {
+        if (error.status == 403) {
+          this.messageService.alert('Session Expired', 'Session was expired and you will need to login again.', 'OUTSET', 'WHITE', 'RED');
+          this.session.clear();
+          this.router.navigate(['/login']);
+        } else {
+          console.log('Internal server error..' + (error.status));
+         // this.router.navigate(['/error']);
+        }
+      }
+    });
+  }
+
+  showNotFoundPage(): void {
+    if (!this.xShowNotFound) {
+      this.showNotFound = true;
     }
   }
-  
 
-  check(allowedRoles: Role[]): Observable<boolean> | boolean {
-    this.showNotFound = false;
-    this.xShowNotFound = false;
+  check(allowedRoles: Role[]): Observable<boolean> {
     if (this.isLogin()) {
       return this.http.get<CheckAuth>(`${this.baseUrl}/check`).pipe(
         map(data => {
@@ -129,8 +196,7 @@ export class AuthService {
           console.log('Response data : ' + JSON.stringify(data));
           if (data.status == 'ACTIVATED') {
             if (!(allowedRoles.length == 0 || allowedRoles.includes(data.role))) {
-              this.showNotFound = true;
-              this.xShowNotFound = true;
+              this.showNotFoundPage();
             }
             return true;
           } else {
@@ -139,7 +205,6 @@ export class AuthService {
             this.router.navigate(['/login']);
             return false;
           }
-
         }),
         catchError((error) => {
           if (error.status == 403) {
@@ -160,7 +225,7 @@ export class AuthService {
       }
       this.systemService.hideLoading();
       this.router.navigate(['/login']);
-      return false;
+      return of(false);
     }
   }
 
@@ -210,6 +275,7 @@ export class AuthService {
     if ((await this.messageService.confirmed('Logout Confimation', 'Are you sure to log out?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {
       this.messageService.toast('info', 'Logged out.');
       this.session.clear();
+      this.clearAuthData();
       this.router.navigate(['/login']);
     }
   }

@@ -36,11 +36,8 @@ export class AddCompanyComponent {
     this.isModalOpen = false;
   }
   addCompany(): void {
-    this.systemService.showProgress('Adding Main HR account...', true, false, 7);
+    this.systemService.showProgress('Adding '+this.HR.companyName+' company...', true, false, 7);
     this.companyService.save(this.HR).subscribe({
-      next: (data) => {
-        console.log('after save ' + JSON.stringify(data));
-      },
       complete: () => {
         this.authService.getDefaultPassword().subscribe({
           next: (data) => {
@@ -53,7 +50,7 @@ export class AddCompanyComponent {
               },
               error: (err) => {
                 this.systemService.stopProgress().then((data) => {
-                  this.messageService.toast('error', 'Registered main HR account but an error occured on sending email.');
+                  this.messageService.toast('error', 'Registered company and HR account but an error occured on sending email to HR.');
                 });
                 this.HR = {} as HR;
                 console.error(err);
@@ -65,7 +62,7 @@ export class AddCompanyComponent {
       },
       error: (err) => {
         this.systemService.stopProgress('ERROR').then((data) => {
-          this.messageService.toast('error', 'An error occured when adding main HR acount.');
+          this.messageService.toast('error', 'An error occured when when adding HR account.');
         });
         console.error(err);
       }

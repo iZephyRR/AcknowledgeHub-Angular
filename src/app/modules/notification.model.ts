@@ -2,7 +2,7 @@ export interface Notification {
   id: string;
   message?: string;
   noticeAt: string;
-  isRead: boolean;
+  isReadAll: boolean;
   announcementId?: string;
   Sender: string;
   SenderName: string;
@@ -16,4 +16,7 @@ export interface Notification {
   timestamp?: string;
   targetName?: string[];
   title:string
+  commentSenderName:string
+  isRead:boolean;
+
 }

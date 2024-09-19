@@ -76,6 +76,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.showNotFound=false;
+    this.authService.xShowNotFound=true;
     this.startCountdown();
     this.authService.severConnectionTest();
   }
@@ -106,7 +108,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.systemService.showLoading('Logging in..');
+    this.systemService.showLoading('Logging in..',true);
     if (this.login.email != undefined && this.login.email != '' && this.login.password != undefined && this.login.password != '') {
       this.authService.login(this.login).pipe(
         catchError(error => {
@@ -141,6 +143,8 @@ export class LoginComponent implements OnInit {
                       this.showOTPDialog();
                     },
                     error: (err) => {
+                      this.systemService.hideLoading();
+                      this.messageService.toast('error', 'An error occured when sending OTP code.');
                       console.log(JSON.stringify(err));
                     }
                   });
@@ -166,8 +170,6 @@ export class LoginComponent implements OnInit {
 
   verifyOtp(): void {
     // let otp = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    console.log('Storaged otp : ' + Mail.otp);
-    console.log('Input otp : ' + this.combinedOTP);
     console.log(this.combinedOTP == (Mail.otp + ''));
     if (this.combinedOTP == (Mail.otp + '')) {
       this.hideOTPDialog();

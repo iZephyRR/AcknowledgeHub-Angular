@@ -46,7 +46,7 @@ export class AppMenuComponent implements OnChanges {
             next: (data) => {
                 this.companyName = data.STRING_RESPONSE;
             },
-            complete:()=>{
+            complete: () => {
                 this.refresh();
             }
         });
@@ -64,7 +64,7 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-        
+
         announcementService.getMainPreview().subscribe({
             next: (data) => {
                 data.map(item => {
@@ -126,7 +126,7 @@ export class AppMenuComponent implements OnChanges {
             ] :
                 [],
             {
-                label: 'Pages',
+                label: this.authService.canActivateFor(['HR_ASSISTANCE','STAFF'])?'Announcements':'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
                     ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']) ? [
@@ -150,9 +150,9 @@ export class AppMenuComponent implements OnChanges {
                                     routerLink: ['/announcement/file']
                                 },
                                 {
-                                    label: 'Announcement reports',
+                                    label: 'Schedule-list',
                                     icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/announcement/reports']
+                                    routerLink: ['/announcement/schedule-list']
 
                                 },
                                 {
@@ -192,36 +192,39 @@ export class AppMenuComponent implements OnChanges {
                             routerLink: ['/announcement/employeelist']
 
                         }] : [],
-                    ...this.authService.canActivateFor([ 'ADMIN', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE', 'STAFF']) ? [
-                        {
-                            label: 'Announcements',
-                            icon: 'pi pi-fw pi-tags',
-                            items: [
+                    //
+                    ...this.authService.canActivateFor(['HR_ASSISTANCE', 'STAFF']) ? [
+                      
                                 {
                                     label: 'ACE Datasystem',
                                     icon: 'pi pi-fw pi-calendar',
                                     items: this.mainAnnouncements
                                 },
-                                ...this.authService.canActivateFor(['HR_ASSISTANCE', 'STAFF']) ? [
-                                    {
-                                        label: this.companyName,
-                                        icon: 'pi pi-fw pi-calendar',
-                                        items: this.subAnnouncements
-                                    }
-                                ] : [],
-                            ]
-                        }
+                                {
+                                    label: this.companyName,
+                                    icon: 'pi pi-fw pi-calendar',
+                                    items: this.subAnnouncements
+                                }
                     ] : [
-                        {
-                            label: 'Category',
-                            icon: 'pi pi-fw pi-tags',
-                            routerLink: ['/announcement/category']
-                        },
-                        {
-                            label: 'Chart List',
-                            icon: 'pi pi-fw pi-list',
-                            routerLink: ['/announcement/charts']
-                        }],
+                        ...this.authService.canActivateFor(['ADMIN', 'MAIN_HR_ASSISTANCE', 'HR']) ? [
+                            {
+                                label: 'Announcements',
+                                icon: 'pi pi-fw pi-tags',
+                                items: this.mainAnnouncements
+                            }
+                        ] : [
+                            {
+                                label: 'Category',
+                                icon: 'pi pi-fw pi-tags',
+                                routerLink: ['/announcement/category']
+                            },
+                            {
+                                label: 'Chart List',
+                                icon: 'pi pi-fw pi-list',
+                                routerLink: ['/announcement/charts']
+                            }
+                        ]
+                    ],
                 ]
             }
         ];

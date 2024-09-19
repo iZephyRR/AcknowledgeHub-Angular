@@ -3,10 +3,10 @@
 </div>
 <p-toast key="tst"></p-toast>
 <app-loading></app-loading>
-<ng-container *ngIf="authService.showNotFound; else notFound">
+<ng-container *ngIf="(authService.showNotFound); else showOutlet">
     <app-notfound></app-notfound>
 </ng-container>
-<ng-template #notFound>
+<ng-template #showOutlet>
     <router-outlet></router-outlet>
 </ng-template>
 <app-progress-bar></app-progress-bar>

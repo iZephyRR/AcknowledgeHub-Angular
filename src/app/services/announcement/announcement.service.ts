@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { Announcement } from 'src/app/modules/announcement';
+import { Announcement, ScheduleList } from 'src/app/modules/announcement';
 import { Draft } from 'src/app/modules/draft';
 
 @Injectable({
@@ -91,6 +91,18 @@ export class AnnouncementService {
             return map;
         })
     );
+}
+
+getNotedPercentageByDepartment(): Observable<{ [key: string]: number }> {
+  return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/getNotedPercentageByDepartment`);
+}
+
+getScheduleList(): Observable<ScheduleList[]> {
+  return this.http.get<ScheduleList[]>(`${this.baseUrl}/getScheduleList`);
+}
+
+deleteScheduleAnnoucement(announcementId: number): Observable<{STRING_RESPONSE : string}> {
+  return this.http.delete<{STRING_RESPONSE : string}>(`${this.baseUrl}/deleteScheduleAnnouncement/${announcementId}`);
 }
 
 

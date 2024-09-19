@@ -58,7 +58,7 @@ export class AppLayoutComponent implements OnDestroy, OnInit {
             });
     }
     ngOnInit(): void {
-     
+        
     }
 
     hideMenu() {

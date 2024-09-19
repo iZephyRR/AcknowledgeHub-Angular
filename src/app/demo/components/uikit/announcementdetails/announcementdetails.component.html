@@ -50,7 +50,7 @@
         </div>
 
         <!-- Display comments -->
-        <div *ngFor="let comment of comments" class="comment-display">
+        <div *ngFor="let comment of comments()" class="comment-display">
           <div class="comment-author">
             <img *ngIf="comment.safePhotoLink; else defaultImage" [src]="comment.safePhotoLink" alt="Profile" class="comment-logo" />
             <ng-template #defaultImage>

@@ -1,79 +1,100 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { SelectItem } from 'primeng/api';
+import { ScheduleList } from 'src/app/modules/announcement';
+import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
 
 @Component({
     templateUrl: './inputdemo.component.html'
 })
 export class InputDemoComponent  {
+  // signal([] as Draft[])
 
-    countries: any[] = [];
+      groupedAnnouncements = [];
+      scheduleLists= signal([] as ScheduleList[]);
 
-    filteredCountries: any[] = [];
+      constructor(private announcementService : AnnouncementService,
+        private messageService : MessageDemoService
+      ) {
+        this.groupAnnouncementsByDate();
+      }
 
-    selectedCountryAdvanced: any[] = [];
-
-    valSlider = 50;
-
-    valColor = '#424242';
-
-    valRadio: string = '';
-
-    valCheck: string[] = [];
-
-    valCheck2: boolean = false;
-
-    valSwitch: boolean = false;
-
-    cities: SelectItem[] = [];
-
-    selectedList: SelectItem = { value: '' };
-
-    selectedDrop: SelectItem = { value: '' };
-
-    selectedMulti: any[] = [];
-
-    valToggle = false;
-
-    paymentOptions: any[] = [];
-
-    valSelect1: string = "";
-
-    valSelect2: string = "";
-
-    valueKnob = 20;
-
-    // constructor(private countryService: CountryService) { }
-
-    // ngOnInit() {
-    //     this.countryService.getCountries().then(countries => {
-    //         this.countries = countries;
-    //     });
-
-    //     this.cities = [
-    //         { label: 'New York', value: { id: 1, name: 'New York', code: 'NY' } },
-    //         { label: 'Rome', value: { id: 2, name: 'Rome', code: 'RM' } },
-    //         { label: 'London', value: { id: 3, name: 'London', code: 'LDN' } },
-    //         { label: 'Istanbul', value: { id: 4, name: 'Istanbul', code: 'IST' } },
-    //         { label: 'Paris', value: { id: 5, name: 'Paris', code: 'PRS' } }
-    //     ];
-
-    //     this.paymentOptions = [
-    //         { name: 'Option 1', value: 1 },
-    //         { name: 'Option 2', value: 2 },
-    //         { name: 'Option 3', value: 3 }
-    //     ];
-    // }
-
-    filterCountry(event: any) {
-        const filtered: any[] = [];
-        const query = event.query;
-        for (let i = 0; i < this.countries.length; i++) {
-            const country = this.countries[i];
-            if (country.name.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-                filtered.push(country);
+      groupAnnouncementsByDate() {
+        const groupMap = new Map<string, { date: Date, announcements: any[] }>();
+      
+        this.announcementService.getScheduleList().subscribe(data => {
+          console.log("Original list: ", data);
+      
+          // Parse and map the announcements, converting 'createdAt' into proper Date objects
+          const parsedAnnouncements = data.map(announcement => ({
+            ...announcement,
+            createdAt: this.parseDate(announcement.createdAt)
+          }));
+      
+          // Group announcements by the same date (ignoring time)
+          parsedAnnouncements.forEach(announcement => {
+            if (!announcement.createdAt) {
+              console.warn('Invalid or null date for announcement:', announcement);
+              return;  // Skip invalid date
             }
-        }
+      
+            // Group by date part only (ignore the time)
+            const dateKey = announcement.createdAt.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      
+            if (!groupMap.has(dateKey)) {
+              groupMap.set(dateKey, { date: announcement.createdAt, announcements: [] });
+            }
+      
+            // Add announcement to the correct date group
+            groupMap.get(dateKey)?.announcements.push(announcement);
+          });
+      
+          // Convert the Map to an array for displaying grouped announcements
+          this.groupedAnnouncements = Array.from(groupMap.values());
+      
+          console.log("Grouped Announcements: ", this.groupedAnnouncements);
+        });
+      }
 
-        this.filteredCountries = filtered;
+      deleteSchedule(announcementId: number) {
+        console.log("announcement : ", announcementId);
+        this.announcementService.deleteScheduleAnnoucement(announcementId)
+          .pipe(
+            
+          )
+          .subscribe({
+            next: (response) => {
+              this.messageService.toast("success",response.STRING_RESPONSE);
+              this.groupAnnouncementsByDate();
+            },
+            error: (error: any) => {
+              this.messageService.toast("error","Something is wrong");
+            }
+          });
+    }
+    
+
+    parseDate(dateInput: any): Date | null {
+      let parsedDate: Date;
+    
+      // Handle array date format (e.g., [2024, 8, 19, 15, 30] -> year, month-1, day, hours, minutes)
+      if (Array.isArray(dateInput)) {
+        parsedDate = new Date(
+          dateInput[0], 
+          dateInput[1] - 1, // JavaScript months are 0-indexed
+          dateInput[2], 
+          dateInput[3] || 0, // Optional hours
+          dateInput[4] || 0  // Optional minutes
+        );
+      } else {
+        parsedDate = new Date(dateInput);
+      }
+    
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate;
+      } else {
+        console.warn('Invalid date string:', dateInput);
+        return null;
+      }
     }
 }

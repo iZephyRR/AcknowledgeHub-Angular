@@ -5,7 +5,7 @@
         <h1 class="error-code">404</h1>
         <p class="error-message">Page Not Found</p>
         <p class="text-muted">Sorry, the page you are looking for does not exist or you do not have permission to access it.</p>
-        <a class="btn btn-primary" routerLink="/">{{authService.isLogin()?'Go Home':'Go to login'}}</a>
+        <a class="btn btn-primary" (click)="hideNotFound()">{{authService.isLogin()?'Go Home':'Go to login'}}</a>
       </div>
   </div>
 <style>

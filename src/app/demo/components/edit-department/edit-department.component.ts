@@ -22,40 +22,42 @@ export class EditDepartmentComponent implements OnInit {
     this.userService.getAllByDepartmentID(this.editDepartmentValidator.department.id).subscribe({
       next: (data) => {
         this.editDepartmentValidator.insertFromApi(data);
-       // this.editDepartmentValidator.users = data;
-       // console.log('Requested data : '+JSON.stringify(this.editDepartmentValidator.users));
       },
       error: (err) => {
         console.error(err);
       }
     });
   }
-saveData():void{}
-  // async saveData(): Promise<void> {
-  //   if ((await this.messageService.confirmed('Are you sure to save this data?', '', 'Sure', 'Cancel', 'WHITE', 'GREEN')).confirmed) {
-  //     this.systemService.showProgress('Uploading users\' data', true, false, 5);
-  //     this.userService.uploadExcel(this.userUploadValidator.users).subscribe({
-  //       complete: () => {
-  //         this.systemService.stopProgress().then(() => {
-  //           this.messageService.toast('success', 'User excel uploaded.');
-  //           this.userUploadValidator.showExcelImport = false;
-  //         });
-  //       },
-  //       error: (err) => {
-  //         this.systemService.stopProgress('ERROR').then(() => {
-  //           this.messageService.toast('error', 'Failed to upload excel data.');
-  //         });
-  //       }
-  //     });
-  //   }
-  //   else {
-  //    // this.userUploadValidator.showExcelImport = false;
-  //   }
-  // }
+
+  async saveData(): Promise<void> {
+    if ((await this.messageService.confirmed('Are you sure to save this data?', '', 'Sure', 'Cancel', 'WHITE', 'GREEN')).confirmed) {
+      this.systemService.showProgress('Uploading users\' data', true, false, 5);
+      this.userService.uploadExcel(this.editDepartmentValidator.users).subscribe({
+        complete: () => {
+          this.systemService.stopProgress().then(() => {
+            this.messageService.toast('success', 'User excel uploaded.');
+            this.editDepartmentValidator.showView = false;
+          });
+        },
+        error: (err) => {
+          this.systemService.stopProgress('ERROR').then(() => {
+            this.messageService.toast('error', 'Failed to upload excel data.');
+          });
+        }
+      });
+    }
+    else {
+     // this.userUploadValidator.showExcelImport = false;
+    }
+  }
+  
   uploadExcel():void{
     setTimeout(() => this.fileInput.nativeElement.click(), 0);
   }
+
   cancel(): void {
     this.editDepartmentValidator.showView = false;
   }
+
+
 }

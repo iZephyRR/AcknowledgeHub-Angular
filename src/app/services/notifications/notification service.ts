@@ -1,3 +1,4 @@
+import { Comment } from './../../modules/comment';
 import { Message } from 'primeng/api';
 import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -21,8 +22,12 @@ export class NotificationService {
   private notedNotificationsSubject = new BehaviorSubject<any[]>([]);
   notedNotifications$ = this.notedNotificationsSubject.asObservable();
 
+  private commentNotificationSubject = new BehaviorSubject<Notification[]>([]);
+  commentNotification$ = this.commentNotificationSubject.asObservable();
+
   private notedNotifications: any[] = [];
   private notifications: any[] = [];
+  private commentNotifications:any[]=[];
 
   private combinedNotifications: any[] = [];
 
@@ -59,7 +64,7 @@ export class NotificationService {
 
   updateCombinedNotifications(): void {
 
-    this.combinedNotifications = [...this.notifications, ...this.notedNotifications];
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications, ...this.commentNotifications];
     this.combinedNotifications.sort((a, b) => {
       const timeA = new Date(a.noticeAt || a.timestamp).getTime();
       const timeB = new Date(b.noticeAt || b.timestamp).getTime();
@@ -110,6 +115,8 @@ export class NotificationService {
   }
 
 
+
+
   markAsRead(notificationId: string): void {
     const notifications = this.notificationsSubject.getValue();
     const notification = notifications.find(n => n.id === notificationId);
@@ -122,23 +129,7 @@ export class NotificationService {
       this.saveReadStatusToLocalStorage();
     }
   }
-//   markAsReadForNoted(notificationId: string): void {
-//     // Get the current noted notifications from the BehaviorSubject
-//     const notedNotifications = this.notedNotificationsSubject.getValue();
-//     const notification = notedNotifications.find(n => n.id === notificationId);
 
-//     if (notification && !notification.isRead) {
-//       // Mark the noted notification as read locally
-//       notification.isRead = true;
-//       // Update the BehaviorSubject with the new state
-//       this.notedNotificationsSubject.next(notedNotifications);
-//       // Decrement unread count
-//       const unreadCount = notedNotifications.filter(n => !n.isRead).length;
-//       this.unreadCountSubject.next(unreadCount);
-//       // Update the combined notifications to reflect the changes
-//       this.updateCombinedNotifications();
-//     }
-//   }
 
 
   markAllAsRead(): void {
@@ -230,6 +221,41 @@ export class NotificationService {
     );
   }
 
+  loadCommentsNotifications(): Observable<Notification[]> {
+    const userId = this.authService.userId; // Get the current user ID
+
+    if (userId) {
+      console.log('Querying comment notifications_for_comment for userId (targetId):', userId);
+      console.log('Type of userId:', typeof userId); // Log to confirm type
+
+      // Ensure userId is a string for comparison with targetId
+      const userIdString = String(userId);
+
+      return this.firestore.collection('notifications_for_comment', ref =>
+        ref.where('targetId', '==', userIdString) // Ensure comparison is done with string type
+          .orderBy('noticeAt', 'desc') // Fetch notifications sent to the current user
+      ).valueChanges({ idField: 'id' }).pipe(
+        catchError(error => {
+          console.error('Error fetching notifications:', error);
+          return of([]); // Return an empty array in case of error
+        }),
+        map((commentNotifications: any[]) => commentNotifications.map(notification => {
+          const message = notification.message || 'Unknown message';
+          return {
+            ...notification,
+            message: message
+          } as Notification;
+        }))
+      );
+    }
+
+    console.warn('User ID is undefined. Cannot load comment notifications.');
+    return of([]);
+}
+
+
+
+
   getNotedNotifications(): Observable<Notification[]> {
     const userId = this.authService.userId;
 
@@ -257,7 +283,7 @@ export class NotificationService {
       );
     }
 
-    return of([]);  
+    return of([]);
   }
 
 }

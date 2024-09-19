@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -20,7 +20,7 @@ export class AnnouncementDetailsComponent implements OnInit {
   newComment: string = '';
   //comments: { author: string; text: string }[] = [];
   data: any[] = [];
-  comments: Comment[] = [];
+  comments = signal ([] as Comment[]);
   safePdfLink: SafeResourceUrl;
 
   constructor(
@@ -58,13 +58,13 @@ export class AnnouncementDetailsComponent implements OnInit {
           }
         },
         error: (err) => {
-          this.authService.showNotFound = true;
-          this.authService.xShowNotFound = true;
+         this.authService.showNotFoundPage();
           console.error('Error fetching announcement details:', err);
         },
       });
     }
   }
+
   parseDate(dateInput: any): Date | null {
     let parsedDate: Date;
     if (Array.isArray(dateInput)) { // && dateInput.length <= 6
@@ -76,14 +76,8 @@ export class AnnouncementDetailsComponent implements OnInit {
         dateInput[4] // minutes
       );
     } else {
-      // Handle string format or other formats
       parsedDate = new Date(dateInput);
     }
-
-    // Log the parsed date for debugging
-    // console.log('Parsed date:', parsedDate);
-
-    // Check if the parsed date is valid
     if (!isNaN(parsedDate.getTime())) {
       return parsedDate;
     } else {
@@ -111,7 +105,7 @@ export class AnnouncementDetailsComponent implements OnInit {
         next: (response) => {
           console.log('Comment added:', response);
           // Optionally add the comment to the local comments array
-          this.comments.push(response);
+         this.getComments();
           this.newComment = ''; // Clear the input field
         },
         error: (err) => {
@@ -123,14 +117,14 @@ export class AnnouncementDetailsComponent implements OnInit {
 
   getComments() {
     const id = this.route.snapshot.paramMap.get('id');
-    this.commentService.getCommentsByAnnouncement(id).subscribe ({
-      next : (data) => {
+    this.commentService.getCommentsByAnnouncement(id).subscribe({
+      next: (data) => {
         console.log("comments: ", data);
-        this.comments = data.map(comment => ({
+        this.comments.set( data.map(comment => ({
           ...comment,
           createdAt: this.parseDate(comment.createdAt),
           safePhotoLink: this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${comment.photoLink}`)
-      }));
+        })));
       },
       error: (err) => {
         console.error('Error fetching comment:', err);
