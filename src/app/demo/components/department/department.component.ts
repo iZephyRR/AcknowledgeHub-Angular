@@ -8,6 +8,7 @@ import { DepartmentService } from 'src/app/services/department/department.servic
 import { UserService } from 'src/app/services/user/user.service';
 import { EditDepartmentComponent } from '../edit-department/edit-department.component';
 import { EditDepartmentService } from 'src/app/services/edit-department/edit-department.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   selector: 'app-department',
@@ -26,7 +27,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
-    public editDepartmentValidator: EditDepartmentService
+    public editDepartmentValidator: EditDepartmentService,
+    private authService: AuthService
 
   ) {
 
@@ -44,26 +46,24 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   loadUsers(): void {
     this.departmentService.getDTOById(this.route.snapshot.paramMap.get('id')).subscribe({
       next: (departmentData) => {
-        console.log('departmentData : ' + JSON.stringify(departmentData));
         this.department = departmentData;
       },
 
       complete: () => {
         this.userService.getAllByDepartmentID(this.department.id).subscribe({
-          next: (departmentData) => {
-            console.log('All users : ' + JSON.stringify(departmentData));
+          next: (departmentData:User[]) => {
             this.users = departmentData;
           },
           error: (err) => {
             console.error(err);
-            this.router.navigate(['/department']);
+           this.authService.showNotFoundPage();
           }
         });
       },
 
       error: (err) => {
         console.error(err);
-        this.router.navigate(['/department']);
+        this.authService.showNotFoundPage();
       }
     });
 
@@ -73,6 +73,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
       this.routerSubscription.unsubscribe();
     }
   }
+
   clear(table: Table) {
     table.clear();
     this.filter.nativeElement.value = '';

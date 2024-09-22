@@ -2,8 +2,11 @@ import { Component, OnInit, signal } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AnnouncementResponseCondition } from 'src/app/constants';
 import { Announcement } from 'src/app/modules/announcement';
-import { Comment } from 'src/app/modules/comment';
+import { Comment, CommentList } from 'src/app/modules/comment';
+import { Reply, ReplyList } from 'src/app/modules/reply';
+
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CommentService } from 'src/app/services/comment/comment.service';
@@ -18,10 +21,13 @@ export class AnnouncementDetailsComponent implements OnInit {
   private routerSubscription: Subscription;
   showModal: boolean = false;
   newComment: string = '';
-  //comments: { author: string; text: string }[] = [];
+  condition: AnnouncementResponseCondition;
+  replyText : string ='';
   data: any[] = [];
-  comments = signal ([] as Comment[]);
+  comments = signal ([] as CommentList  []);
+  replies = signal ([] as ReplyList[]);
   safePdfLink: SafeResourceUrl;
+  activeReplyBoxId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -51,8 +57,10 @@ export class AnnouncementDetailsComponent implements OnInit {
             ...data,
             createdAt: this.parseDate(data.createdAt) // Directly modify the createdAt property
           };
-          this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(this.announcement.pdfLink);
-          if (this.announcement.contentType === 'EXCEL') {
+          this.condition = this.announcement.announcementResponseCondition;
+          if (this.announcement.contentType != 'EXCEL') {
+            this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(this.announcement.pdfLink);
+          }else{
             const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(this.announcement.pdfLink)}&embedded=true`;
             this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(googleViewerUrl);
           }
@@ -89,18 +97,17 @@ export class AnnouncementDetailsComponent implements OnInit {
   openModal() {
     this.showModal = true;
     this.getComments();
+    
   }
 
   addComment(announcementId: number) {
     if (this.newComment.trim()) {
       // Create the comment object using the Comment model
       const comment: Comment = {
-        //author : this.authService.userId,
         content: this.newComment,
-        announcementId: announcementId  // Set the actual announcement ID
+        announcementId: announcementId
       };
 
-      // Call the CommentService to add the comment
       this.commentService.addComment(comment).subscribe({
         next: (response) => {
           console.log('Comment added:', response);
@@ -110,6 +117,26 @@ export class AnnouncementDetailsComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error adding comment:', err);
+        }
+      });
+    }
+  }
+
+  submitReply (commentId : number) {
+    console.log(this.replyText , commentId);
+    if (this.replyText.trim()) {
+      const reply : Reply = {
+        content: this.replyText,
+        commentId: commentId
+      };
+      this.commentService.replyTo(reply).subscribe({
+        next: (response) => {
+          this.getComments();
+          this.getReply(commentId);
+          this.replyText= '';
+        },
+        error: (err) => {
+          console.error('Error reply comment:', err);
         }
       });
     }
@@ -134,8 +161,36 @@ export class AnnouncementDetailsComponent implements OnInit {
 
   clearComment() {
     this.newComment = '';
+    this.activeReplyBoxId = null;
+  }
+  
+  toggleReplyBox(commentId: number | null): void {
+    if (this.activeReplyBoxId === commentId) {
+      this.activeReplyBoxId = null; // Close the reply box if the same one is clicked again
+    } else {
+      this.activeReplyBoxId = commentId;
+      this.getReply(commentId);
+    }
   }
 
+  getReply(commentId: number) {
+    this.commentService.getReply(commentId).subscribe({
+      next: (data) => {
+        console.log("reply: ", data);
+        this.replies.set(data.map(reply => ({
+          ...reply,
+          replyCreatedAt: this.parseDate(reply.replyCreatedAt),
+          safePhotoLink: this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${reply.replierPhotoLink}`)
+        })));
+      },
+      error: (err) => {
+        console.error('Error fetching comment:', err);
+      }
+    });
+  }
+  
+
+  
 }
 
 

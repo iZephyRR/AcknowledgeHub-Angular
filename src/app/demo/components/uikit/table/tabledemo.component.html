@@ -22,9 +22,6 @@
                         <th style="min-width: 12rem">Email</th>
                         <th style="min-width: 12rem">Role<p-columnFilter type="text" field="role" display="menu"
                                 placeholder="Search by role"></p-columnFilter></th>
-                        <th style="min-width: 10rem">Work Entry Date <p-columnFilter type="date" field="workentrydate"
-                                display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
-                        </th>
                         <th style="min-width: 10rem">Company<p-columnFilter type="text" field="company" display="menu"
                                 placeholder="Search by company"></p-columnFilter></th>
                         <th style="min-width: 12rem">Department<p-columnFilter type="text" field="department"
@@ -48,7 +45,6 @@
                         <td>{{user.name}}</td>
                         <td>{{user.email}}</td>
                         <td>{{user.role}}</td>
-                        <td>{{ user.workEntryDate | date: 'MM/dd/yyyy' }}</td>
                         <td>{{user.companyName}}</td>
                         <td>{{user.departmentName}}</td>
                         <td>{{user.status}}</td>

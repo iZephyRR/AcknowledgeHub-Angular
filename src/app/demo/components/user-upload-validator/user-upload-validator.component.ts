@@ -23,6 +23,7 @@ export class UserUploadValidatorComponent {
   async saveData(): Promise<void> {
     if ((await this.messageService.confirmed('Are you sure to save excel data?', '', 'Sure', 'Cancel', 'WHITE', 'GREEN')).confirmed) {
       this.systemService.showProgress('Uploading users\' data', true, false, 5);
+      console.log(this.userUploadValidator.users);
       this.userService.uploadExcel(this.userUploadValidator.users).subscribe({
         complete: () => {
           this.systemService.stopProgress().then(() => {

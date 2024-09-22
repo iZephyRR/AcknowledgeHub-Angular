@@ -5,6 +5,8 @@ import { LayoutService } from './service/app.layout.service';
 import { AuthService } from '../services/auth/auth.service';
 import { AnnouncementService } from '../services/announcement/announcement.service';
 import { CompanyService } from '../services/company/company.service';
+import { NbClickTriggerStrategy } from '@nebular/theme';
+import { _isClickEvent } from 'chart.js/dist/helpers/helpers.core';
 
 @Component({
     selector: 'app-menu',
@@ -17,12 +19,14 @@ export class AppMenuComponent implements OnChanges {
     mainAnnouncements: {
         label: string,
         icon: string,
-        routerLink: string[]
+        routerLink?: string[],
+        command?:any
     }[] = [];
     subAnnouncements: {
         label: string,
         icon: string,
-        routerLink: string[]
+        routerLink?: string[],
+        command?: any
     }[] = [];
 
     companies: {
@@ -30,6 +34,20 @@ export class AppMenuComponent implements OnChanges {
         icon: string,
         routerLink: string[]
     }[] = [];
+    enableMain: boolean = true;
+    enableSub: boolean = true;
+    mainCount:number=0;
+    subCount:number=0;
+    showMoreMain = {
+        label: 'Show more',
+        icon: '',
+        command: () => this.addMainPreviews()
+    };
+    showMoreSub = {
+        label: 'Show more',
+        icon: '',
+        command: () => this.addSubPreviews()
+    };
 
     constructor(
         public layoutService: LayoutService,
@@ -42,7 +60,7 @@ export class AppMenuComponent implements OnChanges {
             icon: '',
             routerLink: ['/company']
         });
-        companyService.getName().subscribe({
+        this.companyService.getName().subscribe({
             next: (data) => {
                 this.companyName = data.STRING_RESPONSE;
             },
@@ -50,7 +68,7 @@ export class AppMenuComponent implements OnChanges {
                 this.refresh();
             }
         });
-        companyService.getAllDTO().subscribe({
+        this.companyService.getAllDTO().subscribe({
             next: (data) => {
                 data.forEach(item => {
                     this.companies.push({
@@ -64,37 +82,8 @@ export class AppMenuComponent implements OnChanges {
                 console.error(err);
             }
         });
-
-        announcementService.getMainPreview().subscribe({
-            next: (data) => {
-                data.map(item => {
-                    this.mainAnnouncements.push({
-                        label: item.label,
-                        icon: 'pi pi-fw pi-megaphone',
-                        routerLink: [`/announcement-page/${item.id}`]
-                    });
-                })
-            },
-
-            error: (err) => {
-                console.error(err);
-            }
-        });
-        announcementService.getSubPreview().subscribe({
-            next: (data) => {
-                data.map(item => {
-                    this.subAnnouncements.push({
-                        label: item.label,
-                        icon: 'pi pi-fw pi-megaphone',
-                        routerLink: [`/announcement-page/${item.id}`]
-
-                    });
-                })
-            },
-            error: (err) => {
-                console.error(err);
-            }
-        });
+        this.addMainPreviews();
+        this.addSubPreviews();
     }
 
     ngOnChanges(changes: SimpleChanges): void {
@@ -102,6 +91,59 @@ export class AppMenuComponent implements OnChanges {
             this.refresh();
         }
     }
+    
+    addMainPreviews(): void {
+        this.mainAnnouncements.pop();
+        this.announcementService.getMainPreview(this.mainCount++).subscribe({
+            next: (data) => {
+                data.content.forEach(item => {
+                    this.mainAnnouncements.push({
+                        label: item.label,
+                        icon: 'pi pi-fw pi-megaphone',
+                        routerLink: [`/announcement-page/${item.id}`]
+                    });
+                });
+                if (data.last) {
+                    this.enableMain = false;
+                }
+            },
+            complete: () => {
+                if (this.enableMain) {
+                    this.mainAnnouncements.push(this.showMoreMain);
+                }
+            },
+            error: (err) => {
+                console.error(err);
+            }
+        });
+    }
+
+    addSubPreviews(): void {
+        this.subAnnouncements.pop();
+        this.announcementService.getSubPreview(this.subCount++).subscribe({
+            next: (data) => {
+                data.content.forEach(item => {
+                    this.subAnnouncements.push({
+                        label: item.label,
+                        icon: 'pi pi-fw pi-megaphone',
+                        routerLink: [`/announcement-page/${item.id}`]
+                    });
+                });
+                if (data.last) {
+                    this.enableSub = false;
+                }
+            },
+            complete: () => {
+                if (this.enableSub) {
+                    this.subAnnouncements.push(this.showMoreSub);
+                }
+            },
+            error: (err) => {
+                console.error(err);
+            }
+        });
+    }
+
 
     private refresh(): void {
         this.model = [
@@ -126,7 +168,7 @@ export class AppMenuComponent implements OnChanges {
             ] :
                 [],
             {
-                label: this.authService.canActivateFor(['HR_ASSISTANCE','STAFF'])?'Announcements':'Pages',
+                label: this.authService.canActivateFor(['HR_ASSISTANCE', 'STAFF']) ? 'Announcements' : 'Pages',
                 icon: 'pi pi-fw pi-briefcase',
                 items: [
                     ...this.authService.canActivateFor(['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE']) ? [
@@ -194,17 +236,22 @@ export class AppMenuComponent implements OnChanges {
                         }] : [],
                     //
                     ...this.authService.canActivateFor(['HR_ASSISTANCE', 'STAFF']) ? [
-                      
-                                {
-                                    label: 'ACE Datasystem',
-                                    icon: 'pi pi-fw pi-calendar',
-                                    items: this.mainAnnouncements
-                                },
-                                {
-                                    label: this.companyName,
-                                    icon: 'pi pi-fw pi-calendar',
-                                    items: this.subAnnouncements
-                                }
+
+                        {
+                            label: 'ACE Datasystem',
+                            icon: 'pi pi-fw pi-calendar',
+                            items: this.mainAnnouncements
+                        },
+                        {
+                            label: this.companyName,
+                            icon: 'pi pi-fw pi-calendar',
+                            items: this.subAnnouncements
+                            // .concat(...this.enable?[{
+                            //     label: 'Show more',
+                            //     icon: '',
+                            //     command: () => this.addSubPreviews()
+                            // }]:[])
+                        }
                     ] : [
                         ...this.authService.canActivateFor(['ADMIN', 'MAIN_HR_ASSISTANCE', 'HR']) ? [
                             {

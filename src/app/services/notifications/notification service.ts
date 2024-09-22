@@ -25,9 +25,14 @@ export class NotificationService {
   private commentNotificationSubject = new BehaviorSubject<Notification[]>([]);
   commentNotification$ = this.commentNotificationSubject.asObservable();
 
+  private replyNotificationSubject = new BehaviorSubject<Notification[]>([]);
+  replyNotification$ = this.replyNotificationSubject.asObservable();
+
+
   private notedNotifications: any[] = [];
   private notifications: any[] = [];
   private commentNotifications:any[]=[];
+  private replyNotifications:any[]=[]
 
   private combinedNotifications: any[] = [];
 
@@ -226,7 +231,7 @@ export class NotificationService {
 
     if (userId) {
       console.log('Querying comment notifications_for_comment for userId (targetId):', userId);
-      console.log('Type of userId:', typeof userId); // Log to confirm type
+      // Log to confirm type
 
       // Ensure userId is a string for comparison with targetId
       const userIdString = String(userId);
@@ -252,6 +257,46 @@ export class NotificationService {
     console.warn('User ID is undefined. Cannot load comment notifications.');
     return of([]);
 }
+
+
+loadReplyCommentsNotifications(): Observable<Notification[]> {
+    const userId = this.authService.userId; // Get the current user ID
+
+    if (userId) {
+      console.log('Querying comment replies for userId (commentId):', userId);
+
+      // Cast userId as a string, but check if it needs to be a number
+      const userIdString = String(userId); // Assuming 'commentId' is stored as a string in Firestore
+      console.log('Type of userId:', typeof userId); // Log to confirm type
+
+      return this.firestore.collection('replies', ref =>
+        ref.where('commentId', '==', userIdString) // Ensure comparison is done with string type
+
+      ).valueChanges({ idField: 'id' }).pipe(
+        catchError(error => {
+          console.error('Error fetching reply notifications:', error);
+          return of([]); // Return an empty array in case of error
+        }),
+        map((replyNotifications: any[]) => {
+          if (!replyNotifications.length) {
+            console.log('No reply notifications found for userId:', userIdString);
+          } else {
+            console.log('Reply notifications found:', replyNotifications);
+          }
+          return replyNotifications.map(notification => {
+            const message = notification.message || 'Unknown message';
+            return {
+              ...notification,
+              message: message
+            } as Notification;
+          });
+        })
+      );
+    }
+
+    console.warn('User ID is undefined. Cannot load comment notifications.');
+    return of([]); // Return empty array if userId is undefined
+  }
 
 
 

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Company, HR } from 'src/app/modules/company';
+import { Company, CompanyRequest, HR } from 'src/app/modules/company';
 import { AuthService } from '../auth/auth.service';
 
 @Injectable({
@@ -39,6 +39,10 @@ export class CompanyService {
 
   countCompany(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/hrs/company-count`);
+  }
+
+  getByDepartmentId(id:bigint): Observable<CompanyRequest> {
+    return this.http.get<CompanyRequest>(`${this.baseUrl}/hrs/company/by-department/${id}`);
   }
 
 }

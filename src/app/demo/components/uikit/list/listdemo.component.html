@@ -1,12 +1,17 @@
-
-
 <div class="grid">
   <div class="col-12">
     <div class="card">
       <h5>Category List</h5>
       <div class="d-flex align-items-center gap-2">
-        <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
-          placeholder="Category" pTooltip="Enter Category">
+        <div class="input-wrapper">
+          <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
+                 placeholder="Category" pTooltip="Enter Category">
+   
+          <button *ngIf="inputValue" class="reset-btn" (click)="resetInput()" aria-label="Reset">
+              <span>&times;</span> 
+          </button>
+      </div>
+      
         <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
           {{ buttonLabel }}
         </button>
@@ -44,8 +49,8 @@
             </td>
           </tr>
         </ng-template>
-        
-        
+
+
         <ng-template pTemplate="emptymessage">
           <tr>
             <td colspan="3">No categories found.</td>

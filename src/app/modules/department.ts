@@ -1,5 +1,5 @@
 export interface Department {
-    id : number;
+    id : bigint;
     name : string;
     companyName?:string;
 }

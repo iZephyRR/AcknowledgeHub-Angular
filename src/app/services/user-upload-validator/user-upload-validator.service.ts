@@ -97,27 +97,25 @@ export class UserUploadValidatorService {
   // Validate data and collect errors or warnings
   validateData(data: any[]): void {
     let uniqueFields: UniqueFields;
-
     this.userService.getUniqueFields().subscribe({
       next: (data) => {
         uniqueFields = data;
       },
       complete: () => {
         this.hasError = false;
-        const errors: FieldError[] = [];
+        // const errors: FieldError[] = [];
+        this.fieldErrors = [];
         const headers = data[0];
         let headersForSystem = headers.map((data: string) => {
           return this.formatToCommonCase(data);
         });
         const emailIndex = headersForSystem.indexOf('email');
-        const idIndex = headersForSystem.indexOf('stuffid');
+        const idIndex = headersForSystem.indexOf('staffid');
         const ageIndex = headersForSystem.indexOf('age');
         const nameIndex = headersForSystem.indexOf('name');
         const nrcIndex = headersForSystem.indexOf('nrc');
         const telegramUsernameIndex = headersForSystem.indexOf('telegramusername');
-
         const dobIndex = headersForSystem.indexOf('dateofbirth');
-        const entIndex = headersForSystem.indexOf('entrydate');
         // const addressIndex = headersForSystem.indexOf('address');
         // const genderIndex = headersForSystem.indexOf('gender');
 
@@ -134,17 +132,16 @@ export class UserUploadValidatorService {
           const nrc = row[nrcIndex];
           const telegramUsername = row[telegramUsernameIndex];
           const dob = row[dobIndex];
-          const ent = row[entIndex];
           // const address = row[addressIndex];
           // const gender = row[genderIndex];
 
           headers.forEach((header: string, colIndex: number) => {
             if (row[colIndex] === null || row[colIndex] === undefined || row[colIndex] === '') {
-              errors.push({ row: i, col: colIndex, message: `${header} is required.`, type: 'error' });
+              this.fieldErrors.push({ row: i, col: colIndex, message: `${header} is required.`, type: 'error' });
               this.hasError = true;
             }
             if (this.validateInput(row[colIndex])) {
-              errors.push({ row: i, col: colIndex, message: `${header} field is not allow this font.`, type: 'error' });
+              this.fieldErrors.push({ row: i, col: colIndex, message: `${header} field is not allow this font.`, type: 'error' });
               this.hasError = true;
             }
 
@@ -155,56 +152,53 @@ export class UserUploadValidatorService {
           });
 
           if (email && !this.validateEmail(email)) {
-            errors.push({ row: i, col: emailIndex, message: 'Invalid email format.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: emailIndex, message: 'Invalid email format.', type: 'error' });
             this.hasError = true;
           } else if (email && !AuthService.isDomainAvailable(email)) {
-            errors.push({ row: i, col: emailIndex, message: 'Email domain is not valid.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: emailIndex, message: 'Email domain is not valid.', type: 'error' });
             this.hasError = true;
           }
 
           if (age !== undefined && (age < 18 || age > 85)) {
-            errors.push({ row: i, col: ageIndex, message: 'Age must be between 18 and 85.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: ageIndex, message: 'Age must be between 18 and 85.', type: 'error' });
             this.hasError = true;
           }
 
           if (this.validateName(name)) {
-            errors.push({ row: i, col: nameIndex, message: 'Double check this name. It may be invalid.', type: 'warning' });
+            this.fieldErrors.push({ row: i, col: nameIndex, message: 'Double check this name. It may be invalid.', type: 'warning' });
           }
           if (uniqueFields.emails.includes(email)) {
-            errors.push({ row: i, col: emailIndex, message: 'This email is already use by another employee.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: emailIndex, message: 'This email is already use by another employee.', type: 'error' });
             this.hasError = true;
           }
           if (uniqueFields.nrcs.includes(nrc)) {
-            errors.push({ row: i, col: nrcIndex, message: 'This NRC number is same as another employee.', type: 'warning' });
+            this.fieldErrors.push({ row: i, col: nrcIndex, message: 'This NRC number is same as another employee.', type: 'warning' });
           }
           if (uniqueFields.staffIds.includes(id)) {
-            errors.push({ row: i, col: idIndex, message: 'This Staff-ID is already exist.', type: 'warning' });
+            this.fieldErrors.push({ row: i, col: idIndex, message: 'This Staff-ID is already exist.', type: 'warning' });
           }
           if (uniqueFields.telegramUsernames.includes(telegramUsername)) {
-            errors.push({ row: i, col: telegramUsernameIndex, message: 'This telegram username is already use by another employee.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: telegramUsernameIndex, message: 'This telegram username is already use by another employee.', type: 'error' });
             this.hasError = true;
           }
           if (this.validateDate(dob)) {
-            errors.push({ row: i, col: dobIndex, message: 'Our date format is yyyy-mm-dd.', type: 'error' });
+            this.fieldErrors.push({ row: i, col: dobIndex, message: 'Our date format is yyyy-mm-dd.', type: 'error' });
             this.hasError = true;
           }
 
-          if (this.validateDate(ent)) {
-            errors.push({ row: i, col: entIndex, message: 'Our date format is yyyy-mm-dd.', type: 'error' });
-            this.hasError = true;
-          }
 
-          console.log('hasError : ' + this.hasError);
-          this.trackDuplicates(email, id, name, i, seenEmails, seenIds, seenNames);
+          // this.trackDuplicates(email, id, name, i, seenEmails, seenIds, seenNames);
+          this.trackDuplicate(email, seenEmails, i);
+          this.trackDuplicate(id, seenIds, i);
+          this.trackDuplicate(name, seenNames, i);
         }
 
-        this.checkDuplicates(seenEmails, errors, emailIndex, 'Email', 'error');
-        this.checkDuplicates(seenIds, errors, idIndex, 'Staff ID', 'error');
-        this.checkDuplicates(seenNames, errors, nameIndex, 'Name', 'warning');
-        this.fieldErrors = errors;
+        this.checkDuplicates(seenEmails, emailIndex, 'Email', 'error');
+        this.checkDuplicates(seenIds, idIndex, 'Staff ID', 'error');
+        this.checkDuplicates(seenNames, nameIndex, 'Name', 'warning');
       },
       error: (err) => {
-        this.messageService.toast('error', 'An error occurred when import excel.');
+        this.messageService.toast('error', 'An error occurred when validate data.');
         console.error(err);
       }
     });
@@ -212,7 +206,7 @@ export class UserUploadValidatorService {
   }
 
   validateInput(input: string): boolean {
-    const regex = /^[A-Za-z0-9!@#$%^&*(),.?":{}|<>/\- ]+$/;
+    const regex = /^[A-Za-z0-9!@#$%^&*(),.?":{}_|<>/\- ]+$/;
 
     // Check if the input matches the pattern
     return !regex.test(input);
@@ -239,49 +233,26 @@ export class UserUploadValidatorService {
   }
 
   // Track duplicates for email, ID, and phone
-  trackDuplicates(
-    email: string,
-    id: string,
-    name: string,
-    row: number,
-    emails: Map<string, number[]>,
-    ids: Map<string, number[]>,
-    names: Map<string, number[]>
-  ) {
-    if (email) {
-      if (!emails.has(email)) {
-        emails.set(email, []);
+  trackDuplicate(incomingData: string, existingData: Map<string, number[]>, row: number) {
+    if (incomingData) {
+      if (!existingData.has(incomingData)) {
+        existingData.set(incomingData, []);
       }
-      emails.get(email)?.push(row);
-    }
-
-    if (id) {
-      if (!ids.has(id)) {
-        ids.set(id, []);
-      }
-      ids.get(id)?.push(row);
-    }
-
-    if (name) {
-      if (!names.has(name)) {
-        names.set(name, []);
-      }
-      names.get(name)?.push(row);
+      existingData.get(incomingData)?.push(row);
     }
   }
 
   // Add warnings for duplicates
   checkDuplicates(
     map: Map<string, number[]>,
-    errors: FieldError[],
     colIndex: number,
     fieldName: string,
     type: 'error' | 'warning'
-  ) {
+  ): void {
     map.forEach((rows, value) => {
       if (rows.length > 1) {
         rows.forEach(row => {
-          errors.push({ row: row, col: colIndex, message: `Duplicate ${fieldName}: "${value}"`, type: type });
+          this.fieldErrors.push({ row: row, col: colIndex, message: `Duplicate ${fieldName}: "${value}"`, type: type });
         });
       }
     });
@@ -303,7 +274,7 @@ export class UserUploadValidatorService {
   get users(): Users {
     const COLUMNS: string[] = [];
     const USERS: Users = {} as Users;
-    USERS.companyId = this.company.id;
+    USERS.companyId=this.company.id;
     USERS.departmentName = this.departmentName;
     USERS.users = [];
     this.jsonData.map((data) => {
@@ -316,7 +287,7 @@ export class UserUploadValidatorService {
         data.map((cell: any, index: number) => {
           switch (this.formatToCommonCase(COLUMNS[index])) {
             //
-            case "stuffid":
+            case "staffid":
               USER.staffId = cell;
               break;
             case "telegramusername":
@@ -352,9 +323,6 @@ export class UserUploadValidatorService {
               break;
             case "dateofbirth":
               USER.dob = cell;
-              break;
-            case "entrydate":
-              USER.workEntryDate = cell;
               break;
             case "address":
               USER.address = cell;

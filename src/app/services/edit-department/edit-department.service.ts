@@ -3,14 +3,23 @@ import { Gender, Role, Status } from 'src/app/constants';
 import { Company } from 'src/app/modules/company';
 import { Department } from 'src/app/modules/department';
 import { User } from 'src/app/modules/user';
-import { Users } from 'src/app/modules/user-excel-upload';
+import { UpdateUser, Users } from 'src/app/modules/user-excel-upload';
 import * as XLSX from 'xlsx';
+import { MessageDemoService } from '../message/message.service';
+import { UserService } from '../user/user.service';
+import { UniqueFields } from 'src/app/modules/unique-fields';
 
 interface FieldError {
   row: number;
   col: number;
   message: string;
-  type: 'error' | 'warning' | 'changed' | 'cannot_be_change';
+  type: 'error' | 'warning' | 'changed' | 'disable';
+}
+
+interface RowError {
+  row: number;
+  message: string;
+  type: 'error' | 'warning' | 'new';
 }
 
 @Injectable({
@@ -18,15 +27,21 @@ interface FieldError {
 })
 export class EditDepartmentService {
   showView: boolean;
-  apiData: string[][] = [];
+  private apiData: string[][] = [];
   showData: string[][] = [];
   fieldErrors: FieldError[] = [];
- // company: Company;
+  rowErrors: RowError[] = [];
   department: Department;
   hasError: boolean;
-  constructor() { }
+  isChange: boolean;
+  idContainer: Map<string, {id:bigint, status:Status}> = new Map<string, {id:bigint, status:Status}>();
+  constructor(
+    private messageService: MessageDemoService,
+    private userService: UserService
+  ) { }
 
   onFileChange(event: any) {
+    this.isChange = true;
     const file = event.target.files[0];
     let excelData: string[][] = [];
     if (file) {
@@ -43,9 +58,9 @@ export class EditDepartmentService {
         });
         const headers: string[] = excelData[0];
         excelData = excelData.filter((data, index) => index > 0 && data.length > 0);
-        let userData: User[] = [];
+        let userData: UpdateUser[] = [];
         excelData.forEach((user, userIndex) => {
-          userData[userIndex] = {} as User;
+          userData[userIndex] = {} as UpdateUser;
           headers.forEach((header, headerIndex) => {
             if (this.formatToCommonCase(header) == 'name') {
               userData[userIndex].name = user[headerIndex];
@@ -68,9 +83,6 @@ export class EditDepartmentService {
             if (this.formatToCommonCase(header) == 'address') {
               userData[userIndex].address = user[headerIndex];
             }
-            if (this.formatToCommonCase(header) == 'status') {
-              userData[userIndex].status = user[headerIndex] as Status;
-            }
             if (this.formatToCommonCase(header) == 'position') {
               userData[userIndex].role = user[headerIndex] as Role;
             }
@@ -87,48 +99,146 @@ export class EditDepartmentService {
     return this.fieldErrors.find(e => e.row === rowIndex && e.col === colIndex) || null;
   }
 
-  updateCellValue(rowIndex: number, colIndex: number, event: any) {
-    const newValue = event.target.value;
-    this.showData[rowIndex + 1][colIndex] = newValue;
-
-    this.fieldErrors = this.fieldErrors.filter(e => e.row !== rowIndex + 1 || e.col !== colIndex);
-
-    //this.validateData(this.showData);
+  getRowError(rowIndex: number): RowError | null {
+    return this.rowErrors.find(e => e.row === rowIndex) || null;
   }
 
-  insertFromApi(users: User[]): void {
-    const strUsers: string[][] = this.typeConvertor(users);
-    this.apiData = strUsers;
-    this.showData = strUsers;
+
+  updateCellValue(rowIndex: number, colIndex: number, event: any) {
+    this.isChange = true;
+    const newValue = event.target.value;
+    this.showData[rowIndex + 1][colIndex] = newValue;
+    this.fieldErrors = this.fieldErrors.filter(e => e.row !== rowIndex + 1 || e.col !== colIndex);
     this.validateData();
   }
 
-  validateData(): void {
-    this.hasError = false;
-    this.fieldErrors = [];
-    this.showData.forEach((row: string[], rowIndex: number) => {
-      row.forEach((cell: string, cellIndex: number) => {
-        if (cell === null || cell === undefined || cell === '') {
-          this.fieldErrors.push({ row: rowIndex, col: cellIndex, message: `${this.showData[0][cellIndex]} is required.`, type: 'error' });
-          this.hasError = true;
-        } else {
-          if (!(this.apiData[rowIndex][cellIndex] === null || this.apiData[rowIndex][cellIndex] === undefined || this.apiData[rowIndex][cellIndex] === '')) {
-            if (cell.toLowerCase() != this.apiData[rowIndex][cellIndex].toLowerCase()) {
-              this.fieldErrors.push({ row: rowIndex, col: cellIndex, message: `${this.showData[0][cellIndex]} is changed from ${this.apiData[rowIndex][cellIndex]} to ${cell}`, type: 'changed' })
-            }
-          }
-        }
-
-      });
+  insertFromApi(users: UpdateUser[]): void {
+    const strUsers: string[][] = this.typeConvertor(users);
+    this.apiData = strUsers;
+    this.showData = strUsers;
+    users.forEach((user) => {
+      this.idContainer.set(user.staffId, {id:user.id,status:user.status});
     });
-    if(this.apiData.length>this.showData.length){
-      for(let i=this.showData.length;i<this.apiData.length;i++){
-        this.showData[i] = this.apiData[i];
+    this.validateData();
+  }
+
+  private validateData(): void {
+    let uniqueFields: UniqueFields;
+    this.userService.getUniqueFields().subscribe({
+      next: (data) => {
+        uniqueFields = data;
+      },
+      complete: () => {
+        this.hasError = false;
+        this.fieldErrors = [];
+        const headers = this.showData[0];
+        headers.forEach((header, headerIndex) => {
+          if (this.formatToCommonCase(header) == 'staffid') {
+            const apiStaffes: string[] = [];
+            const showStaffes: string[] = [];
+            this.apiData.slice(1).forEach((data) => {
+              apiStaffes.push(data[headerIndex]);
+            });
+            this.showData.slice(1).forEach((data) => {
+              showStaffes.push(data[headerIndex]);
+            });
+            //Deleted staff
+            const deletedStaffes: string[] = [];
+            apiStaffes.forEach((staff, index) => {
+              if (!showStaffes.includes(staff)) {
+                deletedStaffes.push(staff);
+                const container=this.idContainer.get(staff);
+                this.idContainer.set(staff,{id:container.id, status:'DEACTIVATED'});
+                this.showData.push(this.apiData[index + 1]);
+                this.rowErrors.push({ row: this.showData.indexOf(this.apiData[index + 1]), type: 'warning', message: 'This row of user account would be deactivate.' });
+              }
+            });
+            //New staff
+            const newStaffes: string[] = [];
+            showStaffes.forEach((staff, index) => {
+              if (!apiStaffes.includes(staff)) {
+                newStaffes.push(staff);
+                this.rowErrors.push({ row: index + 1, type: 'new', message: 'This row is a new user.' });
+              }
+            });
+          }
+        });
+        this.showData.forEach((row, rowIndex) => {
+          headers.forEach((header, headerIndex) => {
+
+            if (row[headerIndex] === null || row[headerIndex] === undefined || row[headerIndex] === '') {
+              this.fieldErrors.push({ row: rowIndex, col: headerIndex, message: `${header} is required.`, type: 'error' });
+              this.hasError = true;
+            }
+
+            if (this.formatToCommonCase(header) == 'email') {
+              const apiEmails: string[] = [];
+              this.apiData.slice(1).forEach((data) => {
+                apiEmails.push(data[headerIndex]);
+              });
+
+              if (uniqueFields.emails.includes(row[headerIndex]) && !apiEmails.includes(row[headerIndex])) {
+                this.fieldErrors.push({ row: rowIndex, col: headerIndex, message: 'This email is already use by another employee.', type: 'error' });
+                this.hasError = true;
+              } else {
+                this.checkDuplicate(rowIndex, headerIndex, row[headerIndex], 'email');
+              }
+
+            }
+
+            if (this.formatToCommonCase(header) == 'nrc') {
+              const apiNRCs: string[] = [];
+              this.apiData.slice(1).forEach((data) => {
+                apiNRCs.push(data[headerIndex]);
+              });
+              if (uniqueFields.nrcs.includes(row[headerIndex]) && !apiNRCs.includes(row[headerIndex])) {
+                this.fieldErrors.push({ row: rowIndex, col: headerIndex, message: 'This NRC number is same as another employee.', type: 'error' });
+                this.hasError = true;
+              } else {
+                this.checkDuplicate(rowIndex, headerIndex, row[headerIndex], 'NRC');
+              }
+            }
+
+            if (this.formatToCommonCase(header) == 'staffid') {
+              this.fieldErrors.push({ row: rowIndex, col: headerIndex, message: 'Staff-ID cannot be edit.', type: 'disable' });
+            }
+        
+            if (this.formatToCommonCase(header) == 'telegramusername') {
+              const apiTelegramusernames: string[] = [];
+              this.apiData.slice(1).forEach((data) => {
+                apiTelegramusernames.push(data[headerIndex]);
+              });
+              if (uniqueFields.telegramUsernames.includes(row[headerIndex]) && !apiTelegramusernames.includes(row[headerIndex])) {
+                this.fieldErrors.push({ row: rowIndex, col: headerIndex, message: 'This telegram username is already use by another employee.', type: 'error' });
+                this.hasError = true;
+              } else {
+                this.checkDuplicate(rowIndex, headerIndex, row[headerIndex], 'telegram username');
+              }
+            }
+          });
+        });
+      },
+      error: (err) => {
+        this.messageService.toast('error', 'An error occurred when validate data.');
+        console.error(err);
       }
+    });
+  }
+
+  private checkDuplicate(rowIndex: number, columnIndex: number, cell: string, label: string): void {
+    let count: number = 0;
+    this.showData.forEach((inner) => {
+      if (inner.includes(cell)) {
+        count++
+      }
+    });
+    if (count > 1) {
+      this.fieldErrors.push({ row: rowIndex, col: columnIndex, message: 'Duplicated ' + label + ' ' + cell, type: 'error' });
+      this.hasError = true;
     }
   }
 
-  typeConvertor(data: User[]): string[][] {
+  private typeConvertor(data: UpdateUser[]): string[][] {
     const convertedData: string[][] = [];
     convertedData[0] = [];
     convertedData[0].push('Name');
@@ -140,9 +250,8 @@ export class EditDepartmentService {
     // convertedData[0].push('Date of Birth');
     convertedData[0].push('Address');
     // convertedData[0].push('Entry Date');
-    convertedData[0].push('Status');
     convertedData[0].push('Position');
-    data.forEach((user: User, index: number) => {
+    data.forEach((user: UpdateUser, index: number) => {
       convertedData[index + 1] = [];
       convertedData[index + 1].push(user.name);
       convertedData[index + 1].push(user.staffId);
@@ -155,32 +264,28 @@ export class EditDepartmentService {
       convertedData[index + 1].push(user.address);
       // convertedData[index + 1].push(null);
       // console.log(user.workEntryDate);
-      convertedData[index + 1].push(user.status);
       convertedData[index + 1].push(user.role);
     });
     return convertedData;
   }
 
-  formatToCommonCase(input: string): string {
+  private formatToCommonCase(input: string): string {
     return input.trim().toLowerCase().replaceAll(" ", "").replaceAll("-", "").replaceAll("_", "");
   }
 
-  get users(): Users {
+  get users(): UpdateUser[] {
     const COLUMNS: string[] = [];
-    const USERS: Users = {} as Users;
-   // USERS.companyId = this.company.id;
-    // USERS.departmentName = this.departmentName;
-    USERS.users = [];
+    const USERS: UpdateUser[] = [];
     this.showData.map((data) => {
       if (data == this.showData[0]) {
         data.map((cell: string) => {
           COLUMNS.push(cell);
         });
       } else {
-        const USER: User = {} as User;
+        const USER: UpdateUser = {} as UpdateUser;
         data.map((cell: any, index: number) => {
           switch (this.formatToCommonCase(COLUMNS[index])) {
-            case "stuffid":
+            case "staffid":
               USER.staffId = cell;
               break;
             case "telegramusername":
@@ -218,9 +323,6 @@ export class EditDepartmentService {
             case "dateofbirth":
               USER.dob = cell;
               break;
-            case "entrydate":
-              USER.workEntryDate = cell;
-              break;
             case "address":
               USER.address = cell;
               break;
@@ -234,9 +336,10 @@ export class EditDepartmentService {
             //
           }
         });
-        USERS.users.push(USER);
+        USERS.push(USER);
       }
     });
     return USERS;
   }
+
 }

@@ -7,6 +7,7 @@ import { Department } from 'src/app/modules/department';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CompanyService } from 'src/app/services/company/company.service';
 import { DepartmentService } from 'src/app/services/department/department.service';
+import { EditDepartmentService } from 'src/app/services/edit-department/edit-department.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 import { UserUploadValidatorService } from 'src/app/services/user-upload-validator/user-upload-validator.service';
 
@@ -31,7 +32,8 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
     private companyService: CompanyService,
     private messageService: MessageDemoService,
     public userUploadValidator: UserUploadValidatorService,
-    private authService:AuthService
+    private authService:AuthService,
+    private editDepartmentService:EditDepartmentService
   ) {
 
   }
@@ -54,11 +56,8 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
 
   loadDepartments(): void {
     const companyId:number=Number.parseInt(this.route.snapshot.paramMap.get('id'));
-    console.log('Company Id '+companyId);
-    console.log('Auth Company Id : '+this.authService.companyId);
     this.companyService.getDTOById(Number.isNaN(companyId)?this.authService.companyId:companyId).subscribe({
       next: (companyData) => {
-        console.log('companydata : ' + JSON.stringify(companyData));
         this.company = companyData;
       },
 

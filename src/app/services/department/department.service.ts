@@ -15,7 +15,7 @@ export class DepartmentService {
     return this.http.get<Department[]>(`${this.baseUrl}`);
   }
 
-  getAllByCompany(id:number): Observable<Department[]> {
+  getAllByCompany(id:bigint): Observable<Department[]> {
     return this.http.get<Department[]>(`${this.baseUrl}/by-company/${id}`);
   }
 

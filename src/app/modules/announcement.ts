@@ -1,4 +1,4 @@
-import { AnnouncementResponseCondition, ContentType } from "../constants";
+import { AnnouncementResponseCondition, ContentType, Role } from "../constants";
 
 
 export interface Announcement {
@@ -25,6 +25,8 @@ export interface ScheduleList {
     title : string;
     createdAt : Date;
     contentType: ContentType;
+    countdown : string;
+    role : Role;
 }
 
 

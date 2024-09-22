@@ -182,8 +182,13 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  toggleDatePicker(show: boolean): void {
-    this.showDatePicker = show;
+  toggleDatePicker(event:any): void {
+    if(event.checked){
+      this.showDatePicker = true;
+    }else{
+      this.showDatePicker=false;
+    }
+    
   }
 
   triggerFileInput(): void {
@@ -322,7 +327,6 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-
   async saveTarget(): Promise<void> {
     if (this.canSaveTarget) {
       const confirmed = await this.messageService.confirmed('Save custom target group', 'Enter a title', 'Save', 'Cancel', 'WHITE', 'GREEN', true);
@@ -375,6 +379,8 @@ export class FormLayoutDemoComponent implements OnInit {
     this.title = '';
     this.file = null;
   }
+
+  
 
   isImage(): boolean {
     return this.filename?.match(/\.(jpg|jpeg|png|gif)$/i) !== null;

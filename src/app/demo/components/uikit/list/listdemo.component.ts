@@ -47,6 +47,9 @@ export class ListDemoComponent implements OnInit {
       name: categoryName.trim(),
       status: 'ACTIVE'
     };
+    
+    this.inputVisible = false;
+    this.buttonLabel = 'Add Category';
 
     this.categoryService.createCategory(newCategory).pipe(
       catchError(error => {
@@ -56,13 +59,8 @@ export class ListDemoComponent implements OnInit {
         }
         return throwError(error);
       })
-    )
-      .subscribe();
-    //console.log('Category:', newCategory);
-    this.inputVisible = false;
-    this.buttonLabel = 'Add Category';
-
-    this.categoryService.createCategory(newCategory).subscribe(
+    )  
+    .subscribe(
       data => {
         this.findAll(); // Refresh the category list
         this.messageService.add({
@@ -108,9 +106,21 @@ export class ListDemoComponent implements OnInit {
 
   toggleInput(): void {
     if (this.inputValue.trim() && this.inputVisible) {
-      console.log('data here : ' + this.inputValue);
-      this.add(this.inputValue);
-      this.inputValue = '';
+      // Show confirmation dialog
+      this.confirmationService.confirm({
+        message: 'Are you sure you want to submit this data?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          // Logic to add the input value
+          console.log('data here : ' + this.inputValue);
+          this.add(this.inputValue);
+          this.inputValue = '';
+        },
+        reject: () => {
+          console.log('Submit action cancelled');
+        }
+      });
     } else {
       this.inputVisible = true;
       this.buttonLabel = 'Submit';
@@ -122,6 +132,10 @@ export class ListDemoComponent implements OnInit {
       this.buttonLabel = 'Add Category';
     }
   }
+  resetInput() {
+    this.inputValue = ''; // Reset input field value
+}
+
 
   onGlobalFilter(table: Table, event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -130,7 +144,7 @@ export class ListDemoComponent implements OnInit {
 
   async delete(categoryId: number, status: Status): Promise<void> {
     if (status === 'ACTIVE') {
-      if (await this.messagedemoService.confirmed('Delete Confirmation', 'Do you want to delete this category?', 'Yes', 'No', 'WHITE', 'BLUE')) {
+      if ((await this.messagedemoService.confirmed('Delete Confirmation', 'Do you want to delete this category?', 'Yes', 'No', 'WHITE', 'BLUE')).confirmed) {
         this.categoryService.softDeleteCategory(categoryId).subscribe({
           complete: () => {
             this.findAll();
@@ -147,7 +161,7 @@ export class ListDemoComponent implements OnInit {
       }
     }
     else if (status === 'SOFT_DELETE') {
-      if (await this.messagedemoService.confirmed('Restore Confirmation', 'Do you want to restore this category?', 'Yes', 'No', 'WHITE', 'BLUE')) {
+      if ((await this.messagedemoService.confirmed('Restore Confirmation', 'Do you want to restore this category?', 'Yes', 'No', 'WHITE', 'BLUE')).confirmed) {
         this.categoryService.softUndeleteCategory(categoryId).subscribe({
           complete: () => {
             this.findAll();

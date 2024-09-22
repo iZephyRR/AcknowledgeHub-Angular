@@ -10,10 +10,9 @@
           class="p-button-outlined p-button-secondary" style="margin-right: 3px;"></button>
           <button pButton pRipple type="button" [disabled]="false" label="Upload from excel" (click)="uploadExcel()" icon="pi pi-file-excel"
           class="p-button-success" style="margin-right: 3px;"></button>
-        <button pButton pRipple type="button" [disabled]="editDepartmentValidator.hasError" label="Save" (click)="saveData()" icon="pi pi-save"
+        <button pButton pRipple type="button" [disabled]="editDepartmentValidator.hasError || !editDepartmentValidator.isChange" label="Save" (click)="saveData()" icon="pi pi-save"
           class="p-button-success"></button>
       </div>
-
     </div>
     <table class="data-table">
       <thead>
@@ -22,11 +21,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let row of editDepartmentValidator.showData.slice(1); let i = index">
+        <tr *ngFor="let row of editDepartmentValidator.showData.slice(1); let i = index" pTooltip="{{editDepartmentValidator.getRowError(i+1)?.message}}" [ngClass]="{'row-warning':editDepartmentValidator.getRowError(i+1)?.type=='warning','new-row':editDepartmentValidator.getRowError(i+1)?.type=='new'}">
           <td *ngFor="let cell of row; let j = index">
             <input
+            [disabled]="editDepartmentValidator.getFieldError(i + 1, j)?.type=='disable'"
              pTooltip="{{editDepartmentValidator.getFieldError(i + 1, j)?.message}}"
-              [ngClass]="{'warning':editDepartmentValidator.getFieldError(i + 1, j)?.type=='warning','error':editDepartmentValidator.getFieldError(i+1,j)?.type=='error','changed':editDepartmentValidator.getFieldError(i+1,j)?.type=='changed'  }"
+              [ngClass]="{'warning':editDepartmentValidator.getFieldError(i + 1, j)?.type=='warning','error':editDepartmentValidator.getFieldError(i+1,j)?.type=='error','changed':editDepartmentValidator.getFieldError(i+1,j)?.type=='changed'}"
               [value]="cell==undefined?null:cell" (blur)="editDepartmentValidator.updateCellValue(i, j, $event)" />
           </td>
         </tr>

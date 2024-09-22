@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { HR } from 'src/app/modules/company';
 import { UniqueFields } from 'src/app/modules/unique-fields';
 import { User, UserProfile } from 'src/app/modules/user';
-import { Users } from 'src/app/modules/user-excel-upload';
+import { UpdateUser, Users } from 'src/app/modules/user-excel-upload';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +13,13 @@ import { Users } from 'src/app/modules/user-excel-upload';
 export class UserService {
 
   private baseUrl = 'http://localhost:8080/api/v1';
+  photoLink:string;
 
   constructor(private http: HttpClient) {
 
   }
   getAllUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}/mr/users`);
+    return this.http.get<User[]>(`${this.baseUrl}/hrs/users`);
   }
 
   getUsersByCompany(): Observable<User[]> {
@@ -32,21 +33,17 @@ export class UserService {
   getProfileInfo():Observable<UserProfile>{
     return this.http.get<UserProfile>(`${this.baseUrl}/user/profile`);
   }
-
-  getUserWhoNotedWithInOneDay(announcementId : string) : Observable<User[]> {
-    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho1DNoted/${announcementId}`);
-  }
-
-  getUserWhoNotedWithInThreeDay(announcementId : string) : Observable<User[]> {
-    return this.http.get<User[]> (`${this.baseUrl}/getEmployeesWho3DNoted/${announcementId}`);
-  }
   
-  getAllByDepartmentID(id: number): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}/hrs/user/by-department/${id}`);
+  getAllByDepartmentID(id: bigint): Observable<UpdateUser[] | User[]> {
+    return this.http.get<UpdateUser[]>(`${this.baseUrl}/hrs/user/by-department/${id}`);
   }
 
   uploadExcel(users: Users): Observable<User[]> {
     return this.http.post<User[]>(`${this.baseUrl}/hrs/add-users`, users);
+  }
+
+  uploadEditExcel(users: UpdateUser[]): Observable<User[]> {
+    return this.http.put<User[]>(`${this.baseUrl}/hrs/edit-users`, users);
   }
 
   getUniqueFields(): Observable<UniqueFields> {

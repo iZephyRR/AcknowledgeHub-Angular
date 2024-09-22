@@ -29,6 +29,7 @@ export class AppTopBarComponent implements OnInit {
   notifications: Notification[] = []; // General notifications
   notedNotifications: Notification[] = []; // Noted notifications
   commentNotifications:Notification[]=[];
+  replyNotifications:Notification[]=[];
   combinedNotifications: Notification[] = []; // Combined list for rendering
   showNotifications: boolean = false;
   showChatNotifications: boolean =false;// Toggle for notification dropdown
@@ -88,6 +89,7 @@ export class AppTopBarComponent implements OnInit {
     this.notificationService.loadNotifications();
     this.loadNotedNotifications();
     this.loadNotificationsForComment();
+    this.loadReplyNotificationsForComment();
     this.notificationService.notifications$.subscribe(notifications => {
       this.notifications = notifications;
       this.updateCombinedNotifications();
@@ -148,6 +150,30 @@ export class AppTopBarComponent implements OnInit {
     );
   }
 
+  loadReplyNotificationsForComment(): void {
+    console.log("Attempting to load replies notifications...");
+    this.notificationService.loadReplyCommentsNotifications().subscribe(
+      (replyNotifications: Notification[]) => {
+        console.log("Reply replies notifications fetched successfully:", replyNotifications); // Check here
+
+        this.replyNotifications = replyNotifications;
+        this.unreadChatCount = this.replyNotifications.filter(notification => !notification.isRead).length;
+
+        if (this.replyNotifications.length > 0) {
+          console.log('First reply notification message:', this.replyNotifications[0].message);
+        } else {
+          console.log('No reply notifications available.');
+        }
+
+        this.updateCombinedNotifications();
+      },
+      (error) => {
+        console.error('Error loading reply comment notifications:', error); // Ensure you see this log in case of an error
+      }
+    );
+  }
+
+
   fetchAnnouncementId(userId: string): Observable<string> {
     return from(
       this.firestore.collection('notifications')
@@ -174,6 +200,7 @@ export class AppTopBarComponent implements OnInit {
   }
 
 
+
   loadNotedNotifications(): void {
     this.notificationService.getNotedNotifications()
       .subscribe(
@@ -194,13 +221,15 @@ export class AppTopBarComponent implements OnInit {
       );
   }
 
+
   updateCombinedNotifications(): void {
-    this.combinedNotifications = [...this.notifications, ...this.notedNotifications,...this.commentNotifications]
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications,...this.commentNotifications,...this.replyNotifications]
       .sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
     this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
     this.loadNotificationsFromLocalStorage();
     this.loadInitialVisibleNotifications(); // Load the initial set of visible notifications
   }
+
 
   saveNotificationsToLocalStorage(): void {
     const readNotifications = this.combinedNotifications.map(notification => ({
@@ -209,6 +238,7 @@ export class AppTopBarComponent implements OnInit {
     }));
     localStorage.setItem('notifications', JSON.stringify(readNotifications));
   }
+
 
   loadNotificationsFromLocalStorage(): void {
     const savedNotifications = localStorage.getItem('notifications');
@@ -404,36 +434,36 @@ export class AppTopBarComponent implements OnInit {
 
   loadMoreNotifications(): void {
     if (this.loading) return; // Prevent multiple clicks while loading
-  
+
     this.loading = true;
-  
+
     // Simulate an async loading delay (e.g., fetching from the server)
     setTimeout(() => {
       this.currentPage++;
-  
+
       // Get the next set of notifications
       const newNotifications = this.combinedNotifications.slice(
         this.visibleNotifications.length,
         this.pageSize * this.currentPage
       );
-  
+
       // Add new notifications to the visible list
       this.visibleNotifications = [...this.visibleNotifications, ...newNotifications];
-  
+
       // Check if we can load more
       this.checkCanLoadMore();
-  
+
       this.loading = false; // Reset loading state
       this.cd.detectChanges();
     }, 1500); // Simulate 1.5 seconds delay
   }
-  
+
 
   checkCanLoadMore(): void {
     // Check if there are more notifications to load than what's currently visible
     this.canLoadMore = this.visibleNotifications.length < this.combinedNotifications.length;
   }
-  
+
 
 
   loadInitialVisibleNotifications(): void {

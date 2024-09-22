@@ -10,29 +10,16 @@
                 <div class="form-group d-flex align-items-center">
                     <div class="title-group flex-grow-1">
                         <label for="title">Title</label>
-                        <input type="text" id="title" name="title" [(ngModel)]="title" required />
-                    </div>
-
-                    <div class="category-group">
-                        <label for="category">Category</label>
-                        <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory" [options]="categories"
-                            placeholder="Select a category" optionLabel="name" optionValue="id" required></p-dropdown>
+                        <input type="text" id="title" name="title" [(ngModel)]="title" required style="width: 100%;" />
                     </div>
                 </div>
-
                 <br>
-
                 <!-- PDF File Upload -->
                 <div class="form-group d-flex align-items-center">
                     <div class="pdf-upload-group flex-grow-1">
-                        <label for="pdf-file">Announcement</label>
-
-
-                        <button type="button" pButton label="Open" icon="pi pi-folder-open" class="p-button-secondary"
+                        <!-- <label for="pdf-file">Announcement</label> -->
+                        <button type="button" pButton label="Choose a file" icon="pi pi-folder-open" class="p-button-secondary"
                             (click)="fileInput.click()"></button>
-
-
-
                         <!-- Hidden file input -->
                         <input type="file" id="media" name="media"
                             accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
@@ -53,18 +40,23 @@
                         </div>
                     </div>
                 </div>
-
                 <br>
                 <!-- Target Select View -->
                 <div class="form-group">
-                    <div class="target-group d-flex justify-content-between align-items-center">
-                        <label for="createdGroups">Target:</label>
-                        <p-dropdown id="createdGroups" name="createdGroups" [(ngModel)]="selectedGroup"
-                            [options]="groups" placeholder="Select Created Groups" optionLabel="title" optionValue="id"
-                            [filter]="true" [showClear]="true" class="dropdown">
-                        </p-dropdown>
+                    <div>
+                        <div class="form-group" style="display: flex;justify-content: space-between;">
+                            <div class="category-group">
+                                <p-dropdown id="category" name="category" [(ngModel)]="selectedCategory"
+                                    [options]="categories" placeholder="Select a category" optionLabel="name"
+                                    optionValue="id" required></p-dropdown>
+                            </div>
+                            <p-dropdown id="createdGroups" name="createdGroups" [(ngModel)]="selectedGroup"
+                                [options]="groups" placeholder="Select Created Groups" optionLabel="title"
+                                optionValue="id" [filter]="true" [showClear]="true" class="dropdown">
+                            </p-dropdown>
+                        </div>
                     </div>
-
+                    <br>
                     <!-- Radio Buttons for Selecting View -->
                     <div class="radio-group">
                         <label>
@@ -150,41 +142,39 @@
                     </p-checkbox>
 
                     <!-- Channel Options beside the Save Target -->
-                    <div class="channel-options d-flex align-items-center ml-4">
-                        <label>Channel:Default Telegram</label>
-                        <div class="form-check ml-2">
-                            <p-checkbox name="channel" [binary]="true" [(ngModel)]="isEmailSelected" inputId="email"
-                                label="Email">
-                            </p-checkbox>
+
+                </div>
+                <br>
+                <div class="form-group" style="display: flex;justify-content: space-between;">
+                    <div>
+                        <div class="form-group">
+                            <div class="schedule-options">
+                                <p-checkbox binary="true" label="Enable Schedule" on
+                                    (onChange)="toggleDatePicker($event)" class="p-checkbox-success">
+
+                                </p-checkbox>
+                            </div>
+                        </div>
+                        <br>
+                        <!-- Date Picker (hidden by default) -->
+                        <div class="form-group" *ngIf="showDatePicker">
+                            <label for="schedule-date">Select Date and Time</label><br>
+                            <input type="datetime-local" id="schedule-date" name="schedule-date"
+                                [(ngModel)]="scheduleDate" [min]="currentDate" required />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="channel-options" style="display: flex;flex-direction: column;">
+                            <!-- <label>Channel:Default Telegram</label> -->
+                            <div class="form-check">
+                                <p-checkbox pTooltip="Send from Telegram is default" name="channel" [binary]="true"
+                                    [(ngModel)]="isEmailSelected" inputId="email" label="Send from Email">
+                                </p-checkbox>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <br>
-                <!-- Schedule Options -->
-                <div class="form-group">
-                    <label>Schedule:</label>
-                    <div class="schedule-options">
-                        <div class="form-check-inline">
-                            <input class="form-check-input" type="radio" name="schedule" id="schedule-now" value="now"
-                                [(ngModel)]="scheduleOption" (change)="toggleDatePicker(false)" required />
-                            <label class="form-check-label" for="schedule-now"> Now </label>
-                        </div>
-                        <div class="form-check-inline">
-                            <input class="form-check-input" type="radio" name="schedule" id="schedule-later"
-                                value="later" [(ngModel)]="scheduleOption" (change)="toggleDatePicker(true)" required />
-                            <label class="form-check-label" for="schedule-later"> Later </label>
-                        </div>
-                    </div>
-                </div>
-                <br>
-                <!-- Date Picker (hidden by default) -->
-                <div class="form-group" *ngIf="showDatePicker">
-                    <label for="schedule-date">Select Date and Time</label>
-                    <input type="datetime-local" id="schedule-date" name="schedule-date" [(ngModel)]="scheduleDate"
-                        [min]="currentDate" required />
-                </div>
-                <br>
-                <!-- Submit Button -->
                 <div class="form-group">
                     <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length && !selectedGroup)
                         || !filePreview " label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
@@ -201,9 +191,6 @@
     </div>
 </div>
 
-
-
-
 <style>
     /* Styles for radio buttons */
     .radio-group {
@@ -215,7 +202,16 @@
     .radio-group label {
         display: flex;
         align-items: center;
+        /* Add a margin to the left of the label if needed */
+        margin-left: 0.5rem;
+        /* Adjust as necessary */
     }
+
+    .radio-group input[type="radio"] {
+        margin-right: 0.5rem;
+        /* Space between radio button and label */
+    }
+
 
     .tree-wrapper {
         max-height: 400px;
@@ -260,28 +256,22 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        /* height: 100vh;
-		padding: 20px; */
     }
 
-    /* Form Card Styles */
     .form-card {
         border-radius: 12px;
         box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 800px;
+        width: 70%;
         padding: 40px;
         background-color: #ffffff;
     }
 
-    /* Card Header Styles */
     .card-header {
         padding: 20px;
         text-align: center;
     }
 
 
-    /* Input and button styles */
     input[type="text"],
     input[type="file"] {
         width: 100%;
@@ -303,7 +293,6 @@
         font-weight: bold;
     }
 
-    /* Button Styles */
     .btn-primary {
         background-color: #007bff;
         color: #ffffff;
@@ -353,7 +342,6 @@
         background-color: #c82333;
     }
 
-    /* announcement-form.component.css */
 
     .search-bar {
         margin-bottom: 1rem;
@@ -386,17 +374,14 @@
     .p-inputtext-sm {
         width: 100%;
         max-width: 250px;
-        /* Adjust width as needed */
     }
 
     .action-buttons {
         display: flex;
         gap: 1rem;
-        /* Spacing between buttons */
     }
 
 
-    /* Style for User Details Dialog */
     .user-details-container {
         padding: 1rem;
     }
@@ -424,7 +409,6 @@
         margin-right: 1rem;
     }
 
-    /* checkbox-list.component.css */
     .tree-container {
         font-family: Arial, sans-serif;
     }
@@ -453,10 +437,8 @@
     .tree-children {
         list-style-type: none;
         padding-left: 20px;
-        /* Adjust for indentation */
         margin: 0;
         display: none;
-        /* Hidden by default */
     }
 
     .tree-node {
@@ -474,7 +456,6 @@
 
     .tree-node>.node-label::before {
         content: '▶';
-        /* Arrow icon */
         display: inline-block;
         width: 20px;
         text-align: center;
@@ -484,94 +465,70 @@
 
     .tree-node.open>.node-label::before {
         transform: rotate(90deg);
-        /* Rotate arrow when open */
     }
 
-    /* Base font size */
     .node-label {
         font-size: 16px;
-        /* Adjust to your desired font size */
     }
 
-    /* Font size for companies */
     .tree-node>.node-label {
         font-size: 16px;
-        /* Example font size for companies */
     }
 
-    /* Font size for departments */
     .tree-node .tree-children>.tree-node>.node-label {
         font-size: 14px;
-        /* Example font size for departments */
     }
 
     .channel-options {
         display: flex;
-        /* Makes the child elements (checkboxes) appear side by side */
         gap: 20px;
-        /* Adds space between the checkboxes */
         align-items: center;
-        /* Centers the checkboxes vertically with the label */
     }
 
     .target-group {
         display: flex;
         justify-content: space-between;
-        /* Distributes space between label and dropdown */
         align-items: center;
-        /* Centers the items vertically */
         margin-bottom: 1rem;
-        /* Adds some spacing below */
         gap: 1rem;
-        /* Adds spacing between the label and dropdown */
     }
 
     .dropdown {
         min-width: 200px;
-        /* Ensures the dropdown has a minimum width */
     }
 
 
-    /* Responsive font size */
     @media (max-width: 600px) {
         .node-label {
             font-size: 0.875rem;
-            /* Smaller font size on smaller screens */
         }
     }
 
-    /* Form Layout Adjustment */
-
 
     .category-group {
-        margin-left: 30px;
-        /* Pushes the category group to the right */
+
+        flex: 0 0 30px;
     }
 
     .title-group {
         margin-right: 20px;
-        /* Adds spacing between title and category */
     }
 
     .title-group input[type="text"] {
         width: 420px;
-        /* Ensures the input takes up the full width of its container */
     }
 
 
     .pdf-upload-group {
         flex: 1;
-        /* Ensures the PDF upload section takes up available space */
     }
 
     .d-flex {
         display: flex;
-        /* Apply flex display */
     }
 
     .align-items-center {
         align-items: center;
-        /* Vertically center items */
     }
 
 
@@ -579,7 +536,6 @@
     @media (max-width: 768px) {
         .d-flex {
             flex-direction: column;
-            /* Stack elements vertically on smaller screens */
         }
 
     }

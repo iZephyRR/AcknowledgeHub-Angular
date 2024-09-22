@@ -1,100 +1,153 @@
 <div class="schedule-list">
-	<div *ngFor="let group of groupedAnnouncements" class="card">
-	  <div class="card-header">
-		{{ group.date | date: 'dd/MM/yyyy' }}
-	  </div>
-	  <div class="card-body">
-		<div *ngFor="let announcement of group.announcements" class="announcement-item">
-		  <div class="announcement-header">
-			<h5 class="card-title">
-			  {{ announcement.title }}
-			</h5>
-			<p class="announcement-time">{{ group.date | date: 'shortTime' }}</p>
-		  </div>
-		  <div class="button-group">
-			<button class="action-button" (click)="uploadNow(announcement.id)">Upload Now</button>
-			<button class="action-button" (click)="deleteSchedule(announcement.id)">Delete</button>
-		  </div>
-		</div>
-	  </div>
-	</div>
+  <div *ngIf="groupedAnnouncements && groupedAnnouncements.length > 0; else noAnnouncements">
+  <div *ngFor="let group of groupedAnnouncements" class="card">
+    <div class="card-header">
+      {{ group.date | date: 'dd/MM/yyyy' }}
+    </div>
+    <div class="card-body">
+      <div *ngFor="let announcement of group.announcements" class="announcement-item">
+        <div class="announcement-header">
+          <h5 class="card-title">
+            {{ announcement.title }} By {{announcement.role}}
+          </h5>
+          <p class="announcement-time">{{ group.date | date: 'shortTime' }}</p>
+          <p><strong>Countdown:</strong> {{ announcement.countdown }}</p>
+        </div>
+        <div class="button-group">
+          <button class="action-button upload-button" (click)="uploadNow(announcement.id)">
+            <i class="pi pi-check"></i> Upload Now
+          </button>
+          <button class="action-button delete-button" (click)="deleteSchedule(announcement.id)">
+            <i class="pi pi-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-  
-  <style>
-	.schedule-list {
-	  display: flex;
-	  flex-wrap: wrap; /* Allows cards to wrap onto the next row */
-	  gap: 10px;
-	  justify-content: space-between; /* Distribute space between cards */
-	}
-  
-	.card {
-	  border: 1px solid #ddd;
-	  border-radius: 4px;
-	  padding: 10px;
-	  background-color: #fff;
-	  width: calc(50% - 10px); /* Adjust the width for 2 cards per row */
-	  box-sizing: border-box;
-	  display: flex;
-	  flex-direction: column;
-	  height: auto; /* Allow the height to adjust based on content */
-	}
-  
-	.card-header {
-	  font-weight: bold;
-	  font-size: 1em;
-	  background-color: #f5f5f5;
-	  padding: 8px;
-	  border-bottom: 1px solid #ddd;
-	  flex: 0 1 auto;
-	}
-  
-	.card-body {
-	  padding: 8px;
-	  flex: 1 1 auto; /* Allow body to expand and fill available space */
-	}
-  
-	.announcement-item {
-	  display: flex;
-	  justify-content: space-between; /* Space between title/time and buttons */
-	  align-items: flex-start; /* Align items at the top */
-	  margin-bottom: 8px;
-	}
-  
-	.announcement-header {
-	  display: flex;
-	  flex-direction: column;
-	  flex: 1; /* Allow header to take available space */
-	}
-  
-	.card-title {
-	  font-size: 0.9em;
-	  margin: 0;
-	}
-  
-	.announcement-time {
-	  font-size: 0.8em;
-	  color: #777;
-	  margin-top: 4px; /* Space between title and time */
-	}
-  
-	.button-group {
-	  display: flex;
-	  flex-direction: column;
-	  gap: 5px; /* Space between buttons */
-	}
-  
-	.action-button {
-	  background-color: #007bff;
-	  color: #fff;
-	  border: none;
-	  border-radius: 4px;
-	  padding: 5px 10px;
-	  cursor: pointer;
-	}
-  
-	.action-button:hover {
-	  background-color: #0056b3;
-	}
-  </style>
-  
+  </div>
+  <ng-template #noAnnouncements>
+    
+    <p>There are no announcements in the schedule list.</p>
+  </ng-template>
+</div>
+
+<style>
+  .schedule-list {
+    display: flex;
+    flex-wrap: wrap;
+    /* Allows cards to wrap onto the next row */
+    gap: 10px;
+    justify-content: space-between;
+    /* Distribute space between cards */
+  }
+
+  .card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #fff;
+    width: calc(50% - 10px);
+    /* Adjust the width for 2 cards per row */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    /* Allow the height to adjust based on content */
+  }
+
+  .card-header {
+    font-weight: bold;
+    font-size: 1.2em;
+    /* Increased text size */
+    background-color: #007bff;
+    /* Blue background */
+    color: #fff;
+    /* White text */
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    /* Space below the header */
+  }
+
+  .card-body {
+    padding: 10px;
+    flex: 1 1 auto;
+    /* Allow body to expand and fill available space */
+  }
+
+  .announcement-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Space between title/time and buttons */
+    margin-bottom: 10px;
+    /* Space between items */
+  }
+
+  .announcement-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    /* Space between title, time, and countdown */
+    flex: 1;
+  }
+
+  .card-title {
+    font-size: 1.1em;
+    /* Increased font size */
+    margin: 0;
+  }
+
+  .announcement-time {
+    font-size: 1em;
+    /* Increased font size */
+    color: #777;
+    margin-left: 10px;
+    /* Space between title and time */
+  }
+
+  .countdown {
+    font-size: 1em;
+    /* Increased font size */
+    color: #888;
+  }
+
+  .button-group {
+    display: flex;
+    gap: 10px;
+    /* Space between buttons */
+  }
+
+  .action-button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    /* Space between icon and text */
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    /* Adjusted padding for better button size */
+    color: #fff;
+    font-size: 0.9em;
+    /* Adjusted font size */
+    cursor: pointer;
+  }
+
+  .upload-button {
+    background-color: #28a745;
+    /* Green */
+  }
+
+  .upload-button:hover {
+    background-color: #218838;
+  }
+
+  .delete-button {
+    background-color: #dc3545;
+    /* Red */
+  }
+
+  .delete-button:hover {
+    background-color: #c82333;
+  }
+</style>

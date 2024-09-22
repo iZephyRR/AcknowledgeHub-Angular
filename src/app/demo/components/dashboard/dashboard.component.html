@@ -22,7 +22,7 @@
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-2">Total Company</span>
-                        <div class="text-primary font-semibold text-2xl">15</div>
+                        <div class="text-primary font-semibold text-2xl">{{companyCount}}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-orange-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
                         <i class="pi pi-briefcase text-orange-600 text-2xl"></i>
@@ -39,7 +39,7 @@
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-2">Employees</span>
-                        <div class="text-primary font-semibold text-2xl">8441</div>
+                        <div class="text-primary font-semibold text-2xl">{{employeeCount}}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-cyan-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
                         <i class="pi pi-users text-cyan-600 text-2xl"></i>
@@ -117,16 +117,86 @@
     <!-- Bar Chart placed in the next row -->
     <div class="grid grid-nogutter mt-4">
         <div class="col-12">
-            <div class="enterprise-chart-card_1 shadow-3 surface-card">
-                <h5 class="text-primary">Bar Chart - Category Count</h5>
-                <p-chart type="bar" [data]="barChartData" [options]="" style="height: 300px;"></p-chart>
+            <div class="enterprise-chart-card_1 shadow-3 surface-card" style="min-height: 350px; padding: 20px; position: relative;">
+                <h5 class="text-primary" style="margin-bottom: 1.5rem;">Bar Chart - Category Count</h5>
+
+                <!-- Year Selector in the top right corner -->
+                <div class="year-selector">
+                    <label for="yearSelect" class="year-selector-label"></label>
+                    <select id="yearSelect" [(ngModel)]="selectedYear" (change)="onYearChange(selectedYear)" class="custom-select">
+                        <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+                    </select>
+                </div>
+
+                <!-- Pagination icons inside the card -->
+                <div class="text-center mb-3">
+                    <span class="pagination-icon" (click)="showPreviousMonths()" [class.disabled]="currentMonthPage === 0">
+                        &#171;
+                    </span>
+                    <span class="pagination-icon" (click)="showNextMonths()" [class.disabled]="(currentMonthPage + 1) * monthsPerPage >= allMonths.length">
+                        &#187;
+                    </span>
+                </div>
+
+                <!-- Chart -->
+                <p-chart type="bar" [data]="barChartData" [options]="chartOptionsBar" style="height: 300px; width: 100%;"></p-chart>
             </div>
         </div>
     </div>
 
 
 
+
+    <!-- Pagination buttons -->
+
+
+
+
     <style>
+        .year-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.year-selector-label {
+    margin-right: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.custom-select {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+    color: #333;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.custom-select:focus {
+    border-color: #007bff;
+}
+        .pagination-icon {
+    cursor: pointer;
+    font-size: 24px; /* Adjust the size as needed */
+    margin: 0 10px;
+    color: var(--text-color); /* Use your theme's text color */
+}
+
+.pagination-icon.disabled {
+    cursor: not-allowed;
+    color: #ccc; /* Greyed-out color for disabled state */
+}
         .percentages {
             margin-top: 1em;
             text-align: center;
@@ -149,13 +219,13 @@
 
         .enterprise-chart-card_1 {
             flex: 1 1 100%;
-            min-width: 410px;
-            max-width: 100px;
-            height: 455px;
+            min-width: 480px;
+            max-width: 80px;
+            height: 350px;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             border-radius: 0.75rem;
             background-color: var(--surface-card);
             border: 1px solid var(--surface-border, #e0e0e0);

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Comment, CommentList } from 'src/app/modules/comment';
+import { Reply, ReplyList } from 'src/app/modules/reply';
 
 
 @Injectable({
@@ -22,5 +23,11 @@ export class CommentService {
     return this.http.get<CommentList[]>(`${this.apiUrl}/getById/${announcementId}`);
   }
 
-  // Other methods (e.g., getComments, deleteComment) can be added here as needed
+  replyTo(reply : Reply):Observable<Reply> {
+    return this.http.post<Reply>(`${this.apiUrl}/replyToComment`,reply);
+  }
+
+  getReply(commentId: number) : Observable<ReplyList[]> {
+    return this.http.get<ReplyList[]> (`${this.apiUrl}/getReplyBy/${commentId}`);
+  }
 }
