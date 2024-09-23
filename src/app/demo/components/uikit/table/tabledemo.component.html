@@ -3,7 +3,7 @@
         <div class="card">
             <h5>User List</h5>
             <p-table #dt1 [value]="users" dataKey="id" [rows]="10" [loading]="loading" [rowHover]="true"
-                styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name', 'email', 'status']"
+                styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name', 'email','role','company','department', 'status']"
                 responsiveLayout="scroll">
                 <ng-template pTemplate="caption">
                     <div class="flex justify-content-between flex-column sm:flex-row">
@@ -19,46 +19,37 @@
                     <tr>
                         <th style="min-width: 12rem">Name<p-columnFilter type="text" field="name" display="menu"
                                 placeholder="Search by name"></p-columnFilter></th>
-                        <th style="min-width: 12rem">Email</th>
+                        <th style="min-width: 12rem">Email<p-columnFilter type="text" field="email" display="menu"
+                            placeholder="Search by name"></p-columnFilter></th>
                         <th style="min-width: 12rem">Role<p-columnFilter type="text" field="role" display="menu"
                                 placeholder="Search by role"></p-columnFilter></th>
-                        <th style="min-width: 10rem">Work Entry Date <p-columnFilter type="date" field="workentrydate"
-                                display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
-                        </th>
                         <th style="min-width: 10rem">Company<p-columnFilter type="text" field="company" display="menu"
                                 placeholder="Search by company"></p-columnFilter></th>
                         <th style="min-width: 12rem">Department<p-columnFilter type="text" field="department"
                                 display="menu" placeholder="Search by department"></p-columnFilter></th>
                         <th style="min-width: 12rem">Status<p-columnFilter field="status" matchMode="equals"
                                 display="menu">
-                                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                    <p-dropdown [ngModel]="value" [options]="statuses" (onChange)="filter($event.value)"
+                                <ng-template pTemplate="filter" let-user let-filter="filterCallback">
+                                    <p-dropdown [ngModel]="user" [options]="statuses" (onChange)="filter($event.value)"
                                         placeholder="Any" [style]="{'min-width': '12rem'}">
                                         <ng-template let-option pTemplate="item">
                                             <span
-                                                [class]="'customer-badge status-' + option.value">{{option.label}}</span>
+                                                >eee</span>
                                         </ng-template>
                                     </p-dropdown>
                                 </ng-template>
                             </p-columnFilter></th>
-                        <th style="min-width: 8rem">Actions</th>
-
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-user>
-                    <tr>
+                    <tr (click)="systemService.showDetails(user)">
                         <td>{{user.name}}</td>
                         <td>{{user.email}}</td>
-                        <td>{{user.role}}</td>
-                        <td>{{ user.workEntryDate | date: 'MM/dd/yyyy' }}</td>
+                        <td>{{systemService.changeRoleToNormalCase(user.role)}}</td>
                         <td>{{user.companyName}}</td>
                         <td>{{user.departmentName}}</td>
                         <td>{{user.status}}</td>
-                        <td>
-                            <button pButton pRipple type="button" label="Info" class="p-button-info p-button-text"
-                                (click)="showDetails(user)"></button>
 
-                        </td>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="emptymessage">
@@ -73,85 +64,3 @@
                 </ng-template>
             </p-table>
         </div>
-    </div>
-</div>
-<!-- Overlay for User Details Card -->
-<div *ngIf="selectedUser" class="overlay" >
-    <div class="user-details-card animate-zoom">
-        <!-- Close Button at the Top Right -->
-        <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-text close-button" 
-            (click)="closeDetails()"></button>
-
-        <h5>User Details</h5>
-        <div>
-            <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-img">
-            
-            <p><strong>Name:</strong> {{selectedUser.name}}</p>
-                <p><strong>Email:</strong> {{selectedUser.email}}</p>
-                <p><strong>Address:</strong> {{selectedUser.address}}</p>
-                <p><strong>Gender:</strong> {{selectedUser.gender}}</p>
-                <p><strong>Date of Birth:</strong> {{selectedUser.dob | date: 'MM/dd/yyyy' }}</p>
-                <p><strong>NRC:</strong> {{selectedUser.nrc}}</p>
-                <p><strong>Role:</strong> {{selectedUser.role}}</p>
-                <p><strong>Company:</strong> {{selectedUser.companyName}}</p>
-                <p><strong>Department:</strong> {{selectedUser.departmentName}}</p>
-                <p><strong>Work Entry Date:</strong> {{selectedUser.workEntryDate | date: 'MM/dd/yyyy' }}</p>
-                <p><strong>Staff ID:</strong> {{selectedUser.stuffId}}</p>
-                <p><strong>Telegram Username:</strong> {{selectedUser.telegramUsername}}</p>
-                <p><strong>Photo Link:</strong> <img [src]="selectedUser.photolink" alt="User Photo" style="max-width: 100%; height: auto;" /></p>
-                <p><strong>Status:</strong> {{selectedUser.status}}</p>
-        </div>
-    </div>
-</div>
-
-<style>
-    
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000; /* Ensure it appears over other content */
-}
-
-/* User Details Card */
-.user-details-card {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 600px;
-    z-index: 1001; /* Above overlay */
-    position: relative;
-    transform: scale(0.9); /* Initial zoom-out effect */
-}
-
-/* Close Button */
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 1002;
-}
-
-/* Zoom-out animation */
-@keyframes zoom-out {
-    0% {
-        transform: scale(0.9);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-.animate-zoom {
-    animation: zoom-out 0.3s ease-in-out;
-}
-
-</style>

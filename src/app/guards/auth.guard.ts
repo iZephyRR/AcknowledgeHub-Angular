@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
     private authService: AuthService
   ) { }
 
-  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> | boolean{
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean>{
     return this.authService.check(route.data['roles'] || []);
   }
 }

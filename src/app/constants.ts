@@ -6,11 +6,13 @@ export type Role = 'ADMIN' | 'MAIN_HR' | 'MAIN_HR_ASSISTANCE' | 'HR' | 'HR_ASSIS
 
 export type Gender = 'MALE' | 'FEMALE';
 
-export type AnnouncementStatus = 'EDITING' | 'PENDING' | 'APPROVED' | 'DECLINED'
+export type AnnouncementStatus = 'EDITING' | 'PENDING' | 'APPROVED' | 'DECLINED';
 
-export type ContentType = 'AUDIO' | 'EXCEL' | 'IMAGE' | 'PDF' | 'VIDEO'
+export type ContentType = 'AUDIO' | 'EXCEL' | 'IMAGE' | 'PDF' | 'VIDEO';
 
-export type Status2 = 'FALSE' | 'TRUE' | 'TRUE_PENDING'
+export type Status2 = 'FALSE' | 'TRUE' | 'TRUE_PENDING';
+
+export type AnnouncementResponseCondition = 'CREATOR'|'RECEIVER'|'VIEWER';
 
 export type Color =
   'ALICEBLUE' | 'ANTIQUEWHITE' | 'AQUA' | 'AQUAMARINE' | 'AZURE' | 'BEIGE' |

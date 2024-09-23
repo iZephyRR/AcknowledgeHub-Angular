@@ -3,6 +3,9 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { HttpEvent } from '@angular/common/http';
+import { Role } from 'src/app/constants';
+import { AuthService } from '../auth/auth.service';
+import { User } from 'src/app/modules/user';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +25,11 @@ export class SystemService {
   private blockBackground = signal(false);
   private message = signal('');
   //Current rout
-  public currentRout=signal('');
+  public currentRout = signal('');
+  //User card
+userProfile=signal('');
+  selectedUser=signal(null);
+  selectedUserProfile=signal('');
 
   showLoading(message: string, hideBackground?: boolean): void {
     this.loading.set(true);
@@ -105,11 +112,6 @@ export class SystemService {
     return this.loadingMessage();
   }
 
-  restartPage(): void {
-    this.router.navigate(['/']);
-  }
-
-
   getShowValue(): boolean {
     return this.showValue();
   }
@@ -126,5 +128,29 @@ export class SystemService {
     return this.message();
   }
 
+  showDetails(user: User) {
+    this.selectedUser.set(user);
+    console.log("selected user : ", this.selectedUser());
+    this.selectedUserProfile.set( this.selectedUser().photoLink ? `data:image/png;base64,${this.selectedUser().photoLink}` : undefined) ;
+  }
+  closeDetails() {
+    this.selectedUser.set(null);
+  }
 
+  changeRoleToNormalCase(role: Role): string {
+    switch (role) {
+      case 'ADMIN':
+        return 'Admin'
+      case 'MAIN_HR':
+        return 'Main HR'
+      case 'MAIN_HR_ASSISTANCE':
+        return 'Main HR assistance'
+      case 'HR_ASSISTANCE':
+        return 'HR assistance'
+      case 'STAFF':
+        return 'Staff'
+      default:
+        return role;
+    }
+  }
 }

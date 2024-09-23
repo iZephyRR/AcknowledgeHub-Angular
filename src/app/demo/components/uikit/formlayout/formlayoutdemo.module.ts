@@ -19,6 +19,7 @@ import { TreeTableModule } from 'primeng/treetable';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { TableModule } from 'primeng/table';
 		TreeModule,  // Add TreeModule to imports
 		CheckboxModule,
 		DialogModule,
-		TableModule
+		TableModule,
+		TooltipModule
 	],
 	declarations: [FormLayoutDemoComponent]
 })

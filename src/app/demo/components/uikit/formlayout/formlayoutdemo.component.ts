@@ -24,11 +24,12 @@ import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
   selector: 'app-form-layout-demo',
   templateUrl: './formlayoutdemo.component.html',
 })
+
 export class FormLayoutDemoComponent implements OnInit {
 
   groups: CustomTergetGroup[];
   canSaveTarget: boolean;
-  selectedGroup: string | null = null;
+  selectedGroup: number | null = null;
   categories: Category[] = [];
   departments: Department[] = [];
   companies: TreeNode[] = [];
@@ -51,11 +52,12 @@ export class FormLayoutDemoComponent implements OnInit {
   loading: boolean = false;
   filter: string = ''; // Updated to string for search functionality
   displayByOneEmployeeDialog: boolean;
-  selectedChannels: string[] = ['telegram'];
   channels: any;
   selectedEmployees: any[] = [];
   viewOption: 'tree' | 'table' = 'tree'; // Default to 'tree'
   selectAllCompanies: boolean;
+  isEmailSelected: boolean = false;
+  currentDate: string = '';
 
   constructor(
     private announcementService: AnnouncementService,
@@ -67,7 +69,10 @@ export class FormLayoutDemoComponent implements OnInit {
     private systemService: SystemService,
     private maptotreeService: MaptotreeService,
     private userService: UserService
-  ) { }
+  ) {
+    const now = new Date();
+    this.currentDate = now.toISOString().slice(0, 16);
+  }
 
   ngOnInit() {
     this.customTargetGroupService.findAllByHRID().subscribe({
@@ -95,13 +100,8 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  onViewChange(option: 'tree' | 'table') {
+  onViewChange(option: 'tree' | 'table'): void {
     this.viewOption = option;
-    // if (this.viewOption == 'tree') {
-    //   this.selectedEmployees = [];
-    // } else {
-    //   this.selectedTargets = [];
-    // }
   }
 
   retrieveAllUsers(): void {
@@ -160,7 +160,9 @@ export class FormLayoutDemoComponent implements OnInit {
       map((company) => this.maptotreeService.mapCompanyToTreeNode(company))
     ).subscribe(
       (treeNode) => {
+        console.log(treeNode);
         this.companies = [treeNode];
+
       },
       error => {
         console.error('Error fetching companies data:', error);
@@ -175,8 +177,13 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  toggleDatePicker(show: boolean): void {
-    this.showDatePicker = show;
+  toggleDatePicker(event: any): void {
+    if (event.checked) {
+      this.showDatePicker = true;
+    } else {
+      this.showDatePicker = false;
+    }
+
   }
 
   triggerFileInput(): void {
@@ -190,6 +197,7 @@ export class FormLayoutDemoComponent implements OnInit {
     this.systemService.showProgress('Uploading an announcement...', true, false, 5);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
+    console.log("group : ", this.selectedGroup);
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
         console.error('Error status:', error.status);
@@ -204,7 +212,6 @@ export class FormLayoutDemoComponent implements OnInit {
           this.resetForm(form);
           this.clearPreview();
         });
-
       },
       error: () => {
         this.messageService.toast("error", "Can't Create");
@@ -227,7 +234,7 @@ export class FormLayoutDemoComponent implements OnInit {
         this.clearPreview();
       },
       error: (err) => {
-        console.error('Draft saving error '+JSON.stringify(err));
+        console.error('Draft saving error ' + JSON.stringify(err));
         this.messageService.toast("error", "Can't Save");
       }
     });
@@ -243,6 +250,7 @@ export class FormLayoutDemoComponent implements OnInit {
     const offset = new Date().getTimezoneOffset();
     if (this.scheduleOption === 'later') {
       const correctedDate = new Date(new Date(this.scheduleDate).getTime() - offset * 60000);
+      console.log("date : ", correctedDate);
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString());
     } else {
@@ -250,8 +258,12 @@ export class FormLayoutDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString());
     }
-    console.log("channel : ", JSON.stringify(this.selectedChannels));
-    formData.append("channel", JSON.stringify(this.selectedChannels));
+    console.log("is email selected: ", this.isEmailSelected);
+    if (this.isEmailSelected) {
+      formData.append("isEmailSelected", 'emailSelected');
+    } else {
+      formData.append("isEmailSelected", 'noEmailSelected');
+    }
     console.log("target : ", this.targetData);
     formData.append('target', JSON.stringify(this.targetData));
     console.log("select all companies : ", this.selectAllCompanies);
@@ -290,8 +302,14 @@ export class FormLayoutDemoComponent implements OnInit {
         sendTo: employee.id,
         receiverType: 'EMPLOYEE' as 'EMPLOYEE'
       }));
-
-      targets = [...targets, ...employeeTargets];  // Append employees
+      targets = [...targets, ...employeeTargets];
+    }
+    if (this.selectedGroup) {
+      const groupTarget = {
+        sendTo: this.selectedGroup,  // Since it's a string
+        receiverType: 'CUSTOM' as 'CUSTOM',
+      };
+      targets = [...targets, groupTarget];
     }
     return targets;
   }
@@ -303,7 +321,6 @@ export class FormLayoutDemoComponent implements OnInit {
       this.canSaveTarget = false;
     }
   }
-
 
   async saveTarget(): Promise<void> {
     if (this.canSaveTarget) {
@@ -330,7 +347,9 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onFileChange(event: any): void {
-    const file = event.target.files[0];
+    console.log("event ", event);
+    const fileInput = event.target;
+    const file = fileInput.files[0];
     if (file) {
       this.file = file;
       this.filename = file.name;
@@ -339,23 +358,27 @@ export class FormLayoutDemoComponent implements OnInit {
         this.filePreview = reader.result;
       };
       reader.readAsDataURL(file);
+      fileInput.value = '';
     }
-  }
-
-  clearPreview(): void {
-    this.filePreview = null;
-    this.filename = '';
   }
 
   resetForm(form: NgForm): void {
     form.reset();
-    this.selectedChannels = ['telegram'];
     this.clearPreview();
     this.selectedCategory = '';
     this.scheduleOption = 'now';
     this.showDatePicker = false;
     this.title = '';
     this.file = null;
+
+  }
+
+  clearPreview(): void {
+    this.filePreview = null;
+    this.filename = '';
+    this.canSaveTarget = false;
+    this.selectedTargets = [];
+    this.onViewChange('tree');
   }
 
   isImage(): boolean {
@@ -368,9 +391,5 @@ export class FormLayoutDemoComponent implements OnInit {
 
   isAudio(): boolean {
     return this.filename?.match(/\.(mp3|wav|ogg)$/i) !== null;
-  }
-  saveDraft(): void {
-    console.log('Draft saved');
-    // Additional logic to save the draft
   }
 }

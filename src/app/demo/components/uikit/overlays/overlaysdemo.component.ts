@@ -40,7 +40,7 @@ export class OverlaysDemoComponent implements OnInit {
   draftId: number;
   fileUrl : string;
   selectAllCompanies : boolean;
-  selectedChannels: any[] = ['telegram'];
+  isEmailSelected: boolean = false;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -150,8 +150,6 @@ export class OverlaysDemoComponent implements OnInit {
   clearPreview(): void {
     this.filePreview = undefined;
     this.filename = undefined;
-    this.selectedTargets = null;
-    this.selectedChannels = [];
   }
 
   onSubmit(form: NgForm) {
@@ -202,13 +200,16 @@ export class OverlaysDemoComponent implements OnInit {
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString()); // Use corrected current date
     }
-    formData.append("channel", JSON.stringify(this.selectedChannels));
+    if (this.isEmailSelected) {
+      formData.append("isEmailSelected", 'emailSelected');
+    } else {
+      formData.append("isEmailSelected", 'noEmailSelected');
+    }
     console.log("targets : ", JSON.stringify(this.targetData));
     formData.append('target', JSON.stringify(this.targetData));
     console.log("file url : ", this.fileUrl);
     formData.append('fileUrl',this.fileUrl);
     formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
-    formData.append('channel',JSON.stringify(this.selectedChannels));
     return formData;
   }
 
@@ -239,16 +240,18 @@ export class OverlaysDemoComponent implements OnInit {
     return targetData;
   }
 
-  deleteDraft(id : number){
-    this.announcementService.deleteDraft(id).subscribe({
-      next: (response) => {
-        this.messageService.toast('success', 'Delete Success');
-        this.loadDrafts();
-      },
-      error: (error) => {
-        this.messageService.toast('error', "Can't delete");
-      }
-    });
+  async deleteDraft(id : number){
+    if ((await this.messageService.confirmed("Delete Announcement Draft", "Do You Want to Delete?", "Yes" , "No",'WHITE','BLACK')).confirmed) {
+      this.announcementService.deleteDraft(id).subscribe({
+        next: (response) => {
+          this.messageService.toast('success', 'Delete Success');
+          this.loadDrafts();
+        },
+        error: (error) => {
+          this.messageService.toast('error', "Can't delete");
+        }
+      });
+    }
   } 
 
   async delete(id: number) {
@@ -269,9 +272,11 @@ export class OverlaysDemoComponent implements OnInit {
   resetForm(form: NgForm) {
     form.reset();
     this.selectedTargets = [];
-    this.showDatePicker = false;  // Hide the date picker
-    this.scheduleOption = 'now';  // Reset schedule option to 'now'
-    this.scheduleDate = new Date(); // Reset the schedule date
+    this.selectedCategory = '';
+    this.scheduleOption = 'now';
+    this.showDatePicker = false;
+    this.title = '';
+    this.file = null;
   }
 
   isImage(): boolean {

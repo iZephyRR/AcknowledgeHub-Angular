@@ -1,0 +1,46 @@
+<div class="overlay">
+    <div class="user-details-card animate-zoom">
+        <!-- Close Button at the Top Right -->
+        <button pButton pRipple type="button" icon="pi pi-times"
+            class="p-button-rounded p-button-text close-button" (click)="systemService.closeDetails()"></button>
+
+        <!-- Profile Container with Image and Name Beside It -->
+        <div class="profile-container">
+            <!-- Profile Image -->
+            <img *ngIf="systemService.selectedUserProfile(); else default" [src]="systemService.selectedUserProfile()" alt="Profile Image"
+                class="profile-img" />
+            <ng-template #default>
+                <img src="assets/default-profile.png" alt="Profile Image" class="profile-img">
+            </ng-template>
+
+            <!-- User Info Container with Name and Role -->
+            <div class="user-info-container">
+                <!-- User's Name -->
+                <div class="user-name">
+                    {{systemService.selectedUser().name}} <span>({{systemService.changeRoleToNormalCase(systemService.selectedUser().role)}})</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info Section (Two Column Layout) -->
+        <div class="user-info">
+            <div class="column">
+                <p><i pTooltip="Email" class="fas fa-envelope"></i> {{systemService.selectedUser().email}}</p>
+                <p><i pTooltip="Telegram User Name" class="fab fa-telegram-plane"></i> {{'@' +
+                    systemService.selectedUser().telegramUsername}}</p>
+                <p *ngIf="systemService.selectedUser().gender"><i pTooltip="Gender" class="fas fa-venus-mars"></i> {{systemService.selectedUser().gender}}</p>
+                <p *ngIf="systemService.selectedUser().dob"><i pTooltip="Date of Birth" class="fas fa-calendar-alt"></i> {{systemService.selectedUser().dob | date:
+                    'MM/dd/yyyy' }}</p>
+                <p *ngIf="systemService.selectedUser().nrc"><i pTooltip="NRC" class="fas fa-id-card"></i> {{systemService.selectedUser().nrc}}</p>
+            </div>
+            <div class="column">
+                <p *ngIf="systemService.selectedUser().companyName"><i pTooltip="Company Name" class="fas fa-briefcase"></i> {{systemService.selectedUser().companyName}}</p>
+                <p *ngIf="systemService.selectedUser().departmentName"><i pTooltip="Department Name" class="fas fa-building"></i> {{systemService.selectedUser().departmentName}}
+                </p>
+                <p><i pTooltip="Staff-ID" class="fas fa-address-book"></i> {{systemService.selectedUser().staffId}}</p>
+                <p><i pTooltip="Status" class="fas fa-check-circle"></i> {{systemService.selectedUser().status}}</p>
+                <p *ngIf="systemService.selectedUser().address"><i pTooltip="Address" class="fas fa-home"></i> {{systemService.selectedUser().address}}</p>
+            </div>
+        </div>
+    </div>
+</div>

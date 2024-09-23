@@ -22,7 +22,7 @@ export class PanelsDemoComponent implements OnInit {
   ngOnInit(): void {
     this.announcementId = this.route.snapshot.paramMap.get('id');
     //this.loadAnnouncementDetails(this.announcementId);
-    this.getUsersWhoNotedWithinOneDay();
+   // this.getUsersWhoNotedWithinOneDay();
     // const currentUrl = this.route.snapshot.routeConfig?.path;
     // console.log("announcement id:", this.announcementId);
     // console.log("current url:", currentUrl);
@@ -43,17 +43,17 @@ export class PanelsDemoComponent implements OnInit {
 //     });
 //   }
 
-  getUsersWhoNotedWithinOneDay() {
-    this.userService.getUserWhoNotedWithInOneDay(this.announcementId).subscribe(data =>{
-        this.users = data;
-    });
-  }
+  // getUsersWhoNotedWithinOneDay() {
+  //   this.userService.getUserWhoNotedWithInOneDay(this.announcementId).subscribe(data =>{
+  //       this.users = data;
+  //   });
+  // }
 
-  getUsersWhoNotedWithinThreeDays() {
-    this.userService.getUserWhoNotedWithInThreeDay(this.announcementId).subscribe(data =>{
-        this.users = data;
-    });
-  }
+  // getUsersWhoNotedWithinThreeDays() {
+  //   this.userService.getUserWhoNotedWithInThreeDay(this.announcementId).subscribe(data =>{
+  //       this.users = data;
+  //   });
+  // }
 
 
   onGlobalFilter(table: Table, event: Event) {

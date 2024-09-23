@@ -11,6 +11,7 @@ import { LoginComponent } from './demo/components/auth/login/login.component';
 import { DashboardComponent } from './demo/components/dashboard/dashboard.component';
 import { DepartmentsComponent } from './demo/components/departments/departments.component';
 import { DepartmentComponent } from './demo/components/department/department.component';
+import { AddCompanyComponent } from './demo/components/add-company/add-company.component';
 
 
 @NgModule({
@@ -19,28 +20,31 @@ import { DepartmentComponent } from './demo/components/department/department.com
             {
                 path: '',
                 component: AppLayoutComponent,
-                canActivate: [AuthGuard],
+                canActivate:[AuthGuard],
                 children: [
                     {
-                        path: '',
+                        path: 'dashboard',
+                        canActivate: [AuthGuard],
+                        data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },
                         component: DashboardComponent
                     },
                     {
                         path: 'announcement',
                         canActivate: [AuthGuard],
-
-                        data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },//Just for example. Anyone can change.
+                        data: { roles: ['MAIN_HR', 'MAIN_HR_ASSISTANCE', 'HR', 'HR_ASSISTANCE'] },
                         loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule)
                     },
- {
-                        path: 'announcement-view',
-                        children: [
-                            { path: 'company/:id', component: AnnouncementDetailsComponent },
-                            { path: 'department/:id', component: AnnouncementDetailsComponent },
-                            { path: 'employee/:id', component: AnnouncementDetailsComponent }
-                        ]
+                    {
+                        path: 'announcement-page/:id',
+                        canActivate: [AuthGuard],
+                        component: AnnouncementDetailsComponent
                     },
-
+                    {
+                        path: 'company',
+                        canActivate: [AuthGuard],
+                        data: { roles: ['MAIN_HR','HR','HR_ASSISTANCE'] },
+                        component: AddCompanyComponent
+                    },
                     {
                         path: 'company/:id',
                         canActivate: [AuthGuard],
@@ -58,9 +62,9 @@ import { DepartmentComponent } from './demo/components/department/department.com
                         path: 'ad',
                         children: [
                             {
-                                path: 'setting',
-                                canActivate:[AuthGuard],
-                                data:{roles:['ADMIN']},
+                                path: 'settings',
+                                canActivate: [AuthGuard],
+                                data: { roles: ['ADMIN'] },
                                 component: SystemSettingsComponent
                             },
                         ]
@@ -78,7 +82,7 @@ import { DepartmentComponent } from './demo/components/department/department.com
             {
                 path: '**',
                 component: NotfoundComponent,
-                canActivate:[AuthGuard]
+                canActivate: [AuthGuard]
             },
         ],
             { scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled', onSameUrlNavigation: 'reload' })

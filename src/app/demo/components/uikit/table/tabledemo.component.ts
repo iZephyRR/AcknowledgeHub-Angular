@@ -2,54 +2,56 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Table } from 'primeng/table';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
-import { User } from 'src/app/modules/user';
+import { User, UserProfile } from 'src/app/modules/user';
 import { UserService } from 'src/app/services/user/user.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SystemService } from 'src/app/services/system/system.service';
 
 type Status = 'ACTIVATED' | 'DEACTIVATED' | 'DEPARTED';
 
 @Component({
-    selector: 'app-table-demo', // Make sure you have a selector if it's standalone
-    templateUrl: './tabledemo.component.html',
-    providers: [UserService, MessageService, ConfirmationService] // Add UserService here
+  selector: 'app-table-demo', // Make sure you have a selector if it's standalone
+  templateUrl: './tabledemo.component.html',
+  providers: [UserService, MessageService, ConfirmationService] // Add UserService here
 })
 export class TableDemoComponent implements OnInit {
-    users: User[] = [];
-    statuses: { label: string; value: Status }[] = [];
-    activityValues: number[] = [0, 100];
-    selectedUser?:User;
-    loading: boolean = false;
+  users: User[] = [];
+  userProfile: UserProfile;
+  statuses: { label: string; value: Status }[] = [];
+  activityValues: number[] = [0, 100];
+  selectedUser?: User;
+  loading: boolean = false;
+  profileImage: SafeUrl | null = null; // To store the selected profile image
 
-    @ViewChild('filter') filter!: ElementRef;
+  @ViewChild('filter') filter!: ElementRef;
 
-    constructor(private userService: UserService) { }
+  constructor(
+    public systemService:SystemService,
+    private userService:UserService
+  ) { }
 
-    ngOnInit(): void {
-        this.retrieveAllUsers();
-      }
-    
-      retrieveAllUsers(): void {
-        this.userService.getAllUsers().subscribe(
-          (data) => {
-            this.users = data;
-            console.log('Users retrieved:', this.users);
-          },
-          (error) => {
-            console.error('Error retrieving users:', error);
-          });
-        }
-        showDetails(user:User){
-          this.selectedUser=user;
-        }
-        closeDetails(){
-          this.selectedUser=null;
-        }
+  ngOnInit(): void {
+    this.retrieveAllUsers();
+  }
 
-    onGlobalFilter(table: Table, event: Event) {
-        const filterValue = (event.target as HTMLInputElement).value;
-        table.filterGlobal(filterValue, 'contains');
-    }
+  retrieveAllUsers(): void {
+    this.userService.getAllUsers().subscribe(
+      (data) => {
+        this.users = data;
+        console.log("user deatail ", data);
+      },
+      (error) => {
+        console.error('Error retrieving users:', error);
+      });
+  }
 
-    clear(table: Table) {
-        table.clear();
-    }
+  onGlobalFilter(table: Table, event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    table.filterGlobal(filterValue, 'contains');
+  }
+
+  clear(table: Table) {
+    table.clear();
+  }
+  
 }

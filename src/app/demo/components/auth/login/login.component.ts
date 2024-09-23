@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { catchError, Subscription, throwError, timer } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
-import { OTPMail } from 'src/app/modules/otp-mails';
+import { Mail } from 'src/app/modules/mails';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
 import { DepartmentService } from 'src/app/services/department/department.service';
@@ -76,10 +76,12 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.systemService.hideLoading();
+    this.authService.showNotFound=false;
+    this.authService.xShowNotFound=true;
     this.startCountdown();
-    //this.authService.severConnectionTest();
+    this.authService.severConnectionTest();
   }
+
   ngOnDestroy(): void {
     if (this.countdownInterval) {
       clearInterval(this.countdownInterval); // Clear interval when component is destroyed
@@ -106,7 +108,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.systemService.showLoading('Logging in..');
+    this.systemService.showLoading('Logging in..',true);
     if (this.login.email != undefined && this.login.email != '' && this.login.password != undefined && this.login.password != '') {
       this.authService.login(this.login).pipe(
         catchError(error => {
@@ -123,24 +125,26 @@ export class LoginComponent implements OnInit {
       )
         .subscribe({
           next: async (response) => {
-            if (response.string_RESPONSE.startsWith('NAME_')) {
+            if (response.STRING_RESPONSE.startsWith('NAME_')) {
               this.isFirstTime = true;
-              this.name = response.string_RESPONSE;
+              this.name = response.STRING_RESPONSE.substring(5);
               this.systemService.hideLoading();
               if ((await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')).confirmed) {
                 if (AuthService.isDomainAvailable(this.login.email)) {
                   setTimeout(() => {
-                    this.systemService.showLoading('Sending OTP...');
+                    this.systemService.showLoading('Sending OTP...',true);
                   }, 0);
-                  OTPMail.action = 'FIRST_LOGIN';
+                  Mail.action = 'FIRST_LOGIN';
                   this.email = this.login.email;
-                  this.messageService.sendEmail(OTPMail.firstLogin(this.email, this.name)).subscribe({
+                  this.messageService.sendEmail(Mail.firstLogin(this.email, this.name)).subscribe({
                     complete: () => {
                       this.systemService.hideLoading();
                       this.otpDialogMessage = 'We have sent an OTP to your email ' + this.maskEmail(this.email) + '.';
                       this.showOTPDialog();
                     },
                     error: (err) => {
+                      this.systemService.hideLoading();
+                      this.messageService.toast('error', 'An error occured when sending OTP code.');
                       console.log(JSON.stringify(err));
                     }
                   });
@@ -149,10 +153,9 @@ export class LoginComponent implements OnInit {
                 }
               }
             } else {
-              this.session.add('token', response.string_RESPONSE);
-              console.log('saved token : ' + this.session.get('token'));
+              this.session.add('token', response.STRING_RESPONSE);
               this.messageService.toast('success', 'Successfully logged in!');
-              this.router.navigate(['/']);
+              this.authService.restartPage();
             }
             this.isValid = true;
             this.systemService.hideLoading();
@@ -161,17 +164,14 @@ export class LoginComponent implements OnInit {
         );
     } else {
       this.systemService.hideLoading();
-      console.log('required.')
       this.isValid = false;
     }
   }
 
   verifyOtp(): void {
     // let otp = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    console.log('Storaged otp : ' + OTPMail.otp);
-    console.log('Input otp : ' + this.combinedOTP);
-    console.log(this.combinedOTP == (OTPMail.otp + ''));
-    if (this.combinedOTP == (OTPMail.otp + '')) {
+    console.log(this.combinedOTP == (Mail.otp + ''));
+    if (this.combinedOTP == (Mail.otp + '')) {
       this.hideOTPDialog();
       this.displayResetPasswordDialog = true;
       this.errorMessage = '';
@@ -197,6 +197,7 @@ export class LoginComponent implements OnInit {
     }
     return email; // Return the original email if it's too short to mask
   }
+
   resendCode(name: string): void {
     if (this.isCountingDown) return; // Prevent multiple clicks
   
@@ -207,9 +208,9 @@ export class LoginComponent implements OnInit {
     console.log('Resending OTP...');
   
     const otpEmail =
-      OTPMail.action === 'FIRST_LOGIN'
-        ? OTPMail.firstLogin(this.email, name)
-        : OTPMail.forgotPassword(this.email, name);
+    Mail.action === 'FIRST_LOGIN'
+        ? Mail.firstLogin(this.email, name)
+        : Mail.forgotPassword(this.email, name);
     this.sendOtpEmail(otpEmail);
   }
   
@@ -229,10 +230,7 @@ export class LoginComponent implements OnInit {
   }
   
   private showOTPDialog(): void {
-    
       this.displayOtpDialog = true;
-    
-  
     this.startCountdown(); // Start countdown when OTP dialog is displayed
   }
   
@@ -269,16 +267,16 @@ export class LoginComponent implements OnInit {
     this.authService.isPasswordDefault(this.email).subscribe({
       next: (data) => {
         console.log(data);
-        if (!data.boolean_RESPONSE) {
+        if (!data.STRING_RESPONSE) {
           this.authService.findNameByEmail(this.email).subscribe({
             next: (data) => {
-              console.log('findNameByEmail ' + data.string_RESPONSE);
+              console.log('findNameByEmail ' + data.STRING_RESPONSE);
               if (AuthService.isDomainAvailable(this.email)) {
-                console.log('Responsed data : ' + data.string_RESPONSE);
-                this.name = data.string_RESPONSE;
+                console.log('Responsed data : ' + data.STRING_RESPONSE);
+                this.name = data.STRING_RESPONSE;
                 this.hideForgotPasswordDialog();
-                OTPMail.action = 'FORGOT_PASSWORD';
-                this.messageService.sendEmail(OTPMail.forgotPassword(this.email, this.name)).subscribe({
+                Mail.action = 'FORGOT_PASSWORD';
+                this.messageService.sendEmail(Mail.forgotPassword(this.email, this.name)).subscribe({
                   complete: () => {
                     this.systemService.hideLoading();
                     this.otpDialogMessage = 'We have sent an OTP to your email ' + this.maskEmail(this.email) + '.'

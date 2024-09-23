@@ -259,7 +259,6 @@ export class MessageDemoService {
     if (email.file) {
       formData.append('file', email.file);
     }
-    console.log('Sending email' + JSON.stringify(email));
     return this.http.post<void>(`http://localhost:8080/api/v1/auth/send-email`, formData);
   }
 }

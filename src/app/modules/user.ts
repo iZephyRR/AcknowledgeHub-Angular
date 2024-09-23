@@ -16,7 +16,6 @@ export interface User {
     role: Role;
     companyId: bigint;
     departmentId: bigint;
-    workEntryDate: Date;
     staffId: string;
     telegramUserId: string;
     telegramUsername: string;
@@ -25,13 +24,14 @@ export interface User {
     notedAt: string;
     companyName: string;
     departmentName: string;
-
 }
+
 export interface UserProfile {
     name: string;
     role: Role;
     email: string;
     companyName: string;
     departmentName: string;
+    photoLink : string;
 }
 

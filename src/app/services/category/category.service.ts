@@ -21,7 +21,7 @@ export class CategoryService {
   }
 
   getAllCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.baseUrl}/get-categories`);
+    return this.http.get<Category[]>(`${this.baseUrl}/get-active-categories`);
   }
 
   getAllCategoriesDESC(): Observable<Category[]> {

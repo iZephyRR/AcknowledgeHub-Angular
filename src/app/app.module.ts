@@ -53,6 +53,13 @@ import { AppFooterComponent } from './layout/app.footer.component';
 import { AppMenuComponent } from './layout/app.menu.component';
 import { AppSidebarComponent } from './layout/app.sidebar.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
+import { TimeAgoPipe } from './time-ago.pipe';
+import { AddCompanyComponent } from './demo/components/add-company/add-company.component';
+import { TableDemoComponent } from './demo/components/uikit/table/tabledemo.component';
+import { RatingModule } from 'primeng/rating';
+import { UserCardComponent } from './demo/components/user-card/user-card.component';
+import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.component';
+import { CategoryComponent } from './demo/components/uikit/category/category.component';
 
 
 @NgModule({
@@ -75,7 +82,13 @@ import { AppLayoutComponent } from './layout/app.layout.component';
     DepartmentsComponent,
     DepartmentComponent,
     UserUploadValidatorComponent,
-    EditDepartmentComponent
+    EditDepartmentComponent,
+    TimeAgoPipe,
+    AddCompanyComponent,
+    TableDemoComponent,
+    UserCardComponent,
+    MediaDemoComponent,
+CategoryComponent
   ],
   imports: [
     BadgeModule,
@@ -112,7 +125,10 @@ import { AppLayoutComponent } from './layout/app.layout.component';
     MultiSelectModule,
     DropdownModule,
     PdfViewerModule,
-    HttpClientModule
+    HttpClientModule,
+    RatingModule,
+    SliderModule,
+    InputTextModule
   ],
   providers: [
     {

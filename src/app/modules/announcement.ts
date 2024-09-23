@@ -1,15 +1,16 @@
-import { ContentType } from "../constants";
+import { AnnouncementResponseCondition, ContentType, Role } from "../constants";
 
 
 export interface Announcement {
-    pdfLink(pdfLink: any): unknown;
-    id:number;
-    created_at:Date;
-    file : string;
-    title : string;
-    categoryName : string;
+    pdfLink: string;
+    id: number;
+    file: string;
+    title: string;
+    categoryName: string;
     creater: string;
     contentType: ContentType;
+    createdAt: Date | string;
+    announcementResponseCondition: AnnouncementResponseCondition;
 }
 export enum FileType {
     AUDIO = 'AUDIO',
@@ -17,7 +18,15 @@ export enum FileType {
     IMAGE = 'IMAGE',
     PDF = 'PDF',
     VIDEO = 'VIDEO'
-  }
+}
+
+export interface ScheduleList {
+    id : number;
+    title : string;
+    createdAt : Date;
+    contentType: ContentType;
+    countdown : string;
+    role : Role;
+}
 
 
-  
