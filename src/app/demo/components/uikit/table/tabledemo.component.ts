@@ -5,6 +5,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { User, UserProfile } from 'src/app/modules/user';
 import { UserService } from 'src/app/services/user/user.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SystemService } from 'src/app/services/system/system.service';
 
 type Status = 'ACTIVATED' | 'DEACTIVATED' | 'DEPARTED';
 
@@ -21,12 +22,12 @@ export class TableDemoComponent implements OnInit {
   selectedUser?: User;
   loading: boolean = false;
   profileImage: SafeUrl | null = null; // To store the selected profile image
-  //sanitizedImages: { [key: number]: SafeUrl } = {};
 
   @ViewChild('filter') filter!: ElementRef;
 
-  constructor(private userService: UserService,
-    private sanitizer: DomSanitizer
+  constructor(
+    public systemService:SystemService,
+    private userService:UserService
   ) { }
 
   ngOnInit(): void {
@@ -42,14 +43,6 @@ export class TableDemoComponent implements OnInit {
       (error) => {
         console.error('Error retrieving users:', error);
       });
-  }
-  showDetails(user: User) {
-    this.selectedUser = user;
-    console.log("selected user : ", user);
-    this.profileImage = this.selectedUser.photoLink ? `data:image/png;base64,${this.selectedUser.photoLink}` : undefined;
-  }
-  closeDetails() {
-    this.selectedUser = null;
   }
 
   onGlobalFilter(table: Table, event: Event) {

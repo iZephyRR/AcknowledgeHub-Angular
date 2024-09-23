@@ -1,0 +1,162 @@
+.user-details-card {
+    background-color: white;
+    padding: 2.5rem;
+    /* Larger padding for bigger card */
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 500px;
+    /* Increased max-width for better fit */
+    z-index: 1001;
+    position: relative;
+    transform: scale(1.05);
+}
+    /* Flex Container for Profile Image and User Info */
+    .profile-container {
+        display: flex;
+        align-items: center;
+        /* Align items vertically centered */
+        margin-bottom: 1rem;
+    }
+     /* Profile Image */
+     .profile-img {
+        width: 170px;
+        /* Profile image size */
+        height: 155px;
+        object-fit: cover;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        /* Rounded corners */
+        margin-right: 2rem;
+        /* Reduced space between image and text */
+    }
+     /* User Name and Role Styling */
+     .user-name {
+        font-size: 1.5rem;
+        /* Adjust font size as needed */
+        font-weight: bold;
+        /* Make the name bold */
+        color: black;
+        /* Set text color to black */
+        display: flex;
+        /* Use flex to align items horizontally */
+        align-items: center;
+        /* Center align items vertically */
+    }
+
+    /* Icon Styling */
+    .user-name i {
+        margin-right: 0.5rem;
+        /* Space between icon and text */
+        color: #555;
+        /* Optional: icon color */
+    }
+
+    /* Role Styling */
+    .user-name span {
+        font-size: 1.2rem;
+        /* Adjust font size for role if needed */
+        color: grey;
+        /* Set text color to grey */
+        margin-left: 0.5rem;
+        /* Space between name and role */
+    }
+
+   
+
+
+   
+
+    /* User Info Container */
+    .user-info-container {
+        display: flex;
+        flex-direction: column;
+        /* Stack name and role vertically */
+        align-items: flex-start;
+        /* Align items to the start (left) */
+    }
+
+    /* User's Name */
+    .user-name {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        /* Added space below the name */
+    }
+
+    /* User Role */
+    .user-role {
+        font-size: 1.2rem;
+        color: #555;
+        /* Slightly different color for role */
+    }
+
+    /* User Info in Two Columns */
+    .user-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        /* Adjusted to fit within the card */
+    }
+
+    /* Info Columns */
+    .column {
+        width: 50%;
+        padding: 0.5rem;
+        /* Reduced padding to bring columns closer */
+    }
+
+    /* Icon and Text Gap */
+    .user-info p i {
+        margin-right: 0.5rem;
+        /* Add gap between icon and text */
+    }
+
+    /* Close Button */
+    .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1002;
+    }
+    .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+   
+    /* Name and Info Text Styling */
+    .user-details-card h5 {
+        font-size: 2.2rem;
+        /* Slightly larger font for name */
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .user-details-card p {
+        font-size: 1.2rem;
+        /* Increased font size for general text */
+    }
+
+    /* Zoom-out animation */
+    @keyframes zoom-out {
+        0% {
+            transform: scale(1.05);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .animate-zoom {
+        animation: zoom-out 0.3s ease-in-out;
+    }

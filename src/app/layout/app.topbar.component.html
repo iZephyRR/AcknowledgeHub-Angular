@@ -1,708 +1,772 @@
 <div class="layout-topbar">
-    <a class="layout-topbar-logo" routerLink="">
-      <span>ACE DATA SYSTEM</span>
-    </a>
-    <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
-      <i class="pi pi-bars"></i>
-    </button>
+  <a routerLink="" style="margin-left: 20px;margin-right: 180px;">
+    <div class="layout-topbar-logo">
+      <span class="company-logo">ACE</span><br>
+      <span class="company-subtitle">Data Systems Ltd.</span>
+    </div>
+  </a>
+  <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
+    <i class="pi pi-bars"></i>
+  </button>
 
 
-    <div #topbarmenu class="layout-topbar-menu" [ngClass]="{
+  <div #topbarmenu class="layout-topbar-menu" [ngClass]="{
         'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
       }">
-        <!-- Notification Icon and Dropdown -->
-        <div class="notification-icon" (click)="toggleNotificationDropdown()">
-          <i class="pi pi-bell"></i>
-          <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
-        </div>
+    <!-- Notification Icon and Dropdown -->
+    <div class="notification-icon" (click)="toggleNotificationDropdown()">
+      <img src="assets/alarm_alert_attention_bell_clock_notification_ring_icon_123203.ico" alt="Notification Icon"
+        class="custom-notification-icon" />
+      <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    </div>
 
-        <div class="notification-dropdown" *ngIf="showNotifications" #notificationDropdown>
-          <div class="notification-header">
-            <h4>Notifications</h4>
-            <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
-          </div>
-          <div class="notification-items">
-            <div class="notification-item" *ngFor="let notification of visibleNotifications" (click)="markAsRead(notification)" [ngClass]="{
+    <div class="notification-dropdown" *ngIf="showNotifications" #notificationDropdown>
+      <div class="notification-header">
+        <h4>Notifications</h4>
+        <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
+      </div>
+      <div class="notification-items">
+        <div class="notification-item" *ngFor="let notification of visibleNotifications"
+          (click)="markAsRead(notification)" [ngClass]="{
                 'unread-notification': !notification.isRead,
                 'read-notification': notification.isRead
               }">
-              <a [routerLink]="['/announcement-page/',notification.announcementId]">
-                <div class="notification-content">
-                  <p class="notification-message">{{ notification.message }} </p>
-                  <small class="notification-timestamp">{{ notification.timestamp | timeAgo }}</small>
-                </div>
-              </a>
+          <a [routerLink]="['/announcement-page/',notification.announcementId]">
+            <div class="notification-content">
+              <p class="notification-message">{{ notification.message }} </p>
+              <small class="notification-timestamp">{{ notification.timestamp | timeAgo }}</small>
             </div>
-          </div>
-          <div class="see-more-container" *ngIf="canLoadMore">
-            <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }" [disabled]="loading">
-              <span *ngIf="!loading">See more</span>
-              <span *ngIf="loading" class="loading-spinner"></span>
-            </button>
-          </div>
+          </a>
         </div>
-
-        <!-- Profile Button and Dropdown -->
-        <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
-          <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
-          <ng-template #default>
-            <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
-          </ng-template>
-        </button>
-        <span class="user-role">{{systemService.changeRoleToNormalCase(user.role)}}</span>
-
-        <!-- logout Button -->
-        <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
-          <i class="pi pi-sign-out"></i>
+      </div>
+      <div class="see-more-container" *ngIf="canLoadMore">
+        <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }"
+          [disabled]="loading">
+          <span *ngIf="!loading">See more</span>
+          <span *ngIf="loading" class="loading-spinner"></span>
         </button>
       </div>
     </div>
 
-
-    <!-- Profile Sidebar Card -->
-    <div *ngIf="isProfileCardVisible" class="profile-sidebar-card">
-      <div class="profile-card">
-        <button (click)="closeProfileCard()" class="close-btn">
-          &times;
-        </button>
-        <div class="card-header">
-          <img *ngIf="profileImage; else defaultImage" [src]="profileImage" alt="Profile Image" class="profile-img" />
-          <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
-          <ng-template #defaultImage>
-            <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="profile-img" />
-          </ng-template>
-          <button (click)="onChangeProfile()" class="change-profile-btn">
-            <i class="fas fa-edit"></i>
-            Change Profile
-          </button>
-        </div>
-        <div class="card-body">
-          <h2>{{ user.name }}</h2>
-          <p class="role">{{ user.role }}</p>
-          <p><strong>Email:</strong> {{ user.email }}</p>
-          <p *ngIf="user.companyName!=null"><strong>Company:</strong> {{ user.companyName }}</p>
-          <p *ngIf="user.departmentName!=null"><strong>Department:</strong> {{ user.departmentName }}</p>
-          <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
-        </div>
+    <!-- Profile Button and Dropdown -->
+    <div style="display: flex; align-items: center;">
+      <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
+        <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
+        <ng-template #default>
+          <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+        </ng-template>
+      </button>
+      <div style="display: flex;flex-direction: column;">
+        <span class="user-role"><strong>{{user.name}}</strong></span>
+        <span style="font-size: 15px;" class="user-role">({{systemService.changeRoleToNormalCase(user.role)}})</span>
       </div>
     </div>
 
-    <!-- PrimeNG Dialog -->
-    <p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">
-      <form (ngSubmit)="onSave()" class="change-password-form">
-        <div class="p-fluid">
-          <!-- Current Password -->
-          <div class="p-field">
-            <label for="currentPassword">Current Password</label>
-            <input id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword"
-              [type]="showCurrentPassword ? 'text' : 'password'" pInputText required class="password-input" />
-            <div class="p-error" *ngIf="currentPasswordError">
-              {{ currentPasswordError }}
-            </div>
-          </div>
-          <br>
-          <!-- New Password -->
-          <div class="p-field">
-            <label for="newPassword">New Password</label>
-            <input id="newPassword" [(ngModel)]="newPassword" name="newPassword"
-              [type]="showNewPassword ? 'text' : 'password'" pInputText required class="password-input" />
-            <div class="p-error" *ngIf="newPasswordError">
-              {{ newPasswordError }}
-            </div>
-          </div>
-          <br>
-          <!-- Confirm Password -->
-          <div class="p-field">
-            <label for="confirmPassword">Confirm Password</label>
-            <input id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword"
-              [type]="showConfirmPassword ? 'text' : 'password'" pInputText required class="password-input" />
-            <div class="p-error" *ngIf="confirmPasswordError">
-              {{ confirmPasswordError }}
-            </div>
-          </div>
-        </div><br>
-        <p-footer>
-          <div class="button-container">
-            <button type="submit" pButton label="Save" class="p-button-primary"></button>
-          </div>
-        </p-footer>
-      </form>
-    </p-dialog>
+    <!-- logout Button -->
+    <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
+      <i class="pi pi-sign-out"></i>
+    </button>
+  </div>
+</div>
 
-    <style>
-      .layout-topbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 20px;
-        background-color: #ffffff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 60px;
-        z-index: 1000;
-      }
 
-      .layout-topbar-logo {
-        font-size: 1.25rem;
-        color: #333;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        /* Align logo and menu button */
-      }
+<!-- Profile Sidebar Card -->
+<div *ngIf="isProfileCardVisible" class="profile-sidebar-card">
+  <div class="profile-card">
+    <button (click)="closeProfileCard()" class="close-btn">
+      &times;
+    </button>
+    <div class="card-header">
+      <img *ngIf="profileImage; else defaultImage" [src]="profileImage" alt="Profile Image" class="profile-img" />
+      <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
+      <ng-template #defaultImage>
+        <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="profile-img" />
+      </ng-template>
+      <button (click)="onChangeProfile()" class="change-profile-btn">
+        <i class="fas fa-edit"></i>
+        Change Profile
+      </button>
+    </div>
+    <div class="card-body">
+      <h2>{{ user.name }}</h2>
+      <p class="role">{{ user.role }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p *ngIf="user.companyName!=null"><strong>Company:</strong> {{ user.companyName }}</p>
+      <p *ngIf="user.departmentName!=null"><strong>Department:</strong> {{ user.departmentName }}</p>
+      <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
+    </div>
+  </div>
+</div>
 
-      .layout-menu-button {
-        margin-right: 30px;
-        margin-left: 0;
-        /* Move menu button close to the logo */
-      }
+<!-- PrimeNG Dialog -->
+<p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">
+  <form (ngSubmit)="onSave()" class="change-password-form">
+    <div class="p-fluid">
+      <!-- Current Password -->
+      <div class="p-field">
+        <label for="currentPassword">Current Password</label>
+        <input id="currentPassword" [(ngModel)]="currentPassword" name="currentPassword"
+          [type]="showCurrentPassword ? 'text' : 'password'" pInputText required class="password-input" />
+        <div class="p-error" *ngIf="currentPasswordError">
+          {{ currentPasswordError }}
+        </div>
+      </div>
+      <br>
+      <!-- New Password -->
+      <div class="p-field">
+        <label for="newPassword">New Password</label>
+        <input id="newPassword" [(ngModel)]="newPassword" name="newPassword"
+          [type]="showNewPassword ? 'text' : 'password'" pInputText required class="password-input" />
+        <div class="p-error" *ngIf="newPasswordError">
+          {{ newPasswordError }}
+        </div>
+      </div>
+      <br>
+      <!-- Confirm Password -->
+      <div class="p-field">
+        <label for="confirmPassword">Confirm Password</label>
+        <input id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword"
+          [type]="showConfirmPassword ? 'text' : 'password'" pInputText required class="password-input" />
+        <div class="p-error" *ngIf="confirmPasswordError">
+          {{ confirmPasswordError }}
+        </div>
+      </div>
+    </div><br>
+    <p-footer>
+      <div class="button-container">
+        <button type="submit" pButton label="Save" class="p-button-primary"></button>
+      </div>
+    </p-footer>
+  </form>
+</p-dialog>
 
-      .layout-topbar-right {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-left: auto;
-        /* Ensure the right section stays at the far right */
-      }
+<style>
+  .layout-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    z-index: 1000;
+  }
 
-      /* end */
+  .layout-topbar-logo {
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: fit-content;
+    /* Center the text */
+    color: #1a1a5b;
+    /* Dark blue color */
+    margin: 0px;
+    /* Space from the left edge */
+  }
 
-      .change-password-link {
-        color: #007bff;
-        cursor: pointer;
-        display: inline-block;
-        margin-top: 10px;
-        text-decoration: none;
-        font-weight: bold;
-        padding: 8px 16px;
-        border: 1px solid #007bff;
-        border-radius: 8px;
-        width: 100%;
-        transition: background-color 0.3s, color 0.3s;
-      }
+  .company-logo {
+    font-family: 'Times New Roman', serif;
+    font-size: 2.5rem;
+    /* Smaller size for ACE */
+    font-weight: 700;
+    /* Bold text */
+    color: #1a1a5b;
+    /* Dark blue */
+    line-height: 1;
+    /* Reduce space between ACE and the subtitle */
+    margin-bottom: -5px;
+    /* Move ACE closer to the subtitle */
+  }
 
-      .change-password-link:hover {
-        background-color: #007bff;
-        color: #ffffff;
-      }
+  .company-subtitle {
+    font-family: 'Times New Roman', serif;
+    font-size: 1rem;
+    /* Smaller size for the subtitle */
+    font-weight: 400;
+    /* Regular weight */
+    color: #1a1a5b;
+    /* Same dark blue */
+    margin-top: -5px;
+    /* Move the subtitle closer to ACE */
+  }
 
-      /* .change-password-link {
+  .layout-menu-button {
+    margin-right: 30px;
+    margin-left: 0;
+    /* Move menu button close to the logo */
+  }
+
+  .layout-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-left: auto;
+    /* Ensure the right section stays at the far right */
+  }
+
+  /* end */
+
+  .change-password-link {
+    color: #007bff;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    width: 100%;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  .change-password-link:hover {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+
+  /* .change-password-link {
       color: #007bff;
       cursor: pointer;
       text-decoration: none;
       transition: color 0.3s ease;
     } */
 
-      .profile-image {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-right: 8px;
-      }
-
-      .change-profile-container {
-        display: flex;
-        justify-content: center;
-        position: absolute;
-        bottom: 16px;
-        width: 100%;
-      }
-
-      .change-profile-btn {
-        background-color: #3f99f9;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        font-size: 14px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-      }
-
-      .change-password-form {
-        max-width: 500px;
-        margin: 0 auto;
-      }
-
-      .password-input {
-        width: 100%;
-        padding: 0.75rem;
-        font-size: 1rem;
-      }
-
-      .p-error {
-        margin-top: 5px;
-        font-size: 0.85rem;
-        color: red;
-      }
-
-      .p-field {
-        margin-bottom: 1.5rem;
-      }
-
-      .button-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 1rem;
-      }
-
-      p-footer {
-        padding: 1rem 0;
-      }
-
-      .user-role {
-        margin-left: 10px;
-        font-size: 16px;
-        color: #000000;
-      }
-
-      .profile-sidebar-card {
-        position: fixed;
-        top: 50px;
-        right: 20px;
-        z-index: 1000;
-      }
-
-      .profile-card {
-        width: 300px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        position: relative;
-        transition: transform 0.3s ease;
-      }
-
-      .profile-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .profile-card-container {
-        position: fixed;
-        top: 34px;
-        right: 5px;
-        z-index: 1000;
-      }
-
-      .change-profile-container {
-        display: flex;
-        justify-content: center;
-        position: absolute;
-        bottom: 16px;
-        width: 100%;
-      }
-
-      .change-profile-btn {
-        background-color: #007bff;
-        color: #ffffff;
-        border: none;
-        border-radius: 5px;
-        padding: 8px 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto;
-        margin-top: 10px;
-        transition: background-color 0.3s;
-      }
-
-      .profile-card:hover {
-        transform: scale(1.05);
-      }
-
-      .change-profile-btn i {
-        margin-right: 5px;
-      }
-
-      .change-profile-btn:hover {
-        background-color: #0056b3;
-      }
-
-      .card-body {
-        padding: 16px;
-      }
-
-      .card-header {
-        text-align: center;
-        margin-bottom: 16px;
-      }
-
-      .profile-img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 3px solid #007bff;
-        object-fit: cover;
-        margin-bottom: 10px;
-      }
-
-      .user-role {
-        font-size: 16px;
-        color: #333;
-      }
-
-      .layout-config-button {
-        border: none;
-        background: none;
-        cursor: pointer;
-      }
-
-      .p-button-primary {
-        background-color: #3f99f9;
-        border-color: #3f99f9;
-      }
-
-      .p-button-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-      }
-
-      .card-body {
-        text-align: center;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-        color: #333;
-        margin: 10px 0;
-      }
-
-      p {
-        margin: 5px 0;
-        color: #666;
-      }
-
-      p strong {
-        color: #333;
-      }
-
-      .unread-notification {
-        background-color: #00BFFF;
-        color: white;
-      }
-
-      .read-notification {
-        background-color: transparent;
-        color: inherit;
-      }
-
-      .notification-icon {
-        position: relative;
-        cursor: pointer;
-        width: 44px;
-        height: 44px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: white;
-
-        color: gray;
-        transition: transform 0.3s ease, background-color 0.3s ease;
-      }
-
-      .notification-content {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
-
-      .notification-badge {
-        position: absolute;
-        top: -1px;
-        right: -1px;
-        background-color: red;
-        color: white;
-        border-radius: 500%;
-        padding: 1px 7px;
-        font-size: 12px;
-      }
-
-      .notification-dropdown {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        width: 300px;
-        max-height: 400px;
-        /* Set max height for the entire dropdown */
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        /* Ensure proper layout for scrollable items and button */
-      }
-
-      .notification-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        background-color: #f0f0f0;
-      }
-
-      .notification-icon i {
-        font-size: 14px;
-
-
-      }
-
-      .notification-item {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        transition: background-color 0.3s ease;
-        cursor: pointer;
-      }
-
-      .notification-item:hover {
-        background-color: #f0f0f0;
-      }
-
-      .notification-timestamp {
-        font-size: 0.85rem;
-        color: #888;
-        margin-left: 10px;
-        /* To add some space between message and timestamp */
-        white-space: nowrap;
-        /* Prevent line breaking */
-        align-self: flex-end;
-        /* Aligns the timestamp to the bottom right */
-      }
-
-      .notification-item:last-child {
-        border-bottom: none;
-        /* Remove the bottom border for the last item */
-      }
-
-      .notification-item:hover {
-        background-color: #f0f0f0;
-      }
-
-      .notification-items {
-        max-height: 300px;
-        /* Adjust height for the scrollable area */
-        overflow-y: auto;
-      }
-
-      .notification-items::-webkit-scrollbar {
-        width: 0;
-        background: transparent;
-        /* Optional: background for the scrollbar track */
-      }
-
-      .notification {
-        display: flex;
-        flex-direction: column;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        position: relative;
-      }
-
-      .notification-message {
-        font-weight: bold;
-        flex-grow: 1;
-        margin-right: 10px;
-      }
-
-      .mark-as-read-button {
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        color: #007bff;
-      }
-
-      /* "See More" button styling */
-      .notification-dropdown .see-more-container {
-        padding: 5px;
-        text-align: center;
-        border-top: 1px solid #ddd;
-      }
-
-      .notification-dropdown .see-more-button {
-        background-color: transparent;
-        border: none;
-        color: #007bff;
-        font-weight: bold;
-        text-align: center;
-        cursor: pointer;
-      }
-
-.see-more-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  color: white;
-}
-
- .see-more-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 0; /* Increased padding for better click area */
-  font-size: 1rem;
-  cursor: pointer;
-  transition: opacity 0.3s;
-  border-radius: 4px;
-  width: 100%; /* Makes button fill the container */
-  text-align: center; /* Center-aligns the text */
-  display: inline-block;
-}
-
-.see-more-container {
-        padding: 10px;
-        text-align: center;
-        border-top: 1px solid #ddd;
-}
-
-
-
-.see-more-button.loading {
-        pointer-events: none;
-        opacity: 0.5;
-
-
-}
-
-    .loading-spinner {
-        border: 4px solid rgba(43, 0, 255, 0.1);
-        border-radius: 50%;
-        border-top: 4px solid rgb(24, 22, 147);
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-        display: inline-block;
-        vertical-align: middle;
-      }
-
-
-      .mark-as-read-button:hover {
-        color: #0056b3;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      @media (max-width: 768px) {
-        .notification-dropdown {
-          width: 100%;
-          right: 0;
-        }
-
-        .layout-topbar-menu {
-          flex-direction: column;
-          gap: 1rem;
-        }
-      }
-
- .chat-icon {
-  position: relative;
-  cursor: pointer;
-  font-size: 24px; /* Larger icon size */
-  margin-right: 20px;
-  margin-top: -6px;
-}
-
-.chat-badge {
-  position: absolute;
-  top: -6px;
-  right: -10px;
-  background-color: #FF0000;
-  color: white;
-  font-size: 11px;
-  padding: 1px 6px;
-  border-radius: 90%;
-}
-
-/* Notification Dropdown Styling */
-.notification-dropdown-icon {
-  position: absolute;
-  right: 0;
-  top: 60px; /* Positioning under the chat icon */
-  width: 320px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  display: block;
-}
-
-.notification-header-icon {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-}
-
-.mark-as-read-button-icon {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #007bff;
-}
-
-.notification-items-icon {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.notification-item-icon {
-  padding: 10px;
-  border-bottom: 1px solid #eaeaea;
-  cursor: pointer;
-}
-
-.unread-notification-icon {
-  background-color: #00BFFF;
-  color: white;
-}
-
-.read-notification-icon {
-  background-color: transparent;
-  color: inherit;
-}
-
-.notification-content-icon {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.notification-timestamp-icon {
-  font-size: 10px;
-  color: #666;
-}
-
-.see-more-container-icon {
-  padding: 10px;
-  text-align: center;
-}
-
-.see-more-button-icon {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 14px;
-  color: #007bff;
-}
-
-
-body {
-        padding-top: 5rem;
-      }
+  .profile-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .change-profile-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    width: 100%;
+  }
+
+  .change-profile-btn {
+    background-color: #3f99f9;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  .change-password-form {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .password-input {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .p-error {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: red;
+  }
+
+  .p-field {
+    margin-bottom: 1.5rem;
+  }
+
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  p-footer {
+    padding: 1rem 0;
+  }
+
+  .user-role {
+    margin-left: 10px;
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .profile-sidebar-card {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .profile-card {
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .profile-card-container {
+    position: fixed;
+    top: 34px;
+    right: 5px;
+    z-index: 1000;
+  }
+
+  .change-profile-container {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 16px;
+    width: 100%;
+  }
+
+  .change-profile-btn {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .profile-card:hover {
+    transform: scale(1.05);
+  }
+
+  .change-profile-btn i {
+    margin-right: 5px;
+  }
+
+  .change-profile-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .card-body {
+    padding: 16px;
+  }
+
+  .card-header {
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .profile-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #007bff;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+
+  .user-role {
+    font-size: 16px;
+    color: #333;
+  }
+
+  .layout-config-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  .p-button-primary {
+    background-color: #3f99f9;
+    border-color: #3f99f9;
+  }
+
+  .p-button-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+  .card-body {
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 10px 0;
+  }
+
+  p {
+    margin: 5px 0;
+    color: #666;
+  }
+
+  p strong {
+    color: #333;
+  }
+
+  .unread-notification {
+    background-color: #00BFFF;
+    color: white;
+  }
+
+  .read-notification {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  .notification-icon {
+    position: relative;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    color: gray;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    margin-right: 15px;
+  }
+
+  .custom-notification-icon {
+    width: 24px;
+    /* Adjust width to make the icon smaller */
+    height: 24px;
+    /* Adjust height to make the icon smaller */
+    object-fit: cover;
+  }
+
+
+  .notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    /* Make it circular */
+    width: 18px;
+    /* Set width for a circular shape */
+    height: 18px;
+    /* Set height for a circular shape */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    padding: 0;
+    /* Remove padding to ensure a perfect circle */
+  }
+
+
+  .notification-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+    max-height: 400px;
+    /* Set max height for the entire dropdown */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    /* Ensure proper layout for scrollable items and button */
+  }
+
+  .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f0f0f0;
+  }
+
+  .notification-icon i {
+    font-size: 14px;
+
+
+  }
+
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
+
+  .notification-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .notification-timestamp {
+    font-size: 0.85rem;
+    color: #888;
+    margin-left: 10px;
+    /* To add some space between message and timestamp */
+    white-space: nowrap;
+    /* Prevent line breaking */
+    align-self: flex-end;
+    /* Aligns the timestamp to the bottom right */
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+    /* Remove the bottom border for the last item */
+  }
+
+  .notification-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .notification-items {
+    max-height: 300px;
+    /* Adjust height for the scrollable area */
+    overflow-y: auto;
+  }
+
+  .notification-items::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
+    /* Optional: background for the scrollbar track */
+  }
+
+  .notification {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+  }
+
+  .notification-message {
+    font-weight: bold;
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+
+  .mark-as-read-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  /* "See More" button styling */
+  .notification-dropdown .see-more-container {
+    padding: 5px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+  }
+
+  .notification-dropdown .see-more-button {
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .see-more-button:hover {
+    background-color: #0056b3;
+    /* Darker blue on hover */
+    color: white;
+  }
+
+  .see-more-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    /* Increased padding for better click area */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    border-radius: 4px;
+    width: 100%;
+    /* Makes button fill the container */
+    text-align: center;
+    /* Center-aligns the text */
+    display: inline-block;
+  }
+
+  .see-more-container {
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #ddd;
+  }
+
+
+
+  .see-more-button.loading {
+    pointer-events: none;
+    opacity: 0.5;
+
+
+  }
+
+  .loading-spinner {
+    border: 4px solid rgba(43, 0, 255, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid rgb(24, 22, 147);
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+
+  .mark-as-read-button:hover {
+    color: #0056b3;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .notification-dropdown {
+      width: 100%;
+      right: 0;
+    }
+
+    .layout-topbar-menu {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+
+  .chat-icon {
+    position: relative;
+    cursor: pointer;
+    font-size: 24px;
+    /* Larger icon size */
+    margin-right: 20px;
+    margin-top: -6px;
+  }
+
+  .chat-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 90%;
+  }
+
+  /* Notification Dropdown Styling */
+  .notification-dropdown-icon {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    /* Positioning under the chat icon */
+    width: 320px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: block;
+  }
+
+  .notification-header-icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .mark-as-read-button-icon {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+  }
+
+  .notification-items-icon {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .notification-item-icon {
+    padding: 10px;
+    border-bottom: 1px solid #eaeaea;
+    cursor: pointer;
+  }
+
+  .unread-notification-icon {
+    background-color: #00BFFF;
+    color: white;
+  }
+
+  .read-notification-icon {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  .notification-content-icon {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .notification-timestamp-icon {
+    font-size: 10px;
+    color: #666;
+  }
+
+  .see-more-container-icon {
+    padding: 10px;
+    text-align: center;
+  }
+
+  .see-more-button-icon {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #007bff;
+  }
+
+
+  body {
+    padding-top: 5rem;
+  }
 </style>

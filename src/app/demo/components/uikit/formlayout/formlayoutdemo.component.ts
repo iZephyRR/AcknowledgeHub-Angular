@@ -199,7 +199,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
-    //this.systemService.showProgress('Uploading an announcement...', true, false, 5);
+    this.systemService.showProgress('Uploading an announcement...', true, false, 5);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
     console.log("group : ", this.selectedGroup);
@@ -352,7 +352,9 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onFileChange(event: any): void {
-    const file = event.target.files[0];
+    console.log("event ", event);
+    const fileInput = event.target;
+    const file = fileInput.files[0];
     if (file) {
       this.file = file;
       this.filename = file.name;
@@ -361,12 +363,8 @@ export class FormLayoutDemoComponent implements OnInit {
         this.filePreview = reader.result;
       };
       reader.readAsDataURL(file);
+      fileInput.value = '';
     }
-  }
-
-  clearPreview(): void {
-    this.filePreview = null;
-    this.filename = '';
   }
 
   resetForm(form: NgForm): void {
@@ -380,7 +378,10 @@ export class FormLayoutDemoComponent implements OnInit {
     this.file = null;
   }
 
-  
+  clearPreview(): void {
+    this.filePreview = null;
+    this.filename = '';
+  }
 
   isImage(): boolean {
     return this.filename?.match(/\.(jpg|jpeg|png|gif)$/i) !== null;

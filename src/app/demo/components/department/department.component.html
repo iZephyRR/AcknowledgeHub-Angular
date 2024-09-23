@@ -10,7 +10,8 @@
 				styleClass="p-datatable-gridlines" [paginator]="true"
 				[globalFilterFields]="['staffId','name','email','role','status']" responsiveLayout="scroll">
 				<ng-template pTemplate="caption">
-					<div class="flex justify-content-between flex-column sm:flex-row">	<span class="p-input-icon-left mb-2">
+					<div class="flex justify-content-between flex-column sm:flex-row">
+							<span class="p-input-icon-left mb-2">
 									<i class="pi pi-search"></i>
 									<input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
 										placeholder="Search Keyword" class="w-full" />
@@ -68,7 +69,7 @@
 					</tr>
 				</ng-template>
 				<ng-template pTemplate="body" let-user let-i="rowIndex">
-					<tr style="cursor: pointer;">
+					<tr style="cursor: pointer;" (click)="showEmployee(user)">
 					  <td>
 						{{ i + 1 }}.
 					  </td>
@@ -82,7 +83,7 @@
 						{{ user.email }}
 					  </td>
 					  <td>
-						{{ user.role }}
+						{{ systemService.changeRoleToNormalCase(user.role) }}
 					  </td>
 					  <td>
 						{{ user.status }}

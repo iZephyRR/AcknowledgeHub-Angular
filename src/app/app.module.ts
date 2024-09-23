@@ -57,6 +57,8 @@ import { TimeAgoPipe } from './time-ago.pipe';
 import { AddCompanyComponent } from './demo/components/add-company/add-company.component';
 import { TableDemoComponent } from './demo/components/uikit/table/tabledemo.component';
 import { RatingModule } from 'primeng/rating';
+import { UserCardComponent } from './demo/components/user-card/user-card.component';
+import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.component';
 
 
 @NgModule({
@@ -82,7 +84,9 @@ import { RatingModule } from 'primeng/rating';
     EditDepartmentComponent,
     TimeAgoPipe,
     AddCompanyComponent,
-    TableDemoComponent
+    TableDemoComponent,
+    UserCardComponent,
+    MediaDemoComponent
   ],
   imports: [
     BadgeModule,
@@ -122,7 +126,7 @@ import { RatingModule } from 'primeng/rating';
     HttpClientModule,
     RatingModule,
     SliderModule,
-    InputTextModule
+    InputTextModule,
   ],
   providers: [
     {

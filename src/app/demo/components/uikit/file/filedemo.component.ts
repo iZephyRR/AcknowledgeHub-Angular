@@ -57,6 +57,7 @@ export class FileDemoComponent implements OnInit {
     this.companyService.getAll().subscribe(
 
       (data) => {
+        console.log(data);
         this.companies = data.map((company) =>
           this.maptotreeService.mapCompaniesToNodesWithEmployees(company)
         );

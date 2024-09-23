@@ -9,6 +9,7 @@ import { UserService } from 'src/app/services/user/user.service';
 import { EditDepartmentComponent } from '../edit-department/edit-department.component';
 import { EditDepartmentService } from 'src/app/services/edit-department/edit-department.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
   selector: 'app-department',
@@ -28,7 +29,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     private router: Router,
     private userService: UserService,
     public editDepartmentValidator: EditDepartmentService,
-    private authService: AuthService
+    private authService: AuthService,
+    private systemService: SystemService
 
   ) {
 
@@ -51,12 +53,12 @@ export class DepartmentComponent implements OnInit, OnDestroy {
 
       complete: () => {
         this.userService.getAllByDepartmentID(this.department.id).subscribe({
-          next: (departmentData:User[]) => {
+          next: (departmentData: User[]) => {
             this.users = departmentData;
           },
           error: (err) => {
             console.error(err);
-           this.authService.showNotFoundPage();
+            this.authService.showNotFoundPage();
           }
         });
       },
@@ -84,8 +86,12 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   editDepartment(): void {
-    this.editDepartmentValidator.department=this.department;
+    this.editDepartmentValidator.department = this.department;
     this.editDepartmentValidator.showView = true;
+  }
+
+  showEmployee(user: User): void {
+    this.systemService.showDetails(user);
   }
 
 }

@@ -9,7 +9,7 @@ export interface Announcement {
     categoryName: string;
     creater: string;
     contentType: ContentType;
-    createdAt: Date;
+    createdAt: Date | string;
     announcementResponseCondition: AnnouncementResponseCondition;
 }
 export enum FileType {

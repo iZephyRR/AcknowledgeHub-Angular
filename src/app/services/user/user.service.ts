@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HR } from 'src/app/modules/company';
 import { UniqueFields } from 'src/app/modules/unique-fields';
 import { User, UserProfile } from 'src/app/modules/user';
 import { UpdateUser, Users } from 'src/app/modules/user-excel-upload';
+import { SystemService } from '../system/system.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,9 @@ export class UserService {
 
   private baseUrl = 'http://localhost:8080/api/v1';
   photoLink:string;
+  profileImage:string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,private systemService:SystemService) {
 
   }
   getAllUsers(): Observable<User[]> {
@@ -71,6 +73,8 @@ export class UserService {
   countEmployee(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/hrs/employee-count`); // Adjust the endpoint as necessary
   }
+
+ 
 }
 
 
