@@ -10,6 +10,7 @@ import { Reply, ReplyList } from 'src/app/modules/reply';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CommentService } from 'src/app/services/comment/comment.service';
+import { UserService } from 'src/app/services/user/user.service';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -32,6 +33,7 @@ export class AnnouncementDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private userService : UserService,
     private announcementService: AnnouncementService,
     private commentService: CommentService,
     private authService: AuthService,

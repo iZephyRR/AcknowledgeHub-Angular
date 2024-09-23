@@ -197,11 +197,7 @@ export class AppMenuComponent implements OnChanges {
                                     routerLink: ['/announcement/schedule-list']
 
                                 },
-                                {
-                                    label: 'Announcement floatlabel',
-                                    icon: 'pi pi-fw pi-floatlabel',
-                                    routerLink: ['/announcement/floatlabel']
-                                }
+                                
                             ]
                         },
                         ...this.authService.role == 'MAIN_HR' ? [
@@ -225,10 +221,6 @@ export class AppMenuComponent implements OnChanges {
                             routerLink: ['/announcement/drafts']
                         },
                         {
-                            label: 'Reports',
-                            icon: 'pi pi-fw pi-calendar',
-                            routerLink: ['/pages/timeline']
-                        }, {
                             label: 'Employee List',
                             icon: 'pi pi-fw pi-user',
                             routerLink: ['/announcement/employeelist']
@@ -265,11 +257,6 @@ export class AppMenuComponent implements OnChanges {
                                 icon: 'pi pi-fw pi-tags',
                                 routerLink: ['/announcement/category']
                             },
-                            {
-                                label: 'Chart List',
-                                icon: 'pi pi-fw pi-list',
-                                routerLink: ['/announcement/charts']
-                            }
                         ]
                     ],
                 ]

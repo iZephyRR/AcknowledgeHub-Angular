@@ -31,12 +31,12 @@ export class NotificationService {
 
   private notedNotifications: any[] = [];
   private notifications: any[] = [];
-  private commentNotifications:any[]=[];
-  private replyNotifications:any[]=[]
+  private commentNotifications: any[] = [];
+  private replyNotifications: any[] = []
 
   private combinedNotifications: any[] = [];
 
-  private apiUrl = 'http://localhost:8080/api/v1/notifications';   private notificationsCollection: AngularFirestoreCollection<any>;
+  private apiUrl = 'http://localhost:8080/api/v1/notifications'; private notificationsCollection: AngularFirestoreCollection<any>;
 
   constructor(
     private http: HttpClient,
@@ -85,9 +85,13 @@ export class NotificationService {
     const userId = this.authService.userId;
 
     if (userId) {
-      console.log('Querying notifications for userId:', userId);
+
+      const userIdString = String(userId);
+
+      console.log('Querying notifications for userId:', userIdString);
+
       this.firestore.collection('notifications', ref =>
-        ref.where('targetId', '==', userId)
+        ref.where('targetId', '==', userIdString)
           .orderBy('userId', 'asc')
           .orderBy('announcementId', 'desc')
           .orderBy('timestamp', 'desc')
@@ -98,15 +102,28 @@ export class NotificationService {
           console.error('Error fetching notifications:', error);
           return of([]);
         }),
-        map((notifications: any[]) => notifications.map(notification => {
-          const senderName = notification.SenderName || 'Unknown Sender';
-          const title = notification.title || 'No Title';
-          const timestamp = notification.noticeAt ? new Date(notification.noticeAt).toLocaleDateString() : 'Unknown Date';
-          return {
-            ...notification,
-            message: `${senderName} posted an announcement "${title}" on ${timestamp}`
-          };
-        }))
+        map((notifications: any[]) => {
+          notifications.forEach(notification => {
+            console.log('Notification userId:', notification.userId);
+            console.log('Notification SenderId:', notification.SenderID);
+          });
+
+          return notifications.filter(notification => {
+            const senderIdString = String(notification.SenderID);
+            const isSender = senderIdString === userIdString;
+            console.log(`Comparing SenderId: ${senderIdString} with userId: ${userIdString}, isSender: ${isSender}`);
+            return !isSender;
+          }).map(notification => {
+            const senderName = notification.SenderName || 'Unknown Sender';
+            const title = notification.title || 'No Title';
+            const timestamp = notification.noticeAt ? new Date(notification.noticeAt).toLocaleDateString() : 'Unknown Date';
+
+            return {
+              ...notification,
+              message: `${senderName} posted an announcement "${title}" on ${timestamp}`
+            };
+          });
+        })
       ).subscribe(
         (notifications: any[]) => {
           console.log('Processed Notifications:', notifications);
@@ -118,9 +135,6 @@ export class NotificationService {
       console.warn('User ID is undefined. Cannot load notifications.');
     }
   }
-
-
-
 
   markAsRead(notificationId: string): void {
     const notifications = this.notificationsSubject.getValue();
@@ -256,10 +270,10 @@ export class NotificationService {
 
     console.warn('User ID is undefined. Cannot load comment notifications.');
     return of([]);
-}
+  }
 
 
-loadReplyCommentsNotifications(): Observable<Notification[]> {
+  loadReplyCommentsNotifications(): Observable<Notification[]> {
     const userId = this.authService.userId; // Get the current user ID
 
     if (userId) {

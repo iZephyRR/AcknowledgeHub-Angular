@@ -37,8 +37,9 @@
                         <td>{{i + 1}}</td>
                         <td>{{draft.title}}</td>
                         <td>{{draft.categoryName}}</td>
-                        <td>{{draft.contentType}}</td>
                         <td>{{draft.filename}}</td>
+                        <td>{{draft.contentType}}</td>
+                        
                         <td>{{draft.draftAt | date:'MMM d,y'}}</td>
                         <!-- <td>
                             <ngx-extended-pdf-viewer [src]="draft.fileUrl" [showSidebarButton]="false"
@@ -153,7 +154,6 @@
                         </div>
                     </div>
                     <br>
-
                     <!-- Submit Button -->
                     <div class="form-group">
                         <button pButton pRipple type="submit"

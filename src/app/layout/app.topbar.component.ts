@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, ViewChild, Input, OnInit, HostListener, Renderer2 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { LayoutService } from "./service/app.layout.service";
 import { AppComponent } from '../app.component';
@@ -23,16 +23,16 @@ export class AppTopBarComponent implements OnInit {
   user: UserProfile = {} as UserProfile;
   items!: MenuItem[];
   unreadCount: number = 0;
-  unreadChatCount:number = 0;
+  unreadChatCount: number = 0;
 
-   // Unread notification count
+  // Unread notification count
   notifications: Notification[] = []; // General notifications
   notedNotifications: Notification[] = []; // Noted notifications
-  commentNotifications:Notification[]=[];
-  replyNotifications:Notification[]=[];
+  commentNotifications: Notification[] = [];
+  replyNotifications: Notification[] = [];
   combinedNotifications: Notification[] = []; // Combined list for rendering
   showNotifications: boolean = false;
-  showChatNotifications: boolean =false;// Toggle for notification dropdown
+  showChatNotifications: boolean = false;// Toggle for notification dropdown
   profileImage: SafeUrl | null = null;
   clickOutsideSubscription!: Subscription; // Subscription for click events
 
@@ -41,6 +41,7 @@ export class AppTopBarComponent implements OnInit {
   @ViewChild('topbarmenu') menu!: ElementRef;
   @ViewChild('fileInput', { static: false }) fileInput!: ElementRef;
   @ViewChild('notificationDropdown') notificationDropdown!: ElementRef;
+  @ViewChild('notificationIcon') notificationIcon!: ElementRef;
   @ViewChild('profileDropdown') profileDropdown!: ElementRef;
   @Input() minimal: boolean = false;
   @Input() announcementId: number;
@@ -51,7 +52,7 @@ export class AppTopBarComponent implements OnInit {
   currentPage: number = 0; // Track the current page
   canLoadMore: boolean = false;
   loading: boolean = false; // Loading state
-
+  private clickListener: () => void;
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
   isChangePasswordModalVisible: boolean = false;
@@ -71,7 +72,7 @@ export class AppTopBarComponent implements OnInit {
 
   constructor(
     public layoutService: LayoutService,
-    private userService: UserService,
+    public userService: UserService,
     public menuService: MenuService,
     private notificationService: NotificationService,
     public messageService: MessageDemoService,
@@ -79,13 +80,13 @@ export class AppTopBarComponent implements OnInit {
     private sanitizer: DomSanitizer,
     public authService: AuthService,
     private firestore: AngularFirestore,
-    public systemService: SystemService
+    public systemService: SystemService, private renderer: Renderer2, private elementRef: ElementRef
   ) { }
 
   ngOnInit(): void {
     this.loadChatNotificationsFromLocalStorage();
     this.profile();
-    this.loadNotifications();
+    //this.loadNotifications();
     this.notificationService.loadNotifications();
     this.loadNotedNotifications();
     this.loadNotificationsForComment();
@@ -101,7 +102,8 @@ export class AppTopBarComponent implements OnInit {
       next: (data) => {
         console.log(data);
         this.user = data;
-        this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
+        //this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
+        this.userService.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
       },
       error: (err) => {
         console.error('Profile error ' + err);
@@ -138,7 +140,6 @@ export class AppTopBarComponent implements OnInit {
         console.log("Comment notifications fetched successfully:", commentNotifications); // Check here
         this.commentNotifications = commentNotifications;
         this.unreadChatCount = this.commentNotifications.filter(notification => !notification.isRead).length;
-
         if (this.commentNotifications.length > 0) {
           console.log('First comment message:', this.commentNotifications[0].message);
         }
@@ -173,7 +174,6 @@ export class AppTopBarComponent implements OnInit {
     );
   }
 
-
   fetchAnnouncementId(userId: string): Observable<string> {
     return from(
       this.firestore.collection('notifications')
@@ -199,8 +199,6 @@ export class AppTopBarComponent implements OnInit {
     );
   }
 
-
-
   loadNotedNotifications(): void {
     this.notificationService.getNotedNotifications()
       .subscribe(
@@ -223,7 +221,7 @@ export class AppTopBarComponent implements OnInit {
 
 
   updateCombinedNotifications(): void {
-    this.combinedNotifications = [...this.notifications, ...this.notedNotifications,...this.commentNotifications,...this.replyNotifications]
+    this.combinedNotifications = [...this.notifications, ...this.notedNotifications, ...this.commentNotifications, ...this.replyNotifications]
       .sort((a, b) => new Date(b.noticeAt).getTime() - new Date(a.noticeAt).getTime());
     this.unreadCount = this.combinedNotifications.filter(notification => !notification.isRead).length;
     this.loadNotificationsFromLocalStorage();
@@ -258,7 +256,35 @@ export class AppTopBarComponent implements OnInit {
   // Toggle notification dropdown
   toggleNotificationDropdown(): void {
     this.showNotifications = !this.showNotifications;
-    this.isProfileCardVisible = false; // Close profile when opening notifications
+
+    if (this.showNotifications) {
+      // Register the outside click listener when dropdown is shown
+      this.clickListener = this.renderer.listen('document', 'click', (event: MouseEvent) => {
+        const target = event.target as HTMLElement;
+        if (
+          this.notificationDropdown &&
+          this.notificationIcon &&
+          !this.notificationDropdown.nativeElement.contains(target) &&
+          !this.notificationIcon.nativeElement.contains(target)
+        ) {
+          this.showNotifications = false; // Close the dropdown
+          this.removeClickListener(); // Remove the listener to avoid unnecessary listeners
+        }
+      });
+    } else {
+      this.removeClickListener();
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.removeClickListener();
+  }
+
+  private removeClickListener(): void {
+    if (this.clickListener) {
+      this.clickListener();
+      this.clickListener = null;
+    }
   }
 
   toggleChatDropdown(): void {
@@ -320,6 +346,21 @@ export class AppTopBarComponent implements OnInit {
     this.isProfileCardVisible = false;
   }
 
+  @HostListener('document:click', ['$event'])
+  handleProfileClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    // Check if the click is outside the profile card
+    const profileCard = document.querySelector('.profile-sidebar-card');
+    const profileButton = document.querySelector('.layout-config-button');
+
+    if (this.isProfileCardVisible &&
+      !profileCard?.contains(target) &&
+      !profileButton?.contains(target)) {
+      this.isProfileCardVisible = false; // Close the card
+    }
+  }
+
   onChangeProfile(): void {
     if (this.fileInput) {
       console.log(this.fileInput); // Debugging: ensure it's defined
@@ -345,7 +386,9 @@ export class AppTopBarComponent implements OnInit {
     if (this.selectedFile) {
       this.userService.uploadProfileImage(this.selectedFile).subscribe({
         next: (response) => {
+          this.profile();
           this.messageService.toast("success", "Upload Profile Successful");
+
         },
         error: (error) => {
           this.messageService.toast("error", "Upload Failed");
@@ -497,19 +540,19 @@ export class AppTopBarComponent implements OnInit {
     localStorage.setItem('chatNotifications', JSON.stringify(readChatNotifications));
   }
 
-loadChatNotificationsFromLocalStorage(): void {
-  const savedChatNotifications = localStorage.getItem('chatNotifications');
-  if (savedChatNotifications) {
-    const readChatStatusList = JSON.parse(savedChatNotifications);
-    this.commentNotifications.forEach(notification => {
-      const readStatus = readChatStatusList.find((n: any) => n.id === notification.id);
-      if (readStatus) {
-        notification.isRead = readStatus.isRead;
-      }
-    });
-    this.unreadChatCount = this.commentNotifications.filter(notification => !notification.isRead).length;
+  loadChatNotificationsFromLocalStorage(): void {
+    const savedChatNotifications = localStorage.getItem('chatNotifications');
+    if (savedChatNotifications) {
+      const readChatStatusList = JSON.parse(savedChatNotifications);
+      this.commentNotifications.forEach(notification => {
+        const readStatus = readChatStatusList.find((n: any) => n.id === notification.id);
+        if (readStatus) {
+          notification.isRead = readStatus.isRead;
+        }
+      });
+      this.unreadChatCount = this.commentNotifications.filter(notification => !notification.isRead).length;
+    }
   }
-}
 
   // Getters and setters for layout settings
   get visible(): boolean {

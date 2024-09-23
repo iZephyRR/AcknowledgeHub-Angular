@@ -20,6 +20,7 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
             {
                 path: '',
                 component: AppLayoutComponent,
+                canActivate:[AuthGuard],
                 children: [
                     {
                         path: 'dashboard',

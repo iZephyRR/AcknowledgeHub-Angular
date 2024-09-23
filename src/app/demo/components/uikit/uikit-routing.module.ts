@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { TableDemoComponent } from './table/tabledemo.component';
 import { MediaDemoComponent } from './media/mediademo.component';
+import { CategoryComponent } from './category/category.component';
 
 
 @NgModule({
@@ -11,7 +12,7 @@ import { MediaDemoComponent } from './media/mediademo.component';
         { path: 'create', data: { breadcrumb: 'Form Layout' }, loadChildren: () => import('./formlayout/formlayoutdemo.module').then(m => m.FormLayoutDemoModule) },
         { path: 'schedule-list', data: { breadcrumb: 'Input' }, loadChildren: () => import('./input/inputdemo.module').then(m => m.InputDemoModule) },
         { path: 'invalidstate', data: { breadcrumb: 'Invalid State' }, loadChildren: () => import('./invalid/invalidstatedemo.module').then(m => m.InvalidStateDemoModule) },
-        { path: 'category', data: { breadcrumb: 'List' }, loadChildren: () => import('./list/listdemo.module').then(m => m.ListDemoModule) },
+        { path: 'category', component:CategoryComponent},
         { path: 'list',component:MediaDemoComponent},
         { path: 'message', data: { breadcrumb: 'Message' }, loadChildren: () => import('./messages/messagesdemo.module').then(m => m.MessagesDemoModule) },
         { path: 'drafts', data: { breadcrumb: 'Overlay' }, loadChildren: () => import('./overlays/overlaysdemo.module').then(m => m.OverlaysDemoModule) },

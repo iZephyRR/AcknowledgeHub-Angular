@@ -5,17 +5,17 @@
       <div class="d-flex align-items-center gap-2">
         <div class="input-wrapper">
           <input *ngIf="inputVisible" class="form-control" type="text" [(ngModel)]="inputValue" (blur)="onBlur()"
-                 placeholder="Category" pTooltip="Enter Category">
-   
+            placeholder="Category" pTooltip="Enter Category">
+
           <button *ngIf="inputValue" class="reset-btn" (click)="resetInput()" aria-label="Reset">
-              <span>&times;</span> 
+            <span>&times;</span>
           </button>
-      </div>
-      
+        </div>
         <button class="btn btn-primary" [disabled]="inputValue.trim() === '' && inputVisible" (click)="toggleInput()">
           {{ buttonLabel }}
         </button>
       </div>
+      <br>
       <p-confirmDialog></p-confirmDialog>
       <p-table #dt2 [value]="categories" dataKey="id" [rows]="5" [loading]="loading" [rowHover]="true"
         styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name']" responsiveLayout="scroll">
@@ -65,69 +65,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .input-wrapper {
-    position: relative;
-    display: inline-block;
-}
-
-.form-control {
-    padding-right: 2.5rem; /* Ensure space for the reset button */
-}
-
-.reset-btn {
-    position: absolute;
-    top: 50%;
-    right: 0.5rem; /* Adjust spacing from the right */
-    transform: translateY(-50%);
-    border: none;
-    background: transparent;
-    color: #6c757d; /* Adjust color to match your theme */
-    font-size: 1.25rem; /* Adjust size as needed */
-    cursor: pointer;
-    outline: none;
-}
-
-.reset-btn:hover {
-    color: #000; /* Change color on hover if needed */
-}
-
-  .d-flex {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    justify-content: flex-end;
-
-  }
-
-  .form-control {
-    flex: 1;
-    max-width: 200px;
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.25rem;
-  }
-
-  .btn-primary {
-    border-radius: 0.25rem;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.25rem;
-    background-color: #41404a;
-    color: white;
-    text-align: center;
-    display: inline-flex;
-    align-items: center;
-  }
-
-
-  .btn-primary:hover {
-    background-color: #727277;
-  }
-
-  .btn-primary:focus,
-  .btn-primary:active {
-    box-shadow: 0 0 0 0.2rem rgba(86, 179, 255, 0.5);
-  }
-</style>

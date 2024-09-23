@@ -59,6 +59,7 @@ import { TableDemoComponent } from './demo/components/uikit/table/tabledemo.comp
 import { RatingModule } from 'primeng/rating';
 import { UserCardComponent } from './demo/components/user-card/user-card.component';
 import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.component';
+import { CategoryComponent } from './demo/components/uikit/category/category.component';
 
 
 @NgModule({
@@ -86,7 +87,8 @@ import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.comp
     AddCompanyComponent,
     TableDemoComponent,
     UserCardComponent,
-    MediaDemoComponent
+    MediaDemoComponent,
+CategoryComponent
   ],
   imports: [
     BadgeModule,
@@ -126,7 +128,7 @@ import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.comp
     HttpClientModule,
     RatingModule,
     SliderModule,
-    InputTextModule,
+    InputTextModule
   ],
   providers: [
     {

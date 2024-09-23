@@ -79,9 +79,12 @@
               </div>
 
               <div *ngIf="activeReplyBoxId === comment.id && condition === 'CREATOR' " class="reply-input-container">
-                <!-- <div class="reply-avatar">
-                  <img [src]="'assets/default-profile.png'" alt="Profile" class="avatar" />
-                </div> -->
+                <div class="reply-avatar">
+                  <img  *ngIf="userService.profileImage; else default" [src]="userService.profileImage" alt="Profile" class="avatar" />
+                  <ng-template #default>
+                    <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+                  </ng-template>
+                </div>
                 <div class="reply-input-wrapper">
                   <textarea [(ngModel)]="replyText" placeholder="Add a public reply..."
                     class="reply-textarea"></textarea>

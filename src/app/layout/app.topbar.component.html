@@ -1,5 +1,5 @@
 <div class="layout-topbar">
-  <a routerLink="" style="margin-left: 20px;margin-right: 180px;">
+  <a [routerLink]="['/dashboard']" style="margin-left: 20px;margin-right: 180px;">
     <div class="layout-topbar-logo">
       <span class="company-logo">ACE</span><br>
       <span class="company-subtitle">Data Systems Ltd.</span>
@@ -14,7 +14,7 @@
         'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
       }">
     <!-- Notification Icon and Dropdown -->
-    <div class="notification-icon" (click)="toggleNotificationDropdown()">
+    <div class="notification-icon" (click)="toggleNotificationDropdown()" #notificationIcon>
       <img src="assets/alarm_alert_attention_bell_clock_notification_ring_icon_123203.ico" alt="Notification Icon"
         class="custom-notification-icon" />
       <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
@@ -26,22 +26,18 @@
         <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
       <div class="notification-items">
-        <div class="notification-item" *ngFor="let notification of visibleNotifications"
-          (click)="markAsRead(notification)" [ngClass]="{
-                'unread-notification': !notification.isRead,
-                'read-notification': notification.isRead
-              }">
-          <a [routerLink]="['/announcement-page/',notification.announcementId]">
+        <div class="notification-item" *ngFor="let notification of visibleNotifications" (click)="markAsRead(notification)" 
+          [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
+          <a [routerLink]="['/announcement-page/', notification.announcementId]">
             <div class="notification-content">
-              <p class="notification-message">{{ notification.message }} </p>
+              <p class="notification-message">{{ notification.message }}</p>
               <small class="notification-timestamp">{{ notification.timestamp | timeAgo }}</small>
             </div>
           </a>
         </div>
       </div>
       <div class="see-more-container" *ngIf="canLoadMore">
-        <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }"
-          [disabled]="loading">
+        <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }" [disabled]="loading">
           <span *ngIf="!loading">See more</span>
           <span *ngIf="loading" class="loading-spinner"></span>
         </button>
@@ -51,14 +47,14 @@
     <!-- Profile Button and Dropdown -->
     <div style="display: flex; align-items: center;">
       <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
-        <img *ngIf="profileImage; else default" [src]="profileImage" alt="Profile Image" class="profile-image" />
+        <img *ngIf="userService.profileImage; else default" [src]="userService.profileImage" alt="Profile Image" class="profile-image" />
         <ng-template #default>
           <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
         </ng-template>
       </button>
-      <div style="display: flex;flex-direction: column;">
-        <span class="user-role"><strong>{{user.name}}</strong></span>
-        <span style="font-size: 15px;" class="user-role">({{systemService.changeRoleToNormalCase(user.role)}})</span>
+      <div style="display: flex; flex-direction: column;">
+        <span class="user-role"><strong>{{ user.name }}</strong></span>
+        <span style="font-size: 15px;" class="user-role">({{ systemService.changeRoleToNormalCase(user.role) }})</span>
       </div>
     </div>
 
@@ -73,26 +69,22 @@
 <!-- Profile Sidebar Card -->
 <div *ngIf="isProfileCardVisible" class="profile-sidebar-card">
   <div class="profile-card">
-    <button (click)="closeProfileCard()" class="close-btn">
-      &times;
-    </button>
     <div class="card-header">
-      <img *ngIf="profileImage; else defaultImage" [src]="profileImage" alt="Profile Image" class="profile-img" />
+      <img *ngIf="userService.profileImage; else defaultImage" [src]="userService.profileImage" alt="Profile Image" class="profile-img" />
       <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
       <ng-template #defaultImage>
         <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="profile-img" />
       </ng-template>
       <button (click)="onChangeProfile()" class="change-profile-btn">
-        <i class="fas fa-edit"></i>
-        Change Profile
+        <i class="fas fa-edit"></i> Change Profile
       </button>
     </div>
     <div class="card-body">
       <h2>{{ user.name }}</h2>
       <p class="role">{{ user.role }}</p>
       <p><strong>Email:</strong> {{ user.email }}</p>
-      <p *ngIf="user.companyName!=null"><strong>Company:</strong> {{ user.companyName }}</p>
-      <p *ngIf="user.departmentName!=null"><strong>Department:</strong> {{ user.departmentName }}</p>
+      <p *ngIf="user.companyName != null"><strong>Company:</strong> {{ user.companyName }}</p>
+      <p *ngIf="user.departmentName != null"><strong>Department:</strong> {{ user.departmentName }}</p>
       <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
     </div>
   </div>

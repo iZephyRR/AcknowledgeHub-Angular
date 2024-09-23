@@ -72,7 +72,7 @@ export class FormLayoutDemoComponent implements OnInit {
   ) {
     const now = new Date();
     this.currentDate = now.toISOString().slice(0, 16);
-   }
+  }
 
   ngOnInit() {
     this.customTargetGroupService.findAllByHRID().subscribe({
@@ -100,13 +100,8 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  onViewChange(option: 'tree' | 'table') {
+  onViewChange(option: 'tree' | 'table'): void {
     this.viewOption = option;
-    // if (this.viewOption == 'tree') {
-    //   this.selectedEmployees = [];
-    // } else {
-    //   this.selectedTargets = [];
-    // }
   }
 
   retrieveAllUsers(): void {
@@ -167,7 +162,7 @@ export class FormLayoutDemoComponent implements OnInit {
       (treeNode) => {
         console.log(treeNode);
         this.companies = [treeNode];
-        
+
       },
       error => {
         console.error('Error fetching companies data:', error);
@@ -182,13 +177,13 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  toggleDatePicker(event:any): void {
-    if(event.checked){
+  toggleDatePicker(event: any): void {
+    if (event.checked) {
       this.showDatePicker = true;
-    }else{
-      this.showDatePicker=false;
+    } else {
+      this.showDatePicker = false;
     }
-    
+
   }
 
   triggerFileInput(): void {
@@ -239,7 +234,7 @@ export class FormLayoutDemoComponent implements OnInit {
         this.clearPreview();
       },
       error: (err) => {
-        console.error('Draft saving error '+JSON.stringify(err));
+        console.error('Draft saving error ' + JSON.stringify(err));
         this.messageService.toast("error", "Can't Save");
       }
     });
@@ -369,18 +364,21 @@ export class FormLayoutDemoComponent implements OnInit {
 
   resetForm(form: NgForm): void {
     form.reset();
-    this.selectedTargets = [];
     this.clearPreview();
     this.selectedCategory = '';
     this.scheduleOption = 'now';
     this.showDatePicker = false;
     this.title = '';
     this.file = null;
+
   }
 
   clearPreview(): void {
     this.filePreview = null;
     this.filename = '';
+    this.canSaveTarget = false;
+    this.selectedTargets = [];
+    this.onViewChange('tree');
   }
 
   isImage(): boolean {

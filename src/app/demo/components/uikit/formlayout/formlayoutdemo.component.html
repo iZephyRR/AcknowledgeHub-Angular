@@ -58,18 +58,18 @@
                     </div>
                     <br>
                     <!-- Radio Buttons for Selecting View -->
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
-                                (change)="onViewChange('tree')">
-                            Company & Department View
-                        </label>
-                        <label>
-                            <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
-                                (change)="onViewChange('table')">
-                            Employee List View
-                        </label>
-                    </div>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
+                                    (change)="onViewChange('tree')">
+                                Company & Department View
+                            </label>
+                            <label>
+                                <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
+                                    (change)="onViewChange('table')">
+                                Employee List View
+                            </label>
+                        </div>
 
                     <!-- Conditionally Display Components -->
                     <div *ngIf="viewOption === 'tree'" class="tree-wrapper">
@@ -138,11 +138,8 @@
                 <br>
                 <div class="form-group d-flex align-items-center">
                     <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0" on
-                        (onChange)="saveTargetToggle($event)" class="p-checkbox-success">
+                        (onChange)="saveTargetToggle($event)" [(ngModel)]="canSaveTarget" class="p-checkbox-success">
                     </p-checkbox>
-
-                    <!-- Channel Options beside the Save Target -->
-
                 </div>
                 <br>
                 <div class="form-group" style="display: flex;justify-content: space-between;">
@@ -179,9 +176,10 @@
                     <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length && !selectedGroup)
                         || !filePreview " label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
                     <button pButton pRipple type="button"
-                        [disabled]="sendAnnouncement.invalid || viewOption !== 'tree' || selectedTargets.length === 0 || selectedGroup"
-                        label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save"
-                        class="btn-success"></button>
+                        [disabled]="!(sendAnnouncement.valid && viewOption === 'tree' && selectedTargets.length > 0) || selectedGroup !== null"
+                        label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save" class="btn-success">
+                    </button>
+
                     &nbsp;
                     <button pButton pRipple type="reset" (click)="clearPreview()" label="Reset" icon="pi pi-refresh"
                         class="btn-secondary"></button>

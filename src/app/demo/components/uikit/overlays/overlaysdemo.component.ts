@@ -240,16 +240,18 @@ export class OverlaysDemoComponent implements OnInit {
     return targetData;
   }
 
-  deleteDraft(id : number){
-    this.announcementService.deleteDraft(id).subscribe({
-      next: (response) => {
-        this.messageService.toast('success', 'Delete Success');
-        this.loadDrafts();
-      },
-      error: (error) => {
-        this.messageService.toast('error', "Can't delete");
-      }
-    });
+  async deleteDraft(id : number){
+    if ((await this.messageService.confirmed("Delete Announcement Draft", "Do You Want to Delete?", "Yes" , "No",'WHITE','BLACK')).confirmed) {
+      this.announcementService.deleteDraft(id).subscribe({
+        next: (response) => {
+          this.messageService.toast('success', 'Delete Success');
+          this.loadDrafts();
+        },
+        error: (error) => {
+          this.messageService.toast('error', "Can't delete");
+        }
+      });
+    }
   } 
 
   async delete(id: number) {

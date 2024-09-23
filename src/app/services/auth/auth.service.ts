@@ -220,9 +220,6 @@ export class AuthService {
         })
       );
     } else {
-      if (this.systemService.currentRout() != '/login') {
-        this.messageService.toast('warn', 'Login first!');
-      }
       this.systemService.hideLoading();
       this.router.navigate(['/login']);
       return of(false);
