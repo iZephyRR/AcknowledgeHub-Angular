@@ -4,6 +4,7 @@ import { catchError, Subscription, throwError, timer } from 'rxjs';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { Login } from 'src/app/modules/login';
 import { Mail } from 'src/app/modules/mails';
+import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CustomTargetGroupService } from 'src/app/services/custom-target-group/custom-target-group.service';
 import { DepartmentService } from 'src/app/services/department/department.service';
@@ -58,7 +59,8 @@ export class LoginComponent implements OnInit {
     public systemService: SystemService,
     public messageService: MessageDemoService,
     private session: LocalStorageService,
-    public departmentService:DepartmentService
+    public departmentService:DepartmentService,
+    private announcementService : AnnouncementService
   ) { }
 
 
@@ -80,6 +82,8 @@ export class LoginComponent implements OnInit {
     this.authService.xShowNotFound=true;
     this.startCountdown();
     this.authService.severConnectionTest();
+    this.announcementService.getPieChart();
+    this.announcementService.getNotedPercentageByDepartment();
   }
 
   ngOnDestroy(): void {

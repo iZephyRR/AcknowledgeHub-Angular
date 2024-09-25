@@ -17,6 +17,15 @@ export class MediaDemoComponent implements OnInit {
   FileType = FileType;
   displayDialog: boolean = false;
   selectedAnnouncement: Announcement | null = null;
+  
+  timeRangeOptions: any[] = [];
+  selectedTimeRange: string;
+  displayCustomDialog: boolean = false;
+
+  // Variables to hold custom date and time inputs
+  customDay: string = '0';
+  customHour: string = '0';
+  customMinute: string = '0';
 
   // Comments handling
   comments: Array<{ author: string, text: string, showReplyBox?: boolean, replyText?: string, replies?: { author: string, text: string }[] }> = [];
@@ -43,6 +52,59 @@ export class MediaDemoComponent implements OnInit {
         console.error('Error fetching announcements:', error);
       }
     );
+    this.timeRangeOptions = [
+      { label: '1 Hour', value: '1 Hour' },
+      { label: '1 Day', value: '1 Day' },
+      { label: '1 Week', value: '1 Week' },
+      { label: 'Custom', value: 'Custom' }
+    ];
+  }
+ 
+   onTimeRangeChange(event: any) {
+    const selectedValue = event.value;
+    if (selectedValue === 'Custom') {
+      this.displayCustomDialog = true;  // Show the custom time picker dialog
+    } else {
+      this.applyTimeRange(selectedValue);
+    }
+  }
+
+  applyTimeRange(timeRange: string) {
+    console.log(`Applying time range: ${timeRange}`);
+    // Add logic for predefined ranges
+  }
+
+  submitCustomTime() {
+    if (this.customDay && this.customHour && this.customMinute) {
+      alert(`Selected date and time: ${this.customDay.padStart(2, '0')} ${this.customHour.padStart(2, '0')}:${this.customMinute.padStart(2, '0')}`);
+      this.displayCustomDialog = false;  // Close the dialog after submission
+    } else {
+      alert('Please enter day, hour, and minutes.');
+    }
+  }
+
+  // Validation for Day (between 0 and 365)
+  validateDay() {
+    const day = parseInt(this.customDay);
+    if (isNaN(day) || day < 0 || day > 365) {
+      this.customDay = '0';  // Reset to 0 if out of range
+    }
+  }
+
+  // Validation for Hour (between 0 and 23)
+  validateHour() {
+    const hour = parseInt(this.customHour);
+    if (isNaN(hour) || hour < 0 || hour > 23) {
+      this.customHour = '0';  // Reset to 0 if out of range
+    }
+  }
+
+  // Validation for Minute (between 0 and 59)
+  validateMinute() {
+    const minute = parseInt(this.customMinute);
+    if (isNaN(minute) || minute < 0 || minute > 59) {
+      this.customMinute = '0';  // Reset to 0 if out of range
+    }
   }
 
   onGlobalFilter(table: Table, event: Event) {

@@ -1,5 +1,5 @@
 <div class="layout-topbar">
-  <a [routerLink]="['/dashboard']" style="margin-left: 20px;margin-right: 180px;">
+  <a [routerLink]="['/dashboard']" style="margin-left: 7.5%;margin-right: 7.5%;">
     <div class="layout-topbar-logo">
       <span class="company-logo">ACE</span><br>
       <span class="company-subtitle">Data Systems Ltd.</span>
@@ -80,11 +80,21 @@
       </button>
     </div>
     <div class="card-body">
-      <h2>{{ user.name }}</h2>
-      <p class="role">{{ user.role }}</p>
-      <p><strong>Email:</strong> {{ user.email }}</p>
-      <p *ngIf="user.companyName != null"><strong>Company:</strong> {{ user.companyName }}</p>
-      <p *ngIf="user.departmentName != null"><strong>Department:</strong> {{ user.departmentName }}</p>
+      <div class="info-row">
+        <strong>{{ user.name }} ({{ user.role }})</strong>
+      </div>
+      <div class="info-row">
+        <i pTooltip="Email" class="fas fa-envelope"></i>
+        <span>{{ user.email }}</span>
+      </div>
+      <div class="info-row" *ngIf="user.companyName != null">
+        <i pTooltip="Company Name" class="fas fa-briefcase"></i>
+        <span>{{ user.companyName }}</span>
+      </div>
+      <div class="info-row" *ngIf="user.departmentName != null">
+        <i pTooltip="Department Name" class="fas fa-building"></i>
+        <span>{{ user.departmentName }}</span>
+      </div>
       <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
     </div>
   </div>
@@ -133,6 +143,28 @@
 </p-dialog>
 
 <style>
+  .card-body {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center the content horizontally */
+  justify-content: center; /* Center the content vertically */
+  padding: 20px;
+  height: 100%; /* Optional: Ensures full height of the container */
+  text-align: center; /* Center the text inside the container */
+}
+
+.info-row {
+  display: flex;
+  align-items: center; /* Aligns the icon and text vertically */
+  justify-content: center; /* Centers the icons and text horizontally */
+  margin-bottom: 10px;
+}
+
+.info-row i {
+  margin-right: 10px; /* Adds space between icon and text */
+  width: 20px; /* Ensures consistent width for icons */
+  text-align: center; /* Centers the icons within their width */
+}
   .layout-topbar {
     display: flex;
     justify-content: space-between;

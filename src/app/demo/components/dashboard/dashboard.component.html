@@ -9,12 +9,16 @@
                         <span class="block text-500 font-medium mb-2">Announcements</span>
                         <div class="text-primary font-semibold text-2xl">{{ announcementCount }}</div>
                     </div>
-                    <div class="flex align-items-center justify-content-center bg-blue-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
-                        <i class="pi pi-bell text-blue-600 text-2xl"></i>
+                    <div class="flex align-items-center justify-content-center bg-blue-50 border-circle"
+                        [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <button pButton pRipple type="button" [routerLink]="['/announcement/list']"
+                            class="p-button p-component p-button-text p-button-icon-only ">
+                            <i class="pi pi-bell text-blue-600 text-2xl"></i>
+                        </button>
                     </div>
                 </div>
-                <span class="text-green-600 font-semibold">4 new </span>
-                <span class="text-500">since last visit</span>
+                <!-- <span class="text-green-600 font-semibold">4 new </span>
+                <span class="text-500">since last visit</span> -->
             </div>
 
             <!-- Total Company Card -->
@@ -24,15 +28,16 @@
                         <span class="block text-500 font-medium mb-2">Total Company</span>
                         <div class="text-primary font-semibold text-2xl">{{companyCount}}</div>
                     </div>
-                    <div class="flex align-items-center justify-content-center bg-orange-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
-                        <i class="pi pi-briefcase text-orange-600 text-2xl"></i>
+                    <div class="flex align-items-center justify-content-center bg-orange-50 border-circle"
+                        [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <button pButton pRipple type="button" [routerLink]="['/company',authService.companyId]"
+                            class="p-button p-component p-button-text p-button-icon-only ">
+                            <i class="pi pi-briefcase text-orange-600 text-2xl"></i></button>
                     </div>
                 </div>
-                <span class="text-green-600 font-semibold">7 Departments</span>
-                <span class="text-500">in each Company</span>
+                <!-- <span class="text-green-600 font-semibold">7 Departments</span>
+                <span class="text-500">in each Company</span> -->
             </div>
-
-
 
             <!-- Employees Card -->
             <div class="enterprise-card-category shadow-3 surface-card">
@@ -41,295 +46,431 @@
                         <span class="block text-500 font-medium mb-2">Employees</span>
                         <div class="text-primary font-semibold text-2xl">{{employeeCount}}</div>
                     </div>
-                    <div class="flex align-items-center justify-content-center bg-cyan-50 border-circle" [ngStyle]="{width: '3rem', height: '3rem'}">
-                        <i class="pi pi-users text-cyan-600 text-2xl"></i>
+                    <div class="flex align-items-center justify-content-center bg-cyan-50 border-circle"
+                        [ngStyle]="{width: '3rem', height: '3rem'}">
+                        <button pButton pRipple type="button" [routerLink]="['/announcement/employeelist']"
+                            class="p-button p-component p-button-text p-button-icon-only ">
+                            <i class="pi pi-users text-cyan-600 text-2xl"></i></button>
                     </div>
                 </div>
-                <span class="text-green-600 font-semibold">20</span>
-                <span class="text-500">newly registered last month</span>
+                <!-- <span class="text-green-600 font-semibold">20</span>
+                <span class="text-500">newly registered last month</span> -->
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Charts and Announcements Table in the same row -->
-    <div class="grid">
-        <!-- Announcements Table and Pie Chart in the same row -->
-        <div class="col-7">
-            <div class="enterprise-card-table shadow-3 surface-card">
-                <h5 class="text-primary">All Announcements</h5>
-                <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt"></p-sortIcon></th>
-                            <th>Title</th>
-                            <th>Created By</th>
-                            <th>Category</th>
-                            <th>View</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-announcement>
-                        <tr>
-                            <td>{{ announcement.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
-                            <td>{{ announcement.title }}</td>
-                            <td>{{ announcement.createdBy }} ({{ announcement.role }})</td>
-                            <td>{{ announcement.categoryName }}</td>
-                            <td>
-                                <button pButton pRipple type="button" icon="pi pi-search"
-                                    class="p-button p-component p-button-text p-button-icon-only"></button>
-                            </td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+<!-- First Row: All Announcements and Noted Percentage by Department -->
+<div class="grid">
+    <!-- Announcements Table (left column, 7/12 width) -->
+    <div class="col-7">
+        <div class="enterprise-card-table shadow-3 surface-card" style="position: relative;">
+            <h5 class="text-primary">All Announcements</h5>
+            <p-table [value]="announcements" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="createdAt">Date <p-sortIcon field="createdAt"></p-sortIcon></th>
+                        <th>Announcement</th>
+                        <th>Announcer</th>
+                        <th>Category</th>
+                        <th>View</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-announcement>
+                    <tr>
+                        <td>{{ announcement.createdAt | date:'yyyy-MM-dd HH:mm' }}</td>
+                        <td>{{ announcement.title }}</td>
+                        <td>{{ announcement.createdBy }} ({{ announcement.role }})</td>
+                        <td>{{ announcement.categoryName }}</td>
+                        <td>
+                            <button pButton pRipple type="button" icon="pi pi-search"
+                                [routerLink]="['/announcement-page',announcement.id]"
+                                class="p-button p-component p-button-text p-button-icon-only"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <!-- Noted Percentage by Department (right column, 5/12 width) -->
+    <div class="col-5">
+        <div class="enterprise-line-card">
+            <div class="flex justify-content-between align-items-center mb-5">
+                <h5>Announcement Noted Percentage by Department</h5>
+            </div>
+            <div *ngIf="loading" class="skeleton-line">
+                <p-skeleton styleClass="skeleton-full" width="100%" height="170%"></p-skeleton>
+            </div>
+            <div *ngIf="!loading" class="line-chart-container">
+                <ul class="list-none p-0 m-0">
+                    <li *ngFor="let department of notedPercentages"
+                        class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
+                        <div>
+                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ department.departmentName }}</span>
+                        </div>
+                        <div class="mt-2 md:mt-0 flex align-items-center">
+                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
+                                [ngStyle]="{height: '8px'}">
+                                <div class="bg-green-500 h-full" [ngStyle]="{width: department.percentage + '%'}"></div>
+                            </div>
+                            <span class="text-green-500 ml-3 font-medium">{{ department.percentage }}%</span>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Pie Chart beside the table -->
-        <div class="col-5">
-            <div class="enterprise-pie-card shadow-3 surface-card">
-                <h5 class="text-primary">Pie Chart - Employee Distribution</h5>
+<!-- Second Row: Bar Chart and Pie Chart -->
+<div class="grid">
+    <!-- Bar Chart (left column, 7/12 width) -->
+    <div class="col-7">
+        <div class="enterprise-chart-card" style="min-height: 350px; padding: 20px; position: relative;">
+            <h5 class="text-primary" style="margin-bottom: 1.5rem;">Bar Chart - Category Count</h5>
+
+            <!-- Year Selector in the top right corner -->
+            <div class="year-selector">
+                <label for="yearSelect" class="year-selector-label"></label>
+                <select id="yearSelect" [(ngModel)]="selectedYear" (change)="onYearChange(selectedYear)"
+                    class="custom-select">
+                    <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+                </select>
+            </div>
+
+            <!-- Pagination icons inside the card -->
+            <div class="text-center mb-3">
+                <span class="pagination-icon" (click)="showPreviousMonths()" [class.disabled]="currentMonthPage === 0">
+                    &#171;
+                </span>
+                <span class="pagination-icon" (click)="showNextMonths()"
+                    [class.disabled]="(currentMonthPage + 1) * monthsPerPage >= allMonths.length">
+                    &#187;
+                </span>
+            </div>
+
+            <!-- Chart -->
+            <p-chart type="bar" [data]="barChartData" [options]="chartOptionsBar"
+                style="height: 300px; width: 100%;"></p-chart>
+        </div>
+    </div>
+
+    <!-- Pie Chart (right column, 5/12 width) -->
+    <div class="col-5" *ngIf="authService.role == 'MAIN_HR'">
+        <div class="enterprise-pie-card shadow-3 surface-card">
+            <h5 class="text-primary">Pie Chart - Employee Distribution</h5>
+            <div class="chart-container" *ngIf="!loading">
                 <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
             </div>
+            <div class="chart-container" *ngIf="loading">
+                <p-skeleton styleClass="skeleton-full" width="100%" height="90%" shape="circle"
+                    size="22rem"></p-skeleton>
+            </div>
         </div>
     </div>
-    <div class="grid grid-nogutter mt-4"></div>
-        <div class="card">
+</div>
+
+<div class="grid" *ngIf="authService.role == 'MAIN_HR'">
+    <!-- Announcements Table (left column, 7/12 width) -->
+    <div class="col-7">
+        <div class="enterprise-card-table shadow-3 surface-card" style="position: relative;">
+            <h5 class="text-primary">Employees Who Noted Most</h5>
+            <p-table [value]="users" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>No.</th>
+                        <th>Staff Id</th>
+                        <th>Name</th>
+                        <th>Times</th>
+                        <th>Department</th>
+                        <th>Company</th>
+                        <th>View</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user let-i="rowIndex">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td>{{ user.staffId }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.notedCount }}</td>
+                        <td>{{ user.departmentName }}</td>
+                        <td>{{ user.companyName }}</td>
+                        <td>
+                            <button pButton pRipple type="button" icon="pi pi-search"
+                                (click)="systemService.showDetails(user)"
+                                class="p-button p-component p-button-text p-button-icon-only"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <!-- Noted Percentage by Department (right column, 5/12 width) -->
+    <div class="col-5">
+        <div class="enterprise-line-card">
             <div class="flex justify-content-between align-items-center mb-5">
                 <h5>Noted Percentage by Department</h5>
             </div>
-            <ul class="list-none p-0 m-0">
-                <li *ngFor="let department of notedPercentages"
-                    class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                    <div>
-                        <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ department.departmentName }}</span>
-                    </div>
-                    <div class="mt-2 md:mt-0 flex align-items-center">
-                        <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                            [ngStyle]="{height: '8px'}">
-                            <div class="bg-green-500 h-full" [ngStyle]="{width: department.percentage + '%'}"></div>
+            <div *ngIf="loading" class="skeleton-line">
+                <p-skeleton styleClass="skeleton-full" width="100%" height="170%"></p-skeleton>
+            </div>
+            <div *ngIf="!loading" class="line-chart-container">
+                <ul class="list-none p-0 m-0">
+                    <li *ngFor="let department of notedPercentages"
+                        class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
+                        <div>
+                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ department.departmentName }}</span>
                         </div>
-                        <span class="text-green-500 ml-3 font-medium">{{ department.percentage }}%</span>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Bar Chart placed in the next row -->
-    <div class="grid grid-nogutter mt-4">
-        <div class="col-12">
-            <div class="enterprise-chart-card_1 shadow-3 surface-card" style="min-height: 350px; padding: 20px; position: relative;">
-                <h5 class="text-primary" style="margin-bottom: 1.5rem;">Bar Chart - Category Count</h5>
-
-                <!-- Year Selector in the top right corner -->
-                <div class="year-selector">
-                    <label for="yearSelect" class="year-selector-label"></label>
-                    <select id="yearSelect" [(ngModel)]="selectedYear" (change)="onYearChange(selectedYear)" class="custom-select">
-                        <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
-                    </select>
-                </div>
-
-                <!-- Pagination icons inside the card -->
-                <div class="text-center mb-3">
-                    <span class="pagination-icon" (click)="showPreviousMonths()" [class.disabled]="currentMonthPage === 0">
-                        &#171;
-                    </span>
-                    <span class="pagination-icon" (click)="showNextMonths()" [class.disabled]="(currentMonthPage + 1) * monthsPerPage >= allMonths.length">
-                        &#187;
-                    </span>
-                </div>
-
-                <!-- Chart -->
-                <p-chart type="bar" [data]="barChartData" [options]="chartOptionsBar" style="height: 300px; width: 100%;"></p-chart>
+                        <div class="mt-2 md:mt-0 flex align-items-center">
+                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
+                                [ngStyle]="{height: '8px'}">
+                                <div class="bg-green-500 h-full" [ngStyle]="{width: department.percentage + '%'}"></div>
+                            </div>
+                            <span class="text-green-500 ml-3 font-medium">{{ department.percentage }}%</span>
+                        </div>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
+</div>
 
 
 
 
-    <!-- Pagination buttons -->
 
+<style>
+    .enterprise-chart-table,
+    .enterprise-line-card {
+        height: 455px;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border, #e0e0e0);
+        box-sizing: border-box;
+    }
 
+    .enterprise-chart-card,
+    .enterprise-pie-card {
+        height: 375px;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border, #e0e0e0);
+        box-sizing: border-box;
+    }
 
+    .chart-container {
+        width: 100%;
+        height: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
 
-    <style>
-        .year-selector {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    align-items: center;
-    background: #f9f9f9;
-    padding: 8px;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
-}
+    .skeleton-full {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(235, 235, 235, 0.2), rgba(255, 255, 255, 0.2));
+        animation: loading 1.5s infinite;
+    }
 
-.year-selector-label {
-    margin-right: 8px;
-    font-size: 14px;
-    color: #333;
-}
+    .skeleton-line {
+        height: 50%;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(235, 235, 235, 0.2), rgba(255, 255, 255, 0.2));
+        animation: loading 1.5s infinite;
+    }
 
-.custom-select {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
-    font-size: 14px;
-    color: #333;
-    background: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    outline: none;
-    transition: border-color 0.2s;
-}
+    /* Year Selector Styling */
+    .year-selector {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        background-color: var(--surface-100, #f9f9f9);
+        padding: 8px 12px;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-.custom-select:focus {
-    border-color: #007bff;
-}
-        .pagination-icon {
-    cursor: pointer;
-    font-size: 24px; /* Adjust the size as needed */
-    margin: 0 10px;
-    color: var(--text-color); /* Use your theme's text color */
-}
+    .year-selector-label {
+        margin-right: 8px;
+        font-size: 14px;
+        color: var(--text-color, #333);
+    }
 
-.pagination-icon.disabled {
-    cursor: not-allowed;
-    color: #ccc; /* Greyed-out color for disabled state */
-}
-        .percentages {
-            margin-top: 1em;
-            text-align: center;
-        }
+    /* Custom Select Styling */
+    .custom-select {
+        border: 1px solid var(--surface-border, #dcdcdc);
+        border-radius: 4px;
+        padding: 4px 8px;
+        background-color: white;
+        color: var(--text-color, #333);
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s ease;
+    }
 
-        .percentages div {
-            margin-bottom: 0.5em;
-            font-size: 14px;
-            color: #555;
-            /* Adjust color as needed */
-        }
+    .custom-select:hover,
+    .custom-select:focus {
+        border-color: var(--primary-color, #3f51b5);
+    }
 
-        /* .chart-container {
+    /* Pagination Icon Styling */
+    .pagination-icon {
+        font-size: 1.25rem;
+        color: var(--primary-color, #3f51b5);
+        cursor: pointer;
+        margin: 0 10px;
+        transition: color 0.2s ease;
+    }
+
+    .pagination-icon:hover {
+        color: var(--primary-dark, #303f9f);
+    }
+
+    .pagination-icon.disabled {
+        color: var(--surface-border, #dcdcdc);
+        cursor: default;
+    }
+
+    .custom-select {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 8px;
+        font-size: 14px;
+        color: #333;
+        background: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .custom-select:focus {
+        border-color: #007bff;
+    }
+
+    .pagination-icon {
+        cursor: pointer;
+        font-size: 24px;
+        /* Adjust the size as needed */
+        margin: 0 10px;
+        color: var(--text-color);
+        /* Use your theme's text color */
+    }
+
+    .pagination-icon.disabled {
+        cursor: not-allowed;
+        color: #ccc;
+        /* Greyed-out color for disabled state */
+    }
+
+    .percentages {
+        margin-top: 1em;
+        text-align: center;
+    }
+
+    .percentages div {
+        margin-bottom: 0.5em;
+        font-size: 14px;
+        color: #555;
+        /* Adjust color as needed */
+    }
+
+    .grid {
         display: flex;
         flex-wrap: wrap;
+
+    }
+
+
+
+    @media (max-width: 768px) {
+        .enterprise-chart-card {
+            max-width: 100%;
+            /* Full width on smaller screens */
+        }
+    }
+
+    .chart-header {
+        margin-bottom: auto;
+    }
+
+    .chart-content {
+        margin-top: auto;
+        height: 300px;
+        /* Ensure consistent height across all charts */
+    }
+
+    .enterprise-card-category-container {
+        display: flex;
+        flex-wrap: wrap;
+        /* Enable wrapping of cards on smaller screens */
         gap: 1rem;
-        justify-content: space-between;
-        margin-top: 3rem;
-    } */
+        margin-bottom: 2rem;
+        /* Add margin below the card categories */
+    }
 
-        .enterprise-chart-card_1 {
-            flex: 1 1 100%;
-            min-width: 480px;
-            max-width: 80px;
-            height: 350px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            border-radius: 0.75rem;
-            background-color: var(--surface-card);
-            border: 1px solid var(--surface-border, #e0e0e0);
-            box-sizing: border-box;
-        }
+    .enterprise-card-category {
+        flex: 1 1 100%;
+        /* Full width for smaller screens */
+        min-width: 180px;
+        max-width: 32%;
+        /* Cards take up a max of 23% to keep four in one row */
+        height: 150px;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border, #e0e0e0);
+        box-sizing: border-box;
+        transition: box-shadow 0.3s ease;
+    }
 
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
+    .enterprise-card-category:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
-        }
 
-        .enterprise-chart-table,
-        .enterprise-pie-card {
-            height: 455px;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            background-color: var(--surface-card);
-            border: 1px solid var(--surface-border, #e0e0e0);
-            box-sizing: border-box;
-        }
+    @media (max-width: 768px) {
 
-        @media (max-width: 768px) {
-            .enterprise-chart-card {
-                max-width: 100%;
-                /* Full width on smaller screens */
+        .col-8,
+        .col-4 {
+            width: 100%;
+
+            .enterprise-card-container {
+                margin-top: 1rem;
             }
         }
+    }
 
-        .chart-header {
-            margin-bottom: auto;
-        }
+    .enterprise-card-table {
+        width: 650px;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        background-color: var(--surface-card);
+        border: 1px solid var(--surface-border, #e0e0e0);
+        box-sizing: border-box;
+    }
 
-        .chart-content {
-            margin-top: auto;
-            height: 300px;
-            /* Ensure consistent height across all charts */
-        }
+    .text-primary {
+        color: var(--primary-color, #007ad9);
+    }
 
-        .enterprise-card-category-container {
-            display: flex;
-            flex-wrap: wrap;
-            /* Enable wrapping of cards on smaller screens */
-            gap: 1rem;
-            margin-bottom: 2rem;
-            /* Add margin below the card categories */
-        }
+    .font-semibold {
+        font-weight: 600;
+    }
 
-        .enterprise-card-category {
-            flex: 1 1 100%;
-            /* Full width for smaller screens */
-            min-width: 180px;
-            max-width: 32%;
-            /* Cards take up a max of 23% to keep four in one row */
-            height: 150px;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            background-color: var(--surface-card);
-            border: 1px solid var(--surface-border, #e0e0e0);
-            box-sizing: border-box;
-            transition: box-shadow 0.3s ease;
-        }
+    .enterprise-card-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
 
-        .enterprise-card-category:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-
-        @media (max-width: 768px) {
-
-            .col-8,
-            .col-4 {
-                width: 100%;
-
-                .enterprise-card-container {
-                    margin-top: 1rem;
-                }
-            }
-        }
-
-        .enterprise-card-table {
-            width: 650px;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            background-color: var(--surface-card);
-            border: 1px solid var(--surface-border, #e0e0e0);
-            box-sizing: border-box;
-        }
-
-        .text-primary {
-            color: var(--primary-color, #007ad9);
-        }
-
-        .font-semibold {
-            font-weight: 600;
-        }
-
-        .enterprise-card-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        /* .col-8 {
+    /* .col-8 {
     width: 66.66%;
 }
 
@@ -337,4 +478,4 @@
     width: 33.33%;
     margin-right: 0px;
 } */
-    </style>
+</style>

@@ -104,6 +104,7 @@ export class AppTopBarComponent implements OnInit {
         this.user = data;
         //this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
         this.userService.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
+        this.userService.companyName = this.user.companyName;
       },
       error: (err) => {
         console.error('Profile error ' + err);

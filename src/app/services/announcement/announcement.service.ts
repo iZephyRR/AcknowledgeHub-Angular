@@ -1,17 +1,20 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, tap } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
-import { Announcement, ScheduleList } from 'src/app/modules/announcement';
+import { Announcement, ScheduleList, TargetDTO } from 'src/app/modules/announcement';
 import { Draft } from 'src/app/modules/draft';
 import { PaginationResponse } from 'src/app/modules/pagination';
 import { User } from 'src/app/modules/user';
+import { TargetCompany } from 'src/app/modules/target-company';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnnouncementService {
   private baseUrl = 'http://localhost:8080/api/v1/announcement';
+  private pieChartDataCache: Map<string, BigInt> | null = null;
+  private notedPercentagesCache: { [key: string]: number } | null = null;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
@@ -28,11 +31,11 @@ export class AnnouncementService {
     return this.http.get<Announcement[]>(`${this.baseUrl}/get-by-company`);
   }
 
-  getMainPreview(page:number): Observable<PaginationResponse<{ id: number, label: string }>> {
+  getMainPreview(page: number): Observable<PaginationResponse<{ id: number, label: string }>> {
     return this.http.get<PaginationResponse<{ id: number, label: string }>>(`${this.baseUrl}/get-main-previews?page=${page}`);
   }
 
-  getSubPreview(page:number): Observable<PaginationResponse<{ id: number, label: string }>> {
+  getSubPreview(page: number): Observable<PaginationResponse<{ id: number, label: string }>> {
     return this.http.get<PaginationResponse<{ id: number, label: string }>>(`${this.baseUrl}/get-sub-previews?page=${page}`);
   }
 
@@ -84,19 +87,37 @@ export class AnnouncementService {
   }
 
   getPieChart(): Observable<Map<string, BigInt>> {
+    if (this.pieChartDataCache) {
+      return of(this.pieChartDataCache); // Return cached data if available
+    }
+
     return this.http.get<{ [key: string]: BigInt }>(`${this.baseUrl}/pieChart`).pipe(
       map(data => {
         const map = new Map<string, BigInt>();
         Object.entries(data).forEach(([key, value]) => {
           map.set(key, value);
         });
+        this.pieChartDataCache = map; // Cache the data
         return map;
       })
     );
   }
 
   getNotedPercentageByDepartment(): Observable<{ [key: string]: number }> {
-    return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/getNotedPercentageByDepartment`);
+    if (this.notedPercentagesCache) {
+      return of(this.notedPercentagesCache); // Return cached data if available
+    }
+
+    return this.http.get<{ [key: string]: number }>(`${this.baseUrl}/getNotedPercentageByDepartment`).pipe(
+      tap(data => {
+        this.notedPercentagesCache = data; // Cache the data
+      })
+    );
+  }
+
+  clearCache(): void {
+    this.pieChartDataCache = null;
+    this.notedPercentagesCache = null;
   }
 
   getScheduleList(): Observable<ScheduleList[]> {
@@ -111,14 +132,21 @@ export class AnnouncementService {
     return this.http.get<{ STRING_RESPONSE: string }>(`${this.baseUrl}/updateNow/${announcementId}`);
   }
 
-  getUserWhoNotedWithInOneDay(announcementId : string,min:number) : Observable<User[]> {
-    return this.http.get<User[]> (`${this.baseUrl}/get-noted-in?id=${announcementId}&min=${min}`);
+  getUserWhoNotedWithInOneDay(announcementId: string, min: number): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/get-noted-in?id=${announcementId}&min=${min}`);
   }
 
   getAnnouncementsForMonthly(year: number): Observable<Map<string, Announcement[]>> {
     return this.http.get<Map<string, Announcement[]>>(`${this.baseUrl}/monthly_announcement?year=${year}`);
-}
+  }
 
+  getAnnouncementReport(): Observable<Announcement[]> {
+    return this.http.get<Announcement[]>(`${this.baseUrl}/announcementsForReport`);
+  }
 
+  // Fetch targets by announcement id
+  getTargetByAnnouncementId(id: number): Observable<TargetCompany[]> {
+    return this.http.get<TargetCompany[]>(`${this.baseUrl}/targetsByAnnouncement/${id}`);
+  }
 }
 

@@ -24,6 +24,7 @@ export interface User {
     notedAt: string;
     companyName: string;
     departmentName: string;
+    notedCount: number;
 }
 
 export interface UserProfile {

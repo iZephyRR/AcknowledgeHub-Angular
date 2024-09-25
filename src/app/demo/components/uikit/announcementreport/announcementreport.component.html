@@ -1,0 +1,117 @@
+<div class="card">
+  <div class="card-body scrollable-container">
+    <div *ngIf="groupedAnnouncements && groupedAnnouncements.length > 0; else noAnnouncements">
+      <div *ngFor="let group of groupedAnnouncements" class="date-group">
+        <!-- Date Header -->
+        <h3 class="group-date">{{ group.date | date: 'dd/MM/yyyy' }}</h3>
+
+        <!-- Announcements Table -->
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Announcement</th>
+              <th>Category</th>
+              <th>Content Type</th>
+              <th>Announcer</th>
+              <th *ngIf="authService.role === 'MAIN_HR'">Company</th>
+              <th>Channel</th>
+              <th>Announce To</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let announcement of group.announcements; let i = index" class="announcement-item" (click)="showDetails(announcement.id)">
+              <td>{{ i + 1 }}</td>
+              <td>{{ announcement.title }}</td>
+              <td>{{ announcement.categoryName }}</td>
+              <td>{{ announcement.contentType }}</td>
+              <td>{{ announcement.createdBy }} ({{ announcement.role }})</td>
+              <td *ngIf="authService.role === 'MAIN_HR'">{{ announcement.companyName }}</td>
+              <td>
+                <!-- Logic to display the correct channel(s) -->
+                <ng-container *ngIf="announcement.channel === 'BOTH'">
+                  Telegram, Email
+                </ng-container>
+                <ng-container *ngIf="announcement.channel === 'TELEGRAM'">
+                  Telegram
+                </ng-container>
+              </td>
+              <td>
+                <p *ngIf="announcement.selectAll === true">To All Companies</p>
+                <button pButton pRipple type="button" icon="pi pi-ellipsis-v" (click)="getAnnounceTo(announcement.id)"
+                  *ngIf="announcement.selectAll === false"
+                  class="p-button p-component p-button-text p-button-icon-only"></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- No Announcements Fallback -->
+    <ng-template #noAnnouncements>
+      <p>No announcements available.</p>
+    </ng-template>
+  </div>
+</div>
+
+<style>
+  .scrollable-container {
+    max-height: 600px;
+    /* Adjust the height as per your design needs */
+    overflow-y: auto;
+    padding-right: 15px;
+    /* Add padding for the scrollbar */
+  }
+
+  .card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .date-group {
+    margin-bottom: 30px;
+  }
+
+  .group-date {
+    background-color: #f7f7f7;
+    padding: 10px;
+    font-size: 1.25em;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  .announcement-item {
+    margin-bottom: 10px;
+  }
+
+  .action-button {
+    margin-right: 10px;
+  }
+</style>

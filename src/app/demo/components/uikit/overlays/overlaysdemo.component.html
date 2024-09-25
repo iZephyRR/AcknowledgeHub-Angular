@@ -1,7 +1,7 @@
 <div class="grid p-fluid">
     <div class="col-12">
         <div class="card">
-            <h5>Announcements List</h5>
+            <h5>Announcements List(Drafts)</h5>
             <p-table #dt [value]="drafts()" dataKey="id" [rows]="10" [rowHover]="true"
                 styleClass="p-datatable-gridlines" [paginator]="true"
                 [globalFilterFields]="['title', 'categoryName', 'filename']" responsiveLayout="scroll">
@@ -20,7 +20,7 @@
                     <tr>
                         <!-- <th>Test</th> -->
                         <th style="min-width: 4rem">No</th>
-                        <th style="min-width: 11rem">Title
+                        <th style="min-width: 11rem">Announcement
                             <p-columnFilter type="text" field="title" display="menu"
                                 placeholder="Search by title"></p-columnFilter>
                         </th>

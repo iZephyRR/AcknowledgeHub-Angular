@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { TableDemoComponent } from './table/tabledemo.component';
 import { MediaDemoComponent } from './media/mediademo.component';
 import { CategoryComponent } from './category/category.component';
+import { AnnouncementreportComponent } from './announcementreport/announcementreport.component';
 
 
 @NgModule({
@@ -14,6 +15,7 @@ import { CategoryComponent } from './category/category.component';
         { path: 'invalidstate', data: { breadcrumb: 'Invalid State' }, loadChildren: () => import('./invalid/invalidstatedemo.module').then(m => m.InvalidStateDemoModule) },
         { path: 'category', component:CategoryComponent},
         { path: 'list',component:MediaDemoComponent},
+        { path: 'report',component: AnnouncementreportComponent},
         { path: 'message', data: { breadcrumb: 'Message' }, loadChildren: () => import('./messages/messagesdemo.module').then(m => m.MessagesDemoModule) },
         { path: 'drafts', data: { breadcrumb: 'Overlay' }, loadChildren: () => import('./overlays/overlaysdemo.module').then(m => m.OverlaysDemoModule) },
         { path: 'Panel', data: { breadcrumb: 'Panel' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) },

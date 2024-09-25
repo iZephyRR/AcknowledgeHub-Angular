@@ -60,6 +60,8 @@ import { RatingModule } from 'primeng/rating';
 import { UserCardComponent } from './demo/components/user-card/user-card.component';
 import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.component';
 import { CategoryComponent } from './demo/components/uikit/category/category.component';
+import { SkeletonModule }  from 'primeng/skeleton';
+import { AnnouncementreportComponent } from './demo/components/uikit/announcementreport/announcementreport.component';
 
 
 @NgModule({
@@ -88,7 +90,8 @@ import { CategoryComponent } from './demo/components/uikit/category/category.com
     TableDemoComponent,
     UserCardComponent,
     MediaDemoComponent,
-CategoryComponent
+CategoryComponent,
+AnnouncementreportComponent
   ],
   imports: [
     BadgeModule,
@@ -128,7 +131,8 @@ CategoryComponent
     HttpClientModule,
     RatingModule,
     SliderModule,
-    InputTextModule
+    InputTextModule,
+    SkeletonModule
   ],
   providers: [
     {

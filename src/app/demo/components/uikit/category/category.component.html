@@ -41,7 +41,7 @@
             <td>{{i + 1}}</td>
             <td>{{category.name}}</td>
             <td>
-              <button type="button" (click)="delete(category.id,category.status)" pButton
+              <button type="button" (click)="delete(category.id,category.status,category.name)" pButton
                 [icon]="category.status === 'SOFT_DELETE' ? 'pi pi-check' : 'pi pi-trash'"
                 [label]="category.status === 'SOFT_DELETE' ? 'Enable' : 'Disable'"
                 [class.p-button-success]="category.status === 'SOFT_DELETE'"

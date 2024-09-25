@@ -1,11 +1,14 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { interval, Subscription, switchMap } from 'rxjs';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { Announcement } from 'src/app/modules/announcement';
 import { ChartData, ChartOptions } from 'chart.js';
 import { UserService } from 'src/app/services/user/user.service';
 import { CompanyService } from 'src/app/services/company/company.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { User } from 'src/app/modules/user';
+import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,23 +39,59 @@ export class DashboardComponent implements OnInit, OnDestroy {
   availableYears: number[] = [];
   employeeCount: number;
   companyCount: number;
+  loading: boolean = true;
+  users : User[] = [];
 
   constructor(
     private announcementService: AnnouncementService,
     private userService: UserService,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    public authService : AuthService,
+    public systemService : SystemService
   ) { }
 
   ngOnInit(): void {
-    this.fetchAnnouncements();
-    this.countAnnouncements();
-    this.loadPieChartData();
-    this.countCompany();
-    this.countEmployee();
+    this.initializeDataFetches();
+    this.initializeChartOptions();
+    this.initializeYearsDropdown();
+  
     const currentYear = new Date().getFullYear();
-    this.availableYears = Array.from({ length: 5 }, (v, i) => currentYear - i); // Example: 5 recent years
     this.selectedYear = currentYear;
-    this.fetchAnnouncementsForYear(this.selectedYear); this.chartOptionsBar = {
+    
+    this.fetchAnnouncementsForYear(this.selectedYear);
+    //this.startYearlyAnnouncementsPolling(this.selectedYear);
+  }
+
+  initializeDataFetches(): void {
+    this.fetchAnnouncements();
+    this.startAnnouncementsPolling();
+  
+    this.countAnnouncements();
+    this.startCountPolling();
+
+  //  if (this.authService.role == 'MAIN_HR') {
+  //   this.loadPieChartData();
+  //   this.startPieChartPolling();
+  //  }
+
+  //   this.getNotedPercentageByDepartment();
+  //   this.startNotedPercentagePolling();
+  
+    this.countCompany();
+    this.startCompanyPolling();
+  
+    this.countEmployee();
+    this.startEmployeePolling();
+  
+    const currentYear = new Date().getFullYear();
+    this.selectedYear = currentYear;
+    this.fetchAnnouncementsForYear(this.selectedYear);
+    this.getNotedCount();
+    this.startNotedCountPolling();
+  }
+
+  initializeChartOptions(): void {
+    this.chartOptionsBar = {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
@@ -66,7 +105,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
         y: {
           display: true,  // Keep y-axis visible
           beginAtZero: true,
-          // Set the maximum value to 100
           ticks: {
             color: getComputedStyle(document.documentElement).getPropertyValue('--text-color'),
             stepSize: 10, // Optional: Set the step size for the ticks
@@ -82,9 +120,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
     };
   }
-
-
-
+  
+  initializeYearsDropdown(): void {
+    const currentYear = new Date().getFullYear();
+    this.availableYears = Array.from({ length: 5 }, (_, i) => currentYear - i);  // Generate a list of the last 5 years
+  }
+  
   fetchAnnouncements(): void {
     const subscription = this.announcementService.getAllAnnouncements().subscribe(
       (data) => {
@@ -92,7 +133,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           ...announcement,
           createdAt: this.parseDate(announcement.createdAt),
         }));
-        this.updateCharts(this.announcements);
       },
       (error) => {
         console.error('Error fetching announcements', error);
@@ -101,10 +141,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
+  startAnnouncementsPolling(): void {
+    // Poll for announcements every 10 seconds
+    const announcementsPollingSubscription = interval(10000).pipe(
+      switchMap(() => this.announcementService.getAllAnnouncements())
+    ).subscribe(
+      (data) => {
+        this.announcements = data.map((announcement) => ({
+          ...announcement,
+          createdAt: this.parseDate(announcement.createdAt),
+        }));
+      },
+      (error) => {
+        console.error('Error polling announcements', error);
+      }
+    );
+  
+    // Add the subscription to the list for proper cleanup
+    this.subscriptions.push(announcementsPollingSubscription);
+  }
+
 
   fetchAnnouncementsForYear(year: number): void {
     console.log('Fetching data for year:', year);  // Debugging line
-    this.announcementService.getAnnouncementsForMonthly(year).subscribe(
+  
+    // Fetch the data initially
+    const subscription = this.announcementService.getAnnouncementsForMonthly(year).subscribe(
       (data: any) => {
         this.processedData = this.processAnnouncementsData(data);
         console.log('Processed Data:', this.processedData);  // Debugging line
@@ -114,7 +176,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.error('Error fetching announcements for the year', error);
       }
     );
+    this.subscriptions.push(subscription); // Push the subscription for cleanup
   }
+  
+  startYearlyAnnouncementsPolling(year: number): void {
+    // Poll the server every 10 seconds
+    const pollingSubscription = interval(10000).pipe(
+      switchMap(() => this.announcementService.getAnnouncementsForMonthly(year))
+    ).subscribe(
+      (data: any) => {
+        this.processedData = this.processAnnouncementsData(data);
+        console.log('Updated Data for Year:', this.processedData);  // Debugging line
+        this.updateBarChart();
+      },
+      (error) => {
+        console.error('Error during polling for year', error);
+      }
+    );
+    
+    this.subscriptions.push(pollingSubscription); // Add to subscriptions for cleanup
+  }
+  
 
   onYearChange(selectedYear: number): void {
     if (selectedYear) {
@@ -191,8 +273,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     console.log('Months to Show:', monthsToShow);
     console.log('Values to Show:', valuesToShow);
   }
-
-
 
   initBarChart(data: any): void {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -274,6 +354,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   loadPieChartData(): void {
+    this.loading = true;
     const subscription = this.announcementService.getPieChart().subscribe(
       (data: Map<string, BigInt>) => {
         const labels: string[] = [];
@@ -291,8 +372,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           datasets: [
             {
               data: values,
-              backgroundColor: this.generateRandomColors(labels.length),
-              hoverBackgroundColor: this.generateHoverColors(labels.length)
+              // backgroundColor: this.generateRandomColors(labels.length),
+              // hoverBackgroundColor: this.generateHoverColors(labels.length)
             }
           ]
         };
@@ -333,14 +414,79 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
-  getNotedPercentageByDepartment() {
-    this.announcementService.getNotedPercentageByDepartment().subscribe(data => {
+  startPieChartPolling(): void {
+    // Poll for pie chart data every 1 min
+    const pieChartPollingSubscription = interval(60000).pipe(
+      switchMap(() => this.announcementService.getPieChart())
+    ).subscribe(
+      (data: Map<string, BigInt>) => {
+        const labels: string[] = [];
+        const values: number[] = [];
+  
+        // Convert Map to plain arrays
+        data.forEach((value, key) => {
+          labels.push(key);                 // Company names (keys)
+          values.push(Number(value));       // Convert BigInt to number
+        });
+  
+        // Define pie chart data with labels and datasets
+        this.pieChartData = {
+          labels: labels,
+          datasets: [
+            {
+              data: values,
+              // backgroundColor: this.generateRandomColors(labels.length),
+              // hoverBackgroundColor: this.generateHoverColors(labels.length)
+            }
+          ]
+        };
+      },
+      (error) => {
+        console.error('Error polling pie chart data', error);
+      }
+    );
+  
+    this.subscriptions.push(pieChartPollingSubscription); // Store for cleanup
+  }
+
+  getNotedPercentageByDepartment(): void {
+    this.loading = true;
+  // Fetch the noted percentages by department immediately on initialization
+  const subscription = this.announcementService.getNotedPercentageByDepartment().subscribe(
+    (data) => {
+      // Transform the data into an array of departmentName and percentage pairs
       this.notedPercentages = Object.keys(data).map(key => ({
         departmentName: key,
         percentage: data[key]
       }));
-    });
-  }
+    },
+    (error) => {
+      console.error('Error fetching noted percentages by department', error);
+    }
+  );
+  
+  this.subscriptions.push(subscription); // Store the subscription for cleanup
+}
+
+startNotedPercentagePolling(): void {
+  // Poll for the noted percentages by department every 1 min
+  const notedPercentagePollingSubscription = interval(60000).pipe(
+    switchMap(() => this.announcementService.getNotedPercentageByDepartment())
+  ).subscribe(
+    (data) => {
+      // Transform the data into an array of departmentName and percentage pairs
+      this.notedPercentages = Object.keys(data).map(key => ({
+        departmentName: key,
+        percentage: data[key]
+      }));
+    },
+    (error) => {
+      console.error('Error polling noted percentages by department', error);
+    }
+  );
+  
+  this.subscriptions.push(notedPercentagePollingSubscription); // Store the polling subscription for cleanup
+}
 
 
   generateRandomColors(count: number): string[] {
@@ -373,100 +519,105 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
-  updateCharts(announcements: Announcement[]): void {
-    // Update the charts dynamically based on the announcements data
+  startCountPolling(): void {
+    // Poll for announcement count every 10 seconds
+    const countPollingSubscription = interval(10000).pipe(
+      switchMap(() => this.announcementService.countAnnouncements())
+    ).subscribe(
+      (count: number) => {
+        this.announcementCount = count; // Update the count with the new data
+      },
+      (error) => {
+        console.error('Error polling announcement count', error);
+      }
+    );
+  
+    // Add the polling subscription to the list for proper cleanup
+    this.subscriptions.push(countPollingSubscription);
   }
 
-  // initChart(): void {
-  //     const documentStyle = getComputedStyle(document.documentElement);
-  //     const textColor = documentStyle.getPropertyValue('--text-color');
-  //     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-  //     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+  countCompany(): void {
+    // Fetch company count immediately on component load
+    const subscription = this.companyService.countCompany().subscribe({
+      next: (data) => {
+        this.companyCount = data;
+      },
+      error: (error) => {
+        console.error('Error fetching company count', error);
+      }
+    });
+  
+    this.subscriptions.push(subscription); // Store the subscription for cleanup
+  }
+  
+  startCompanyPolling(): void {
+    // Poll for company count every 10 seconds
+    const companyPollingSubscription = interval(10000).pipe(
+      switchMap(() => this.companyService.countCompany())
+    ).subscribe({
+      next: (data) => {
+        this.companyCount = data;
+      },
+      error: (error) => {
+        console.error('Error polling company count', error);
+      }
+    });
+  
+    this.subscriptions.push(companyPollingSubscription); // Store for cleanup
+  }
 
-  //     // Initialize static chart data
-  //     this.lineChartData = {
-  //         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  //         datasets: [
-  //             {
-  //                 label: 'Announcements',
-  //                 data: [65, 59, 80, 81, 56, 55, 40],
-  //                 fill: false,
-  //                 borderColor: documentStyle.getPropertyValue('--blue-500'),
-  //                 tension: 0.4
-  //             }
-  //         ]
-  //     };
+  countEmployee(): void {
+    // Fetch employee count immediately on component load
+    const subscription = this.userService.countEmployee().subscribe({
+      next: (data) => {
+        this.employeeCount = data;
+      },
+      error: (error) => {
+        console.error('Error fetching employee count', error);
+      }
+    });
+  
+    this.subscriptions.push(subscription); // Store the subscription for cleanup
+  }
+  
+  startEmployeePolling(): void {
+    // Poll for employee count every 10 seconds
+    const employeePollingSubscription = interval(10000).pipe(
+      switchMap(() => this.userService.countEmployee())
+    ).subscribe({
+      next: (data) => {
+        this.employeeCount = data;
+      },
+      error: (error) => {
+        console.error('Error polling employee count', error);
+      }
+    });
+  
+    this.subscriptions.push(employeePollingSubscription); // Store for cleanup
+  }
 
-  //     this.barChartData = {
-  //         labels: ['Holidays', 'Salary', 'Must Know', 'Office Rules', 'General'],
-  //         datasets: [
-  //             {
-  //                 label: 'Category Count',
-  //                 data: [10, 15, 7, 12, 5],
-  //                 backgroundColor: [
-  //                     documentStyle.getPropertyValue('--blue-500'),
-  //                     documentStyle.getPropertyValue('--orange-500'),
-  //                     documentStyle.getPropertyValue('--cyan-500'),
-  //                     documentStyle.getPropertyValue('--green-500'),
-  //                     documentStyle.getPropertyValue('--purple-500')
-  //                 ]
-  //             }
-  //         ]
-  //     };
+  startNotedCountPolling() : void {
+    const notedCountPollingsubscription = interval(10000).pipe(
+      switchMap(() => this.userService.getNotedCount())
+    ).subscribe({
+      next:(data) => {
+        this.users= data;
+      }
+    });
+    this.subscriptions.push(notedCountPollingsubscription);
+  }
 
-  //     this.pieChartData = {
-  //         datasets: [
-  //             {
-  //                 backgroundColor: [
-  //                     documentStyle.getPropertyValue('--blue-500'),
-  //                     documentStyle.getPropertyValue('--orange-500'),
-  //                     documentStyle.getPropertyValue('--cyan-500'),
-  //                     documentStyle.getPropertyValue('--green-500'),
-  //                     documentStyle.getPropertyValue('--purple-500')
-  //                 ],
-  //                 hoverBackgroundColor: [
-  //                     documentStyle.getPropertyValue('--blue-600'),
-  //                     documentStyle.getPropertyValue('--orange-600'),
-  //                     documentStyle.getPropertyValue('--cyan-600'),
-  //                     documentStyle.getPropertyValue('--green-600'),
-  //                     documentStyle.getPropertyValue('--purple-600')
-  //                 ]
-  //             }
-  //         ]
-  //     };
-
-  //     this.chartOptions = {
-  //         plugins: {
-  //             legend: {
-  //                 labels: {
-  //                     color: textColor
-  //                 }
-  //             }
-  //         },
-
-  //     };
-  // }
-
+  getNotedCount() : void {
+    const subscription = this.userService.getNotedCount().subscribe({
+      next:(data) => {
+        this.users = data;
+      }
+    });
+    this.subscriptions.push(subscription);
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe()); // Unsubscribe from all subscriptions
   }
-  countCompany(): void {
-    this.companyService.countCompany().subscribe(
-      {
-        next: (data) => {
-          this.companyCount = data;
-        }
-      }
-    );
-  }
-  countEmployee(): void {
-    this.userService.countEmployee().subscribe(
-      {
-        next: (data) => {
-          this.employeeCount = data;
-        }
-      }
-    );
-  }
+
 }

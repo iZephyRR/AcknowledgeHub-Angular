@@ -39,6 +39,7 @@ export class FormLayoutDemoComponent implements OnInit {
   showDatePicker: boolean = false;
   scheduleOption: string = 'now';
   scheduleDate: Date = new Date();
+  isDateValid: boolean = false;
   filePreview: string | ArrayBuffer | null = null;
   filename: string = '';
   file: File;
@@ -77,7 +78,6 @@ export class FormLayoutDemoComponent implements OnInit {
   ngOnInit() {
     this.customTargetGroupService.findAllByHRID().subscribe({
       next: (data) => {
-        console.log(JSON.stringify(data));
         this.groups = data;
       },
       error: (err) => {
@@ -170,21 +170,26 @@ export class FormLayoutDemoComponent implements OnInit {
     );
   }
 
-  onScheduleOptionChange(): void {
-    this.showDatePicker = this.scheduleOption === 'later';
-    if (this.scheduleOption === 'now') {
-      this.scheduleDate = new Date();
-    }
-  }
+  // onScheduleOptionChange(): void {
+  //   this.showDatePicker = this.scheduleOption === 'later';
+  //   if (this.scheduleOption === 'now') {
+  //     this.scheduleDate = new Date();
+  //   }
+  // }
 
   toggleDatePicker(event: any): void {
     if (event.checked) {
       this.showDatePicker = true;
+      this.scheduleOption = 'later'; // Set scheduleOption to 'later'
     } else {
       this.showDatePicker = false;
+      this.scheduleOption = 'now'; // Reset scheduleOption to 'now'
     }
-
   }
+
+  // checkDateValidity(): void {
+  //   this.isDateValid = !!this.scheduleDate; // Set true if scheduleDate is not null
+  // }
 
   triggerFileInput(): void {
     const fileInput = document.getElementById('pdf-file') as HTMLInputElement;
@@ -208,7 +213,14 @@ export class FormLayoutDemoComponent implements OnInit {
         this.systemService.stopProgress().then(async (data) => {
           await this.saveTarget();
           this.messageService.toast("success", "Announcement Created");
-          //    this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by blahahahah',icon:'assets\\demo\\images\\avatar\\amyelsner.png'});
+          let image = null;
+          if(this.userService.profileImage == null) {
+            image = "assets/default-profile.png";
+          } else {
+            image = this.userService.profileImage;
+          }
+          let companyName = this.userService.companyName;
+          this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
           this.resetForm(form);
           this.clearPreview();
         });
@@ -251,10 +263,12 @@ export class FormLayoutDemoComponent implements OnInit {
     if (this.scheduleOption === 'later') {
       const correctedDate = new Date(new Date(this.scheduleDate).getTime() - offset * 60000);
       console.log("date : ", correctedDate);
+      console.log("scheduleOption : ", this.scheduleOption);
       formData.append('scheduleOption', 'later');
       formData.append('createdAt', correctedDate.toISOString());
     } else {
       const correctedNow = new Date(new Date().getTime() - offset * 60000);
+      console.log("scheduleOption : ", this.scheduleOption);
       formData.append('scheduleOption', 'now');
       formData.append('createdAt', correctedNow.toISOString());
     }
@@ -378,6 +392,7 @@ export class FormLayoutDemoComponent implements OnInit {
     this.filename = '';
     this.canSaveTarget = false;
     this.selectedTargets = [];
+    this.selectedEmployees = [];
     this.onViewChange('tree');
   }
 

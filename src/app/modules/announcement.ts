@@ -8,9 +8,12 @@ export interface Announcement {
     title: string;
     categoryName: string;
     creater: string;
+    createdBy: string;  // Update this
     contentType: ContentType;
     createdAt: Date | string;
+    companyName:string;
     announcementResponseCondition: AnnouncementResponseCondition;
+    selectAll : boolean;
 }
 export enum FileType {
     AUDIO = 'AUDIO',
@@ -29,4 +32,9 @@ export interface ScheduleList {
     role : Role;
 }
 
+export interface TargetDTO {
+    id: number;
+    ReceiverType: string;
+    sentTo: number;
+  }
 

@@ -58,18 +58,18 @@
                     </div>
                     <br>
                     <!-- Radio Buttons for Selecting View -->
-                        <div class="radio-group">
-                            <label>
-                                <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
-                                    (change)="onViewChange('tree')">
-                                Company & Department View
-                            </label>
-                            <label>
-                                <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
-                                    (change)="onViewChange('table')">
-                                Employee List View
-                            </label>
-                        </div>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="viewOption" value="tree" [(ngModel)]="viewOption"
+                                (change)="onViewChange('tree')">
+                            Company & Department View
+                        </label>
+                        <label>
+                            <input type="radio" name="viewOption" value="table" [(ngModel)]="viewOption"
+                                (change)="onViewChange('table')">
+                            Employee List View
+                        </label>
+                    </div>
 
                     <!-- Conditionally Display Components -->
                     <div *ngIf="viewOption === 'tree'" class="tree-wrapper">
@@ -92,7 +92,7 @@
                                     </div>
                                 </div>
                                 <!-- User List Table -->
-                                <p-table #dt1 [value]="users" dataKey="id" [rows]="10" [loading]="loading"
+                                <p-table #dt1 [value]="users" dataKey="id" [rows]="5" [loading]="loading"
                                     [rowHover]="true" styleClass="p-datatable-gridlines" [paginator]="true"
                                     [globalFilterFields]="['name', 'companyName', 'departmentName']"
                                     responsiveLayout="scroll" selectionMode="multiple"
@@ -148,7 +148,6 @@
                             <div class="schedule-options">
                                 <p-checkbox binary="true" label="Enable Schedule" on
                                     (onChange)="toggleDatePicker($event)" class="p-checkbox-success">
-
                                 </p-checkbox>
                             </div>
                         </div>
@@ -157,7 +156,8 @@
                         <div class="form-group" *ngIf="showDatePicker">
                             <label for="schedule-date">Select Date and Time</label><br>
                             <input type="datetime-local" id="schedule-date" name="schedule-date"
-                                [(ngModel)]="scheduleDate" [min]="currentDate" required />
+                                [(ngModel)]="scheduleDate" [min]="currentDate" (change)="checkDateValidity()"
+                                required />
                         </div>
                     </div>
                     <div>
@@ -173,8 +173,16 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || (!selectedTargets.length && !selectedEmployees.length && !selectedGroup)
-                        || !filePreview " label="Create" icon="pi pi-check" class="btn-primary"></button> &nbsp;
+                    <button pButton pRipple type="submit" [disabled]="sendAnnouncement.invalid || 
+                    (!selectedTargets.length && !selectedEmployees.length && !selectedGroup) || 
+                    !filePreview" label="Create" icon="pi pi-check" class="btn-primary">
+                    </button>
+                    &nbsp;
+                    <!-- <button pButton pRipple type="button"
+                        [disabled]="!(sendAnnouncement.valid && viewOption === 'tree' && selectedTargets.length > 0 && isDateValid) || selectedGroup !== null"
+                        label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save" class="btn-success">
+                    </button> -->
+
                     <button pButton pRipple type="button"
                         [disabled]="!(sendAnnouncement.valid && viewOption === 'tree' && selectedTargets.length > 0) || selectedGroup !== null"
                         label="Save" (click)="saveToDraft(sendAnnouncement)" icon="pi pi-save" class="btn-success">

@@ -57,7 +57,7 @@ export class AppMenuComponent implements OnChanges {
     ) {
         this.companies.push({
             label: 'Add new company',
-            icon: '',
+            icon: 'pi pi-plus',
             routerLink: ['/company']
         });
         this.companyService.getName().subscribe({
@@ -73,7 +73,7 @@ export class AppMenuComponent implements OnChanges {
                 data.forEach(item => {
                     this.companies.push({
                         label: item.name,
-                        icon: 'pi pi-fw pi-list',
+                        icon: 'pi pi-building',
                         routerLink: [`/company/${item.id}`]
                     });
                 });
@@ -183,34 +183,39 @@ export class AppMenuComponent implements OnChanges {
                                 },
                                 {
                                     label: 'Announcement List',
-                                    icon: 'pi pi-fw pi-list',
+                                    icon: 'pi pi-folder-open',
                                     routerLink: ['/announcement/list']
                                 },
                                 {
-                                    label: 'Create custom target group',
-                                    icon: 'pi pi-fw pi-list',
-                                    routerLink: ['/announcement/file']
-                                },
-                                {
                                     label: 'Schedule-list',
-                                    icon: 'pi pi-fw pi-list',
+                                    icon: 'pi pi-folder-open',
                                     routerLink: ['/announcement/schedule-list']
 
                                 },
+                                {
+                                    label: 'Create custom target group',
+                                    icon: 'pi pi-user-plus',
+                                    routerLink: ['/announcement/file']
+                                },
+                                {
+                                    label: 'Announcement Report',
+                                    icon: 'pi pi-fw pi-list',
+                                    routerLink: ['/announcement/report']
+                                }
                                 
                             ]
                         },
                         ...this.authService.role == 'MAIN_HR' ? [
                             {
-                                label: 'Company infomations',
-                                icon: 'pi pi-fw pi-tags',
+                                label: 'Company Infomations',
+                                icon: 'pi pi-building',
                                 items: this.companies
                             }
                         ] :
                             [
                                 {
-                                    label: 'Company infomations',
-                                    icon: 'pi pi-fw pi-tags',
+                                    label: 'Company Infomations',
+                                    icon: 'pi pi-building',
                                     routerLink: ['/company']
                                 }
                             ],
@@ -222,7 +227,7 @@ export class AppMenuComponent implements OnChanges {
                         },
                         {
                             label: 'Employee List',
-                            icon: 'pi pi-fw pi-user',
+                            icon: 'pi pi-users',
                             routerLink: ['/announcement/employeelist']
 
                         }] : [],

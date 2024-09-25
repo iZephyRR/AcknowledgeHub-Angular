@@ -16,6 +16,7 @@ export class UserService {
   private baseUrl = 'http://localhost:8080/api/v1';
   photoLink:string;
   profileImage:string;
+  companyName : string;
 
   constructor(private http: HttpClient,private systemService:SystemService) {
 
@@ -72,6 +73,10 @@ export class UserService {
 
   countEmployee(): Observable<number> {
     return this.http.get<number>(`${this.baseUrl}/hrs/employee-count`); // Adjust the endpoint as necessary
+  }
+
+  getNotedCount() : Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/getNotedCount`);
   }
 
  

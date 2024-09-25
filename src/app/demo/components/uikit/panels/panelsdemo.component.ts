@@ -14,18 +14,18 @@ export class PanelsDemoComponent implements OnInit {
 
   announcementId: string;
   announcementTitle: string = '';
-  constructor(private userService: UserService,private announcementService: AnnouncementService,
-
+  constructor(private userService: UserService,
+    private announcementService: AnnouncementService,
     private route : ActivatedRoute
   ) { }
 
   ngOnInit(): void {
     this.announcementId = this.route.snapshot.paramMap.get('id');
-    //this.loadAnnouncementDetails(this.announcementId);
-   // this.getUsersWhoNotedWithinOneDay();
-    // const currentUrl = this.route.snapshot.routeConfig?.path;
-    // console.log("announcement id:", this.announcementId);
-    // console.log("current url:", currentUrl);
+  //   this.loadAnnouncementDetails(this.announcementId);
+  //  this.getUsersWhoNotedWithinOneDay();
+    const currentUrl = this.route.snapshot.routeConfig?.path;
+    console.log("announcement id:", this.announcementId);
+    console.log("current url:", currentUrl);
 
     // if (currentUrl?.includes('notedOneDay')) {
     //     this.getUsersWhoNotedWithinOneDay();
@@ -33,15 +33,15 @@ export class PanelsDemoComponent implements OnInit {
     //     this.getUsersWhoNotedWithinThreeDays();
     // }
   }
-//   loadAnnouncementDetails(announcementId: string) {
-//     // Fetch announcement details using the announcement service
-//     this.announcementService.getAnnouncementById(announcementId).subscribe(data => {
-//       this.announcementTitle = data.title; // Assuming the response contains the title
-//       this.getUsersWhoNotedWithinOneDay(); // Fetch users after loading the announcement details
-//     }, error => {
-//       console.error('Error loading announcement details:', error);
-//     });
-//   }
+  // loadAnnouncementDetails(announcementId: string) {
+  //   // Fetch announcement details using the announcement service
+  //   this.announcementService.getAnnouncementById(announcementId).subscribe(data => {
+  //     this.announcementTitle = data.title; // Assuming the response contains the title
+  //     this.getUsersWhoNotedWithinOneDay(); // Fetch users after loading the announcement details
+  //   }, error => {
+  //     console.error('Error loading announcement details:', error);
+  //   });
+  // }
 
   // getUsersWhoNotedWithinOneDay() {
   //   this.userService.getUserWhoNotedWithInOneDay(this.announcementId).subscribe(data =>{
