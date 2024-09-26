@@ -7,12 +7,14 @@ import { Draft } from 'src/app/modules/draft';
 import { PaginationResponse } from 'src/app/modules/pagination';
 import { User } from 'src/app/modules/user';
 import { TargetCompany } from 'src/app/modules/target-company';
+import { NotedPreview2 } from 'src/app/modules/noted-models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnnouncementService {
   private baseUrl = 'http://localhost:8080/api/v1/announcement';
+  showNotedReport:boolean;
   private pieChartDataCache: Map<string, BigInt> | null = null;
   private notedPercentagesCache: { [key: string]: number } | null = null;
 
@@ -148,5 +150,10 @@ export class AnnouncementService {
   getTargetByAnnouncementId(id: number): Observable<TargetCompany[]> {
     return this.http.get<TargetCompany[]>(`${this.baseUrl}/targetsByAnnouncement/${id}`);
   }
+
+  getNotedList(announcementId:bigint,duration:bigint):Observable<NotedPreview2>{
+    return this.http.get<NotedPreview2>(`${this.baseUrl}/noted-list?announcementId=${announcementId}&duration=${duration}`);
+  }
+
 }
 

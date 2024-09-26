@@ -11,11 +11,11 @@ import { AnnouncementService } from 'src/app/services/announcement/announcement.
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CommentService } from 'src/app/services/comment/comment.service';
 import { UserService } from 'src/app/services/user/user.service';
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-announcement-details',
   templateUrl: './announcementdetails.component.html',
+  styleUrl: './announcementdetails.component.scss'
 })
 export class AnnouncementDetailsComponent implements OnInit {
   announcement: Announcement;
@@ -23,28 +23,38 @@ export class AnnouncementDetailsComponent implements OnInit {
   showModal: boolean = false;
   newComment: string = '';
   condition: AnnouncementResponseCondition;
-  replyText : string ='';
+  replyText: string = '';
   data: any[] = [];
-  comments = signal ([] as CommentList  []);
-  replies = signal ([] as ReplyList[]);
+  comments = signal([] as CommentList[]);
+  replies = signal([] as ReplyList[]);
   safePdfLink: SafeResourceUrl;
   activeReplyBoxId: number | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userService : UserService,
-    private announcementService: AnnouncementService,
+    private userService: UserService,
+    public announcementService: AnnouncementService,
     private commentService: CommentService,
     private authService: AuthService,
     private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
-    this.getAnnouncements();
+    console.log(this.authService.afterLoginRout);
     this.routerSubscription = this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.getAnnouncements();
+      }
+    });
+    this.authService.check(['ADMIN', 'HR', 'HR_ASSISTANCE', 'MAIN_HR', 'MAIN_HR_ASSISTANCE', 'STAFF']).subscribe({
+      next: (data: boolean) => {
+        if (data) {
+          this.getAnnouncements();
+
+        } else {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
@@ -62,13 +72,13 @@ export class AnnouncementDetailsComponent implements OnInit {
           this.condition = this.announcement.announcementResponseCondition;
           if (this.announcement.contentType != 'EXCEL') {
             this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(this.announcement.pdfLink);
-          }else{
+          } else {
             const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(this.announcement.pdfLink)}&embedded=true`;
             this.safePdfLink = this.sanitizer.bypassSecurityTrustResourceUrl(googleViewerUrl);
           }
         },
         error: (err) => {
-         this.authService.showNotFoundPage();
+          this.authService.showNotFoundPage();
           console.error('Error fetching announcement details:', err);
         },
       });
@@ -99,7 +109,11 @@ export class AnnouncementDetailsComponent implements OnInit {
   openModal() {
     this.showModal = true;
     this.getComments();
-    
+
+  }
+
+  showReport(): void {
+    this.announcementService.showNotedReport = true;
   }
 
   addComment(announcementId: number) {
@@ -114,7 +128,7 @@ export class AnnouncementDetailsComponent implements OnInit {
         next: (response) => {
           console.log('Comment added:', response);
           // Optionally add the comment to the local comments array
-         this.getComments();
+          this.getComments();
           this.newComment = ''; // Clear the input field
         },
         error: (err) => {
@@ -124,10 +138,10 @@ export class AnnouncementDetailsComponent implements OnInit {
     }
   }
 
-  submitReply (commentId : number) {
-    console.log(this.replyText , commentId);
+  submitReply(commentId: number) {
+    console.log(this.replyText, commentId);
     if (this.replyText.trim()) {
-      const reply : Reply = {
+      const reply: Reply = {
         content: this.replyText,
         commentId: commentId
       };
@@ -135,7 +149,7 @@ export class AnnouncementDetailsComponent implements OnInit {
         next: (response) => {
           this.getComments();
           this.getReply(commentId);
-          this.replyText= '';
+          this.replyText = '';
         },
         error: (err) => {
           console.error('Error reply comment:', err);
@@ -149,10 +163,11 @@ export class AnnouncementDetailsComponent implements OnInit {
     this.commentService.getCommentsByAnnouncement(id).subscribe({
       next: (data) => {
         console.log("comments: ", data);
-        this.comments.set( data.map(comment => ({
+        this.comments.set(data.map(comment => ({
           ...comment,
           createdAt: this.parseDate(comment.createdAt),
-          safePhotoLink: this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${comment.photoLink}`)
+          safePhotoLink: comment.photoLink ? 
+          this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${comment.photoLink}`) : null
         })));
       },
       error: (err) => {
@@ -165,7 +180,7 @@ export class AnnouncementDetailsComponent implements OnInit {
     this.newComment = '';
     this.activeReplyBoxId = null;
   }
-  
+
   toggleReplyBox(commentId: number | null): void {
     if (this.activeReplyBoxId === commentId) {
       this.activeReplyBoxId = null; // Close the reply box if the same one is clicked again
@@ -182,7 +197,7 @@ export class AnnouncementDetailsComponent implements OnInit {
         this.replies.set(data.map(reply => ({
           ...reply,
           replyCreatedAt: this.parseDate(reply.replyCreatedAt),
-          safePhotoLink: this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${reply.replierPhotoLink}`)
+          safePhotoLink: reply.replierPhotoLink ? this.sanitizer.bypassSecurityTrustUrl(`data:image/jpeg;base64,${reply.replierPhotoLink}`) : null
         })));
       },
       error: (err) => {
@@ -190,9 +205,9 @@ export class AnnouncementDetailsComponent implements OnInit {
       }
     });
   }
-  
 
-  
+
+
 }
 
 

@@ -20,6 +20,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { DialogModule } from 'primeng/dialog';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
+import { FileUploadModule } from 'primeng/fileupload';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { TooltipModule } from 'primeng/tooltip';
 		CheckboxModule,
 		DialogModule,
 		TableModule,
-		TooltipModule
+		TooltipModule,
+		FileUploadModule
 	],
 	declarations: [FormLayoutDemoComponent]
 })

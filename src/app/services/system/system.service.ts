@@ -27,9 +27,9 @@ export class SystemService {
   //Current rout
   public currentRout = signal('');
   //User card
-userProfile=signal('');
-  selectedUser=signal(null);
-  selectedUserProfile=signal('');
+  userProfile = signal('');
+  selectedUser = signal(null);
+  selectedUserProfile = signal('');
 
   showLoading(message: string, hideBackground?: boolean): void {
     this.loading.set(true);
@@ -131,7 +131,7 @@ userProfile=signal('');
   showDetails(user: User) {
     this.selectedUser.set(user);
     console.log("selected user : ", this.selectedUser());
-    this.selectedUserProfile.set( this.selectedUser().photoLink ? `data:image/png;base64,${this.selectedUser().photoLink}` : undefined) ;
+    this.selectedUserProfile.set(this.selectedUser().photoLink ? `data:image/png;base64,${this.selectedUser().photoLink}` : undefined);
   }
   closeDetails() {
     this.selectedUser.set(null);

@@ -20,7 +20,7 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
             {
                 path: '',
                 component: AppLayoutComponent,
-                canActivate:[AuthGuard],
+                //canActivate:[AuthGuard],
                 children: [
                     {
                         path: 'dashboard',
@@ -36,7 +36,7 @@ import { AddCompanyComponent } from './demo/components/add-company/add-company.c
                     },
                     {
                         path: 'announcement-page/:id',
-                        canActivate: [AuthGuard],
+                        //canActivate: [AuthGuard],
                         component: AnnouncementDetailsComponent
                     },
                     {

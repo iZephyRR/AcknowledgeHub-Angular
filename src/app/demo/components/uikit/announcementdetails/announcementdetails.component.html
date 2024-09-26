@@ -1,325 +1,134 @@
-<div *ngIf="announcement" class="card-container">
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">{{ announcement.title }}</h3>
-    </div>
-    <div class="card-body">
-      <p>Created at: {{ announcement.createdAt | date: 'MMM d, y' }}</p>
-      <h5 class="card-title">Content Type: {{ announcement.contentType }}</h5>
+<ng-container *ngIf="announcementService.showNotedReport; else announcementView">
+  <app-each-anno-noted-list [announcementId]="announcement.id"></app-each-anno-noted-list>
+</ng-container>
+<ng-template #announcementView>
+  <div *ngIf="announcement" class="card-container">
+    <div class="card">
+      <div class="card-header" style="display: flex;justify-content: space-between;">
+        <h3 class="card-title">{{ announcement.title }}</h3>
+        <button *ngIf="announcement.announcementResponseCondition!='RECEIVER'" pButton pRipple label="Report"
+          (click)="showReport()"></button>
+      </div>
+      <div class="card-body">
+        <p>Created at: {{ announcement.createdAt | date: 'MMM d, y' }}</p>
+        <h5 class="card-title">Content Type: {{ announcement.contentType }}</h5>
 
-      <!-- PDF Viewer -->
-      <pdf-viewer *ngIf="announcement.contentType === 'PDF'" [src]="announcement.pdfLink" [render-text]="true"
-        style="display: block; width: 80%; height: 400px;">
-      </pdf-viewer>
+        <!-- PDF Viewer -->
+        <pdf-viewer *ngIf="announcement.contentType === 'PDF'" [src]="announcement.pdfLink" [render-text]="true"
+          style="display: block; width: 80%; height: 400px;">
+        </pdf-viewer>
 
-      <!-- Image Viewer -->
-      <img *ngIf="announcement.contentType === 'IMAGE'" [src]="safePdfLink" alt="Image Content"
-        style="display: block; width: 80%; height: auto;" />
+        <!-- Image Viewer -->
+        <img *ngIf="announcement.contentType === 'IMAGE'" [src]="safePdfLink" alt="Image Content"
+          style="display: block; width: 80%; height: auto;" />
 
-      <!-- Video Player -->
-      <video *ngIf="announcement.contentType === 'VIDEO'" [src]="safePdfLink" controls
-        style="display: block; width: 80%; height: 400px;">
-      </video>
+        <!-- Video Player -->
+        <video *ngIf="announcement.contentType === 'VIDEO'" [src]="safePdfLink" controls
+          style="display: block; width: 80%; height: 400px;">
+        </video>
 
-      <!-- Audio Player -->
-      <audio *ngIf="announcement.contentType === 'AUDIO'" [src]="safePdfLink" controls
-        style="display: block; width: 80%;">
-      </audio>
-      <!-- Excel Viewer -->
-      <iframe *ngIf="announcement.contentType === 'EXCEL'" [src]="safePdfLink"
-        style="display: block; width: 80%; height: 400px;">
-      </iframe>
-      <br>
-      <!-- Button to open the modal -->
-      <button type="button" pButton label="Add Comment" (click)="openModal()"></button>
+        <!-- Audio Player -->
+        <audio *ngIf="announcement.contentType === 'AUDIO'" [src]="safePdfLink" controls
+          style="display: block; width: 80%;">
+        </audio>
+        <!-- Excel Viewer -->
+        <iframe *ngIf="announcement.contentType === 'EXCEL'" [src]="safePdfLink"
+          style="display: block; width: 80%; height: 400px;">
+        </iframe>
+        <br>
+        <!-- Button to open the modal -->
+        <button type="button" pButton label="Add Comment" (click)="openModal()"></button>
 
-      <!-- p-dialog Modal -->
-      <p-dialog header="Add a Comment" [(visible)]="showModal" [modal]="true" [closable]="true"
-        [style]="{'width': '40vw'}" (onHide)="clearComment()">
+        <!-- p-dialog Modal -->
+        <p-dialog header="Add a Comment" [(visible)]="showModal" [modal]="true" [closable]="true"
+          [style]="{'width': '40vw'}" (onHide)="clearComment()">
 
-        <!-- Add Comment Box -->
-        <div class="comment-box" *ngIf="condition === 'RECEIVER'">
-          <!-- <div class="comment-avatar">
+          <!-- Add Comment Box -->
+          <div class="comment-box" *ngIf="condition === 'RECEIVER'">
+            <!-- <div class="comment-avatar">
             <img [src]="'assets/default-profile.png'" alt="Your Profile" class="avatar" />
           </div> -->
-          <div class="comment-input-container">
-            <textarea [(ngModel)]="newComment" placeholder="Write your comment..." class="comment-textarea"></textarea>
-            <div class="comment-actions">
-              <button pButton label="Comment" icon="pi pi-check" class="comment-button"
-                (click)="addComment(announcement.id)" [disabled]="!newComment.trim()"></button>
-              <button pButton label="Cancel" icon="pi pi-times" class="cancel-button" (click)="clearComment()"></button>
+            <div class="comment-input-container">
+              <textarea [(ngModel)]="newComment" placeholder="Write your comment..."
+                class="comment-textarea"></textarea>
+              <div class="comment-actions">
+                <button pButton label="Comment" icon="pi pi-check" class="comment-button"
+                  (click)="addComment(announcement.id)" [disabled]="!newComment.trim()"></button>
+                <button pButton label="Cancel" icon="pi pi-times" class="cancel-button"
+                  (click)="clearComment()"></button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Display comments -->
-        <div *ngIf="comments().length > 0; else noComments">
-          <div *ngFor="let comment of comments()" class="comment-container">
-            <div class="comment-avatar">
-              <img *ngIf="comment.safePhotoLink; else defaultImage" [src]="comment.safePhotoLink" alt="Profile"
-                class="avatar" />
-              <ng-template #defaultImage>
-                <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="avatar" />
-              </ng-template>
-            </div>
-            <div class="comment-body">
-              <div class="comment-header">
-                <span class="author">{{ comment.author }}</span>
-                <span class="comment-time">{{ comment.createdAt | timeAgo }}</span>
+          <!-- Display comments -->
+          <div *ngIf="comments().length > 0; else noComments">
+            <div *ngFor="let comment of comments()" class="comment-container">
+              <div class="comment-avatar">
+                <img *ngIf="comment.safePhotoLink; else defaultImage" [src]="comment.safePhotoLink" alt="Profile"
+                  class="avatar" />
+                <ng-template #defaultImage>
+                  <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="avatar" />
+                </ng-template>
               </div>
-              <p class="comment-content">{{ comment.content }}</p>
-
-              <!-- Reply Section -->
-              <div class="comment-actions" *ngIf="condition === 'CREATOR'">
-                <button class="reply-btn" (click)="toggleReplyBox(comment.id)">Reply</button>
-              </div>
-
-              <div class="comment-actions" *ngIf="condition != 'CREATOR'">
-                 <button class="reply-btn" (click)="toggleReplyBox(comment.id)">Replies</button>
-              </div>
-
-              <div *ngIf="activeReplyBoxId === comment.id && condition === 'CREATOR' " class="reply-input-container">
-                <div class="reply-avatar">
-                  <img  *ngIf="userService.profileImage; else default" [src]="userService.profileImage" alt="Profile" class="avatar" />
-                  <ng-template #default>
-                    <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
-                  </ng-template>
+              <div class="comment-body">
+                <div class="comment-header">
+                  <span class="author">{{ comment.author }}</span>
+                  <span class="comment-time">{{ comment.createdAt | timeAgo }}</span>
                 </div>
-                <div class="reply-input-wrapper">
-                  <textarea [(ngModel)]="replyText" placeholder="Add a public reply..."
-                    class="reply-textarea"></textarea>
-                  <div class="reply-actions">
-                    <button pButton label="Cancel" icon="pi pi-times" class="cancel-reply-btn"
-                      (click)="toggleReplyBox(null)"></button>
-                    <button pButton label="Reply" icon="pi pi-check" class="submit-reply-btn"
-                      (click)="submitReply(comment.id)" [disabled]="!replyText.trim()"></button>
-                  </div>
+                <p class="comment-content">{{ comment.content }}</p>
+
+                <!-- Reply Section -->
+                <div class="comment-actions" *ngIf="condition === 'CREATOR'">
+                  <button class="reply-btn" (click)="toggleReplyBox(comment.id)">Reply</button>
                 </div>
-              </div>
-              <div class="replies-container" *ngIf="activeReplyBoxId === comment.id && replies().length > 0">
-                <div *ngFor="let reply of replies()" class="reply-container">
-                  <div class="reply-avatar">
-                    <img *ngIf="reply.safePhotoLink; else defaultImage" [src]="reply.safePhotoLink" alt="Profile"
-                      class="avatar" />
-                    <ng-template #defaultImage>
-                      <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="avatar" />
-                    </ng-template>
-                  </div>
-                  <div class="comment-body">
-                    <div class="reply-header">
-                      <span class="reply-author">{{ reply.replierName }}</span>
-                      <span class="reply-time">{{ reply.replyCreatedAt | timeAgo }}</span>
+
+                <div class="comment-actions" *ngIf="condition != 'CREATOR'">
+                  <button class="reply-btn" (click)="toggleReplyBox(comment.id)">Replies</button>
+                </div>
+
+                <div *ngIf="activeReplyBoxId === comment.id && condition === 'CREATOR' " class="reply-input-container">
+                  <!-- <div class="reply-avatar">
+                  <img [src]="'assets/default-profile.png'" alt="Profile" class="avatar" />
+                </div> -->
+                  <div class="reply-input-wrapper">
+                    <textarea [(ngModel)]="replyText" placeholder="Add a public reply..."
+                      class="reply-textarea"></textarea>
+                    <div class="reply-actions">
+                      <button pButton label="Cancel" icon="pi pi-times" class="cancel-reply-btn"
+                        (click)="toggleReplyBox(null)"></button>
+                      <button pButton label="Reply" icon="pi pi-check" class="submit-reply-btn"
+                        (click)="submitReply(comment.id)" [disabled]="!replyText.trim()"></button>
                     </div>
-                    <p class="reply-content">{{ reply.replyContent }}</p>
+                  </div>
+                </div>
+                <div class="replies-container" *ngIf="activeReplyBoxId === comment.id && replies().length > 0">
+                  <div *ngFor="let reply of replies()" class="reply-container">
+                    <div class="reply-avatar">
+                      <img *ngIf="reply.safePhotoLink; else defaultImage" [src]="reply.safePhotoLink" alt="Profile"
+                        class="avatar" />
+                      <ng-template #defaultImage>
+                        <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="avatar" />
+                      </ng-template>
+                    </div>
+                    <div class="comment-body">
+                      <div class="reply-header">
+                        <span class="reply-author">{{ reply.replierName }}</span>
+                        <span class="reply-time">{{ reply.replyCreatedAt | timeAgo }}</span>
+                      </div>
+                      <p class="reply-content">{{ reply.replyContent }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+          <!-- No Comments Template -->
+          <ng-template #noComments>
+            <p class="no-comments-text">There has no comments.</p>
+          </ng-template>
+        </p-dialog>
+      </div>
+    </div>
+  </div>
+</ng-template>
 
-        <!-- No Comments Template -->
-        <ng-template #noComments>
-          <p class="no-comments-text">There has no comments.</p>
-        </ng-template>
-      </p-dialog>
-
-
-      <!-- Styles -->
-      <style>
-        .comment-box {
-          display: flex;
-          align-items: flex-start;
-          padding: 10px 0;
-          border-bottom: 1px solid #ccc;
-        }
-
-        .comment-avatar {
-          margin-right: 10px;
-        }
-
-        .avatar {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-        }
-
-        .comment-input-container {
-          flex: 1;
-        }
-
-        .comment-textarea {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          resize: none;
-          height: 80px;
-          box-shadow: none;
-          outline: none;
-        }
-
-        .comment-actions {
-          display: flex;
-          justify-content: flex-end;
-          margin-top: 8px;
-        }
-
-        .comment-button,
-        .cancel-button {
-          background-color: transparent;
-          border: none;
-          font-size: 14px;
-          color: #065fd4;
-          cursor: pointer;
-        }
-
-        .comment-button:disabled {
-          color: #aaa;
-        }
-
-        .comment-container {
-          display: flex;
-          align-items: flex-start;
-          padding: 10px 0;
-          border-bottom: 1px solid #eee;
-        }
-
-        .comment-body {
-          flex: 1;
-        }
-
-        .comment-header {
-          font-weight: bold;
-          display: flex;
-          justify-content: space-between;
-          font-size: 14px;
-        }
-
-        .comment-time {
-          color: #606060;
-          font-size: 12px;
-        }
-
-        .comment-content {
-          margin: 4px 0;
-          font-size: 14px;
-        }
-
-        .comment-actions {
-          margin-top: 5px;
-        }
-
-        .reply-btn {
-          background: none;
-          border: none;
-          color: #065fd4;
-          cursor: pointer;
-          font-size: 13px;
-        }
-
-        .reply-input-container {
-          display: flex;
-          margin-top: 10px;
-        }
-
-        .reply-avatar {
-          margin-right: 10px;
-        }
-
-        .reply-input-wrapper {
-          flex: 1;
-        }
-
-        .reply-textarea {
-          width: 100%;
-          padding: 8px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          resize: none;
-          box-shadow: none;
-          outline: none;
-        }
-
-        .reply-actions {
-          display: flex;
-          justify-content: flex-end;
-          margin-top: 4px;
-        }
-
-        .replies-container {
-          margin-top: 10px;
-          /* Space between the comment and replies */
-          padding-left: 20px;
-          /* Indentation for replies */
-        }
-
-        .reply-container {
-          display: flex;
-          /* Aligns avatar and content horizontally */
-          margin-bottom: 10px;
-          /* Space between replies */
-          padding: 10px;
-          border: 1px solid #e0e0e0;
-          /* Light gray border */
-          border-radius: 8px;
-          /* Rounded corners */
-          background-color: #f9f9f9;
-          /* Light background for replies */
-        }
-
-        .reply-avatar {
-          margin-right: 10px;
-          /* Space between avatar and reply content */
-        }
-
-        .avatar {
-          width: 40px;
-          /* Avatar size */
-          height: 40px;
-          /* Avatar size */
-          border-radius: 50%;
-          /* Circular avatar */
-        }
-
-        .reply-body {
-          flex: 1;
-          /* Allow content to take remaining space */
-        }
-
-        .reply-header {
-          display: flex;
-          justify-content: space-between;
-          /* Space between author and time */
-          font-weight: bold;
-          /* Emphasize author name */
-        }
-
-        .reply-time {
-          color: #888;
-          /* Lighter color for time */
-          font-size: 12px;
-          /* Smaller font size for time */
-        }
-
-        .reply-content {
-          margin-top: 5px;
-          /* Space above the content */
-          line-height: 1.5;
-          /* Better line height for readability */
-        }
-
-        .cancel-reply-btn,
-        .submit-reply-btn {
-          background: none;
-          border: none;
-          color: #065fd4;
-          cursor: pointer;
-        }
-
-        .no-comments-text {
-          text-align: center;
-          color: #606060;
-          font-size: 14px;
-        }
-      </style>

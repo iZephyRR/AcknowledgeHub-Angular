@@ -4,6 +4,7 @@ import { TableDemoComponent } from './table/tabledemo.component';
 import { MediaDemoComponent } from './media/mediademo.component';
 import { CategoryComponent } from './category/category.component';
 import { AnnouncementreportComponent } from './announcementreport/announcementreport.component';
+import { OverlaysDemoComponent } from './overlays/overlaysdemo.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { AnnouncementreportComponent } from './announcementreport/announcementre
         { path: 'list',component:MediaDemoComponent},
         { path: 'report',component: AnnouncementreportComponent},
         { path: 'message', data: { breadcrumb: 'Message' }, loadChildren: () => import('./messages/messagesdemo.module').then(m => m.MessagesDemoModule) },
-        { path: 'drafts', data: { breadcrumb: 'Overlay' }, loadChildren: () => import('./overlays/overlaysdemo.module').then(m => m.OverlaysDemoModule) },
+        { path: 'drafts', component:OverlaysDemoComponent},
+        //{ path: 'drafts', data: { breadcrumb: 'Overlay' }, loadChildren: () => import('./overlays/overlaysdemo.module').then(m => m.OverlaysDemoModule) },
         { path: 'Panel', data: { breadcrumb: 'Panel' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) },
         { path: 'employeelist',component:TableDemoComponent},
         { path: 'notedOneDay/:id', data: { breadcrumb: 'Panel' }, loadChildren: () => import('./panels/panelsdemo.module').then(m => m.PanelsDemoModule) },

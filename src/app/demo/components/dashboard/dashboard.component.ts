@@ -64,24 +64,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   initializeDataFetches(): void {
     this.fetchAnnouncements();
-    this.startAnnouncementsPolling();
+    //this.startAnnouncementsPolling();
   
     this.countAnnouncements();
-    this.startCountPolling();
+    //this.startCountPolling();
 
-  //  if (this.authService.role == 'MAIN_HR') {
-  //   this.loadPieChartData();
-  //   this.startPieChartPolling();
-  //  }
+   if (this.authService.role == 'MAIN_HR') {
+    this.loadPieChartData();
+    this.startPieChartPolling();
+   }
 
-  //   this.getNotedPercentageByDepartment();
-  //   this.startNotedPercentagePolling();
+    this.getNotedPercentageByDepartment();
+    this.startNotedPercentagePolling();
   
     this.countCompany();
-    this.startCompanyPolling();
+    //this.startCompanyPolling();
   
     this.countEmployee();
-    this.startEmployeePolling();
+    //this.startEmployeePolling();
   
     const currentYear = new Date().getFullYear();
     this.selectedYear = currentYear;
@@ -600,8 +600,11 @@ startNotedPercentagePolling(): void {
     const notedCountPollingsubscription = interval(10000).pipe(
       switchMap(() => this.userService.getNotedCount())
     ).subscribe({
-      next:(data) => {
-        this.users= data;
+      next:(data: User[]) => {
+        this.users = data.map(user =>({
+          ...user,
+          profileImage : user.photoLink ? `data:image/png;base64,${user.photoLink}` : null
+        }))
       }
     });
     this.subscriptions.push(notedCountPollingsubscription);
@@ -609,8 +612,11 @@ startNotedPercentagePolling(): void {
 
   getNotedCount() : void {
     const subscription = this.userService.getNotedCount().subscribe({
-      next:(data) => {
-        this.users = data;
+      next:(data : User[]) => {
+        this.users = data.map(user =>({
+          ...user,
+          profileImage : user.photoLink ? `data:image/png;base64,${user.photoLink}` : null
+        }))
       }
     });
     this.subscriptions.push(subscription);

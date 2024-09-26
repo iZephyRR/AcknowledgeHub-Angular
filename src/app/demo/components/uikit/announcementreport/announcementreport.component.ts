@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { interval, Subscription, switchMap } from 'rxjs';
+import { TargetCompany } from 'src/app/modules/target-company';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
@@ -13,6 +14,8 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 export class AnnouncementreportComponent implements OnInit, OnDestroy {
   groupedAnnouncements: any[] = [];
   pollingSubscription: Subscription;
+  targetCompany : TargetCompany[];
+  displayDialog: boolean = false;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -23,7 +26,7 @@ export class AnnouncementreportComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.fetchInitialData();
-    this.startPolling();
+    //this.startPolling();
   }
 
   fetchInitialData() {
@@ -48,7 +51,6 @@ export class AnnouncementreportComponent implements OnInit, OnDestroy {
 
     const parsedAnnouncements = data.map((announcement: any) => {
       const createdAt = this.parseDate(announcement.createdAt);
-      console.log("select all : ", announcement.selectAll);
       if (!createdAt) {
         console.warn('Skipping announcement with invalid date:', announcement);
         return null;
@@ -112,6 +114,16 @@ export class AnnouncementreportComponent implements OnInit, OnDestroy {
   }
 
   getAnnounceTo (id : number) {
-    this.announcementService.getTargetByAnnouncementId(id)
+    this.announcementService.getTargetByAnnouncementId(id).subscribe(data => {
+      console.log("target : ", data);
+      this.targetCompany = data;
+    }, error => {
+      this.messageService.toast('error', 'Failed to load ');
+    });
+    this.displayDialog = true;
+  }
+
+  closeDialog() {
+    this.displayDialog = false; // Method to close the dialog
   }
 }

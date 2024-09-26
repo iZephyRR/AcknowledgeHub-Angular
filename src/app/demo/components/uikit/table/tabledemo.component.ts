@@ -22,23 +22,41 @@ export class TableDemoComponent implements OnInit {
   selectedUser?: User;
   loading: boolean = false;
   profileImage: SafeUrl | null = null; // To store the selected profile image
+  status: any[] = [];
+  role: any[] = [];
 
   @ViewChild('filter') filter!: ElementRef;
 
   constructor(
-    public systemService:SystemService,
-    private userService:UserService
+    public systemService: SystemService,
+    private userService: UserService
   ) { }
 
   ngOnInit(): void {
     this.retrieveAllUsers();
+    this.status = [
+      { label: 'ACTIVATED', value: 'ACTIVATED' },
+      { label: 'DEACTIVATED', value: 'DEACTIVATED' },
+      { label: 'DEPARTED', value: 'DEPARTED' },
+      { label: 'DEFAULT', value: 'DEFAULT' }
+    ];
+    this.role = [
+      { label: 'ADMIN', value: 'ADMIN' },
+      { label: 'MAIN_HR', value: 'MAIN_HR' },
+      { label: 'MAIN_HR_ASSISTANCE', value: 'MAIN_HR_ASSISTANCE' },
+      { label: 'HR', value: 'HR' },
+      { label: 'HR_ASSISTANCE', value: 'HR_ASSISTANCE' },
+      { label: 'STAFF', value: 'STAFF' },
+    ]
   }
 
   retrieveAllUsers(): void {
     this.userService.getAllUsers().subscribe(
-      (data) => {
-        this.users = data;
-        console.log("user deatail ", data);
+      (data: User[]) => {
+        this.users = data.map(user => ({
+          ...user,
+          profileImage: user.photoLink ? `data:image/png;base64,${user.photoLink}` : null
+        }))
       },
       (error) => {
         console.error('Error retrieving users:', error);
@@ -53,5 +71,5 @@ export class TableDemoComponent implements OnInit {
   clear(table: Table) {
     table.clear();
   }
-  
+
 }

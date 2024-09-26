@@ -16,11 +16,12 @@
               <th>Announcer</th>
               <th *ngIf="authService.role === 'MAIN_HR'">Company</th>
               <th>Channel</th>
-              <th>Announce To</th>
+              <th>Audience</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let announcement of group.announcements; let i = index" class="announcement-item" (click)="showDetails(announcement.id)">
+            <tr *ngFor="let announcement of group.announcements; let i = index" class="announcement-item"
+              (click)="showDetails(announcement.id)">
               <td>{{ i + 1 }}</td>
               <td>{{ announcement.title }}</td>
               <td>{{ announcement.categoryName }}</td>
@@ -30,21 +31,48 @@
               <td>
                 <!-- Logic to display the correct channel(s) -->
                 <ng-container *ngIf="announcement.channel === 'BOTH'">
-                  Telegram, Email
+                  Telegram & Email
                 </ng-container>
                 <ng-container *ngIf="announcement.channel === 'TELEGRAM'">
                   Telegram
                 </ng-container>
               </td>
               <td>
-                <p *ngIf="announcement.selectAll === true">To All Companies</p>
-                <button pButton pRipple type="button" icon="pi pi-ellipsis-v" (click)="getAnnounceTo(announcement.id)"
-                  *ngIf="announcement.selectAll === false"
+                <p *ngIf="announcement.selectAll === 'TRUE'">To All Companies</p>
+                <button pButton pRipple type="button" icon="pi pi-ellipsis-v" *ngIf="announcement.selectAll === 'FALSE'"
+                  (click)="getAnnounceTo(announcement.id); $event.stopPropagation()"
                   class="p-button p-component p-button-text p-button-icon-only"></button>
               </td>
             </tr>
           </tbody>
         </table>
+
+        <p-dialog header="Audience" [(visible)]="displayDialog" [modal]="false"
+          [contentStyle]="{'font-size': '14px'}" [closable]="true" [style]="{'width': '50vw'}" (onHide)="closeDialog()">
+
+          <ng-container *ngIf="targetCompany && targetCompany.length > 0; else noDataTemplate">
+            <div *ngFor="let company of targetCompany">
+              <h2>{{ company.companyName }}</h2>
+              <div *ngFor="let department of company.departments">
+                <h3>{{ department.departmentName }}</h3>
+                <ul>
+                  <li *ngFor="let employee of department.employees">
+                    {{ employee.employeeName }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-template #noDataTemplate>
+            <p>No data available</p>
+          </ng-template>
+
+          <p-footer>
+            <button type="button" pButton label="Close" (click)="closeDialog()"></button>
+          </p-footer>
+        </p-dialog>
+
       </div>
     </div>
 

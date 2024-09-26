@@ -60,9 +60,20 @@ import { RatingModule } from 'primeng/rating';
 import { UserCardComponent } from './demo/components/user-card/user-card.component';
 import { MediaDemoComponent } from './demo/components/uikit/media/mediademo.component';
 import { CategoryComponent } from './demo/components/uikit/category/category.component';
-import { SkeletonModule }  from 'primeng/skeleton';
 import { AnnouncementreportComponent } from './demo/components/uikit/announcementreport/announcementreport.component';
-
+import { EachAnnoNotedListComponent } from './demo/components/each-anno-noted-list/each-anno-noted-list.component';
+import { SkeletonModule } from 'primeng/skeleton';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { CalendarModule } from 'primeng/calendar';
+import { ChipsModule } from 'primeng/chips';
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { CascadeSelectModule } from 'primeng/cascadeselect';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { ToolbarModule } from 'primeng/toolbar';
+import { TreeTableModule } from 'primeng/treetable';
+import { CheckboxModule } from 'primeng/checkbox';
+import { OverlaysDemoComponent } from './demo/components/uikit/overlays/overlaysdemo.component';
 
 @NgModule({
   declarations: [
@@ -90,8 +101,11 @@ import { AnnouncementreportComponent } from './demo/components/uikit/announcemen
     TableDemoComponent,
     UserCardComponent,
     MediaDemoComponent,
-CategoryComponent,
-AnnouncementreportComponent
+    CategoryComponent,
+    AnnouncementreportComponent,
+    CategoryComponent,
+    EachAnnoNotedListComponent,
+    OverlaysDemoComponent
   ],
   imports: [
     BadgeModule,
@@ -132,7 +146,17 @@ AnnouncementreportComponent
     RatingModule,
     SliderModule,
     InputTextModule,
-    SkeletonModule
+    SkeletonModule,
+    AutoCompleteModule,
+    CalendarModule,
+    ChipsModule,
+    InputMaskModule,
+    InputNumberModule,
+    CascadeSelectModule,
+    InputTextareaModule,
+    ToolbarModule,
+    TreeTableModule,
+    CheckboxModule
   ],
   providers: [
     {

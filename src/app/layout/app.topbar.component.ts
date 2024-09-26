@@ -102,7 +102,6 @@ export class AppTopBarComponent implements OnInit {
       next: (data) => {
         console.log(data);
         this.user = data;
-        //this.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
         this.userService.profileImage = this.user.photoLink ? `data:image/png;base64,${this.user.photoLink}` : undefined;
         this.userService.companyName = this.user.companyName;
       },
@@ -363,6 +362,7 @@ export class AppTopBarComponent implements OnInit {
   }
 
   onChangeProfile(): void {
+
     if (this.fileInput) {
       console.log(this.fileInput); // Debugging: ensure it's defined
       this.fileInput.nativeElement.click();
@@ -371,15 +371,18 @@ export class AppTopBarComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
-      // Preview the selected image
-      const objectURL = URL.createObjectURL(this.selectedFile);
-      this.profileImage = this.sanitizer.bypassSecurityTrustUrl(objectURL);
-      this.uploadProfileImage();
+  async onFileSelected(event: Event) {
+    if ((await this.messageService.confirmed('Change profile', 'Are you sure to change your profile photo?', 'Yes', 'No', 'WHITE', 'BLUE')).confirmed) {
+      const input = event.target as HTMLInputElement;
+      if (input.files && input.files[0]) {
+        this.selectedFile = input.files[0];
+        // Preview the selected image
+        const objectURL = URL.createObjectURL(this.selectedFile);
+        this.profileImage = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+        this.uploadProfileImage();
+      }
     }
+
   }
 
   uploadProfileImage() {

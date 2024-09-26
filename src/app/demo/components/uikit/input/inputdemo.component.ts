@@ -9,7 +9,7 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 })
 export class InputDemoComponent implements OnInit, OnDestroy {
   groupedAnnouncements = [];
-  scheduleLists = signal([] as ScheduleList[]); // Signal for reactive list
+  //scheduleLists = signal([] as ScheduleList[]); // Signal for reactive list
   pollingSubscription: Subscription;
 
   constructor(

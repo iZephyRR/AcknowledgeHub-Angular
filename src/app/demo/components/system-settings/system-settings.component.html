@@ -5,8 +5,7 @@
         <div class="row">
             <label for="defaultPassword">Default Password</label>
             <div class="input-right">
-                <span>{{ isPasswordVisible ? defaultPassword : '*'.repeat(defaultPassword.length) }}</span>
-                <i (click)="togglePasswordVisibility()" class="pi" [ngClass]="isPasswordVisible ? 'pi-eye-slash' : 'pi-eye'"></i>
+                <span (click)="togglePasswordVisibility()" style="cursor: pointer;">{{ isPasswordVisible ? defaultPassword : '*'.repeat(defaultPassword.length) }}</span>
                 <i (click)="editDefaultPassword()" class="pi pi-pencil"></i>
             </div>
         </div>

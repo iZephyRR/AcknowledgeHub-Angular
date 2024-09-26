@@ -21,6 +21,9 @@ export class AuthService {
   private _companyId: number;
   showNotFound: boolean;
   xShowNotFound: boolean;
+  afterLoginRout: string;
+  pauseAfterLoginConfig: boolean;
+
   private static readonly ALLOWED_DOMAINS: Set<string> = new Set<string>([
     "@gmail.com",
     "@yahoo.com",
@@ -273,6 +276,7 @@ export class AuthService {
       this.messageService.toast('info', 'Logged out.');
       this.session.clear();
       this.clearAuthData();
+      this.pauseAfterLoginConfig=true;
       this.router.navigate(['/login']);
     }
   }

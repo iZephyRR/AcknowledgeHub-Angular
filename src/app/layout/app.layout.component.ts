@@ -58,7 +58,9 @@ export class AppLayoutComponent implements OnDestroy, OnInit {
             });
     }
     ngOnInit(): void {
-        
+        if(!this.authService.isLogin()){
+            this.router.navigate(['/login']);
+        }
     }
 
     hideMenu() {

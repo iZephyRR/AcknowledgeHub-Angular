@@ -12,38 +12,10 @@
 									<input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
 										placeholder="Search Keyword" class="w-full" />
 								</span></div>
-                             
-                                <div>
-                                    <!-- Clear Button -->
-                                    <button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt1)"></button>
-                                  
-                                    <!-- Dropdown for Time Range -->
-                                    <p-dropdown [options]="timeRangeOptions" [(ngModel)]="selectedTimeRange" placeholder="Select Time Range"
-                                      class="ml-2 mb-2" (onChange)="onTimeRangeChange($event)">
-                                    </p-dropdown>
-                                  
-                                    <!-- Custom Date and Time Picker Modal -->
-                                    <p-dialog header="Custom Date and Time" [(visible)]="displayCustomDialog" [modal]="true" [style]="{width: '400px'}">
-                                      <div class="container">
-                                        <label for="day">Select Day,Hour,Minute</label>
-                                        <div class="input-container">
-                                          <!-- Day input -->
-                                          <input type="number" id="day" class="date-input" min="0" max="365" [(ngModel)]="customDay" placeholder="DD" (input)="validateDay()" />
-                                          <!-- Hour input -->
-                                          <input type="number" id="hour" class="time-input" min="0" max="23" [(ngModel)]="customHour" placeholder="HH" (input)="validateHour()" />
-                                          :
-                                          <!-- Minute input -->
-                                          <input type="number" id="minute" class="time-input" min="0" max="59" [(ngModel)]="customMinute" placeholder="MM" (input)="validateMinute()" />
-                                        </div>
-                                  
-                                        <!-- Submit button -->
-                                        <button class="submit-btn" (click)="submitCustomTime()">Submit</button>
-                                      </div>
-                                    </p-dialog>
-                                  </div>
-                                  
-                         
-                              
+							
+						<div><button pButton label="Clear" class="p-button-outlined mb-2" icon="pi pi-filter-slash"
+							(click)="clear(dt1)"></button></div>
+							
 					</div>
 				</ng-template>
                 <ng-template pTemplate="header">
@@ -56,12 +28,19 @@
                         <th style="min-width: 8rem">Announcer<p-columnFilter type="text" field="createdBy" display="menu"
                                 placeholder="Search by creator"></p-columnFilter>
                         </th>
-                        <th style="min-width: 12rem">Created At<p-columnFilter type="date" field="createdAt" display="menu"
-                            placeholder="Search by created at"></p-columnFilter>
+                        <th style="min-width: 12rem">Created At<p-columnFilter type="date" field="createdAt" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
                         </th>
-                        <th style="min-width: 8rem">Status<p-columnFilter type="text" field="status" display="menu"
-                            placeholder="Search by status"></p-columnFilter>
-                        </th>
+                        <th style="min-width: 12rem">Status<p-columnFilter field="status" matchMode="equals"
+                            display="menu">
+                            <ng-template pTemplate="filter" let-user let-filter="filterCallback">
+                                <p-dropdown [ngModel]="announcements" [options]="announcementstatus" (onChange)="filter($event.value)"
+                                    placeholder="Any" [style]="{'min-width': '12rem'}">
+                                    <ng-template let-option pTemplate="item">
+                                        <span [class]="'customer-badge status-' + option.value">{{option.label}}</span>
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter></th>
                         <th style="min-width: 8rem">Category<p-columnFilter type="text" field="category" display="menu"
                             placeholder="Search by category"></p-columnFilter>
                         </th>
@@ -95,50 +74,3 @@
         </div>
     </div>
 </div>
-<style>
-    .comment-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .comment-header button {
-        font-size: 0.8rem;
-        padding: 0.5rem 1rem;
-    }
-
-    li {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
-    }
-
-    .reply-icon {
-        font-size: 0.7rem;
-        padding: 0.3rem;
-        margin-left: 10px;
-    }
-
-
-    .reply-box {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-
-        margin-top: 10px;
-
-    }
-
-
-    textarea {
-        width: 100%;
-        resize: vertical;
-
-    }
-
-    .reply-box-buttons button {
-        margin-right: 5px;
-
-    }
-</style>

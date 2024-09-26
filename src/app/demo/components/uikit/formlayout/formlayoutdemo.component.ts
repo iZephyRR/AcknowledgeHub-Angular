@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { TreeNode } from 'primeng/api';
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
 import { Department } from 'src/app/modules/department';
@@ -20,6 +20,7 @@ import { User } from 'src/app/modules/user';
 import { Table } from 'primeng/table';
 import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 
+
 @Component({
   selector: 'app-form-layout-demo',
   templateUrl: './formlayoutdemo.component.html',
@@ -27,7 +28,7 @@ import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 
 export class FormLayoutDemoComponent implements OnInit {
 
-  groups: CustomTergetGroup[];
+  groups : CustomTergetGroup[];
   canSaveTarget: boolean;
   selectedGroup: number | null = null;
   categories: Category[] = [];
@@ -75,18 +76,50 @@ export class FormLayoutDemoComponent implements OnInit {
     this.currentDate = now.toISOString().slice(0, 16);
   }
 
-  ngOnInit() {
-    this.customTargetGroupService.findAllByHRID().subscribe({
-      next: (data) => {
-        this.groups = data;
-      },
-      error: (err) => {
-        console.error(err);
-      },
-      complete: () => {
+  onUpload(event: any) {
+    console.log('event ', event);
+    // Make sure the event has files before accessing them
+    if (event && event.files && event.files.length > 0) {
+      const file = event.files[0]; // Get the first uploaded file
+      console.log('file ', file);
 
-      }
-    });
+      this.file = file;
+      this.filename = file.name;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.filePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.error('No file selected');
+    }
+  }
+
+  onClear(): void {
+    console.log("this.file = null");
+    this.file = null;
+  }
+
+  onFileChange(event: any): void {
+
+    console.log("event ", event);
+    const fileInput = event.target;
+    const file = fileInput.files[0];
+    if (file) {
+      this.file = file;
+      this.filename = file.name;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.filePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = '';
+    }
+  }
+
+  ngOnInit() {
+    this.customTargetGroup();
     this.role = this.authService.role;
     //this.companyId = this.authService.companyId;
     this.loadCategories();
@@ -98,6 +131,20 @@ export class FormLayoutDemoComponent implements OnInit {
       this.getAllCompanies();
       this.retrieveAllUsers();
     }
+  }
+
+  customTargetGroup () {
+    this.customTargetGroupService.findAllByHRID().subscribe({
+      next: (data) => {
+        this.groups = data;
+      },
+      error: (err) => {
+        console.error(err);
+      },
+      complete: () => {
+
+      }
+    });
   }
 
   onViewChange(option: 'tree' | 'table'): void {
@@ -202,7 +249,6 @@ export class FormLayoutDemoComponent implements OnInit {
     this.systemService.showProgress('Uploading an announcement...', true, false, 5);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
-    console.log("group : ", this.selectedGroup);
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
         console.error('Error status:', error.status);
@@ -221,12 +267,16 @@ export class FormLayoutDemoComponent implements OnInit {
           }
           let companyName = this.userService.companyName;
           this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
+          this.customTargetGroup();
+          this.onClear();
           this.resetForm(form);
           this.clearPreview();
         });
       },
       error: () => {
-        this.messageService.toast("error", "Can't Create");
+        this.systemService.stopProgress("ERROR").then((error) => {
+          this.messageService.toast("error", "Can't Create");
+        });
       }
     });
   }
@@ -256,6 +306,7 @@ export class FormLayoutDemoComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', this.title);
     formData.append('categoryId', this.selectedCategory);
+    console.log("file : ", this.file);
     formData.append('file', this.file);
     formData.append('filename', this.filename);
 
@@ -360,22 +411,6 @@ export class FormLayoutDemoComponent implements OnInit {
 
   }
 
-  onFileChange(event: any): void {
-    console.log("event ", event);
-    const fileInput = event.target;
-    const file = fileInput.files[0];
-    if (file) {
-      this.file = file;
-      this.filename = file.name;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.filePreview = reader.result;
-      };
-      reader.readAsDataURL(file);
-      fileInput.value = '';
-    }
-  }
-
   resetForm(form: NgForm): void {
     form.reset();
     this.clearPreview();
@@ -384,7 +419,7 @@ export class FormLayoutDemoComponent implements OnInit {
     this.showDatePicker = false;
     this.title = '';
     this.file = null;
-
+    
   }
 
   clearPreview(): void {

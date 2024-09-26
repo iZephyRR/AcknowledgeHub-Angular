@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
 import { Table } from 'primeng/table';
@@ -16,11 +16,10 @@ import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
 
 @Component({
-  templateUrl: './overlaysdemo.component.html',
-  providers: [ConfirmationService, MessageService]
+  templateUrl: './overlaysdemo.component.html'
 })
 export class OverlaysDemoComponent implements OnInit {
-
+  @ViewChild('filter') filter!: ElementRef;
   drafts = signal([] as Draft[]);
   displayModal: boolean = false;
 
@@ -41,6 +40,7 @@ export class OverlaysDemoComponent implements OnInit {
   fileUrl : string;
   selectAllCompanies : boolean;
   isEmailSelected: boolean = false;
+  contentType: any[] =[];
 
   constructor(
     private announcementService: AnnouncementService,
@@ -60,10 +60,25 @@ export class OverlaysDemoComponent implements OnInit {
     } else {
       this.getAllCompanies();
     }
+
+    this.contentType = [
+      { label: 'AUDIO', value: 'AUDIO' },
+      { label: 'EXCEL', value: 'EXCEL' },
+      { label: 'IMAGE', value: 'IMAGE' },
+      { label: 'PDF', value: 'PDF' },
+      { label: 'VIDEO', value: 'VIDEO' }
+
+
+      
+  ];
   }
 
   loadDrafts() {
     this.announcementService.getDrafts().subscribe(data => {
+      data = data.map((data) => {
+        data.draftAt = new Date(data.draftAt).toLocaleDateString();
+        return data;
+      });
       this.drafts.set(data);
     });
   }
@@ -240,18 +255,16 @@ export class OverlaysDemoComponent implements OnInit {
     return targetData;
   }
 
-  async deleteDraft(id : number){
-    if ((await this.messageService.confirmed("Delete Announcement Draft", "Do You Want to Delete?", "Yes" , "No",'WHITE','BLACK')).confirmed) {
-      this.announcementService.deleteDraft(id).subscribe({
-        next: (response) => {
-          this.messageService.toast('success', 'Delete Success');
-          this.loadDrafts();
-        },
-        error: (error) => {
-          this.messageService.toast('error', "Can't delete");
-        }
-      });
-    }
+  deleteDraft(id : number){
+    this.announcementService.deleteDraft(id).subscribe({
+      next: (response) => {
+        this.messageService.toast('success', 'Delete Success');
+        this.loadDrafts();
+      },
+      error: (error) => {
+        this.messageService.toast('error', "Can't delete");
+      }
+    });
   } 
 
   async delete(id: number) {
@@ -277,6 +290,11 @@ export class OverlaysDemoComponent implements OnInit {
     this.showDatePicker = false;
     this.title = '';
     this.file = null;
+  }
+  
+  clear(table: Table) {
+    table.clear();
+    this.filter.nativeElement.value = '';
   }
 
   isImage(): boolean {

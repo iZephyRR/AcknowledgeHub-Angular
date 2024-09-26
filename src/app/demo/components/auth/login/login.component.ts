@@ -158,8 +158,12 @@ export class LoginComponent implements OnInit {
               }
             } else {
               this.session.add('token', response.STRING_RESPONSE);
+              if(this.authService.afterLoginRout){
+                this.router.navigate([this.authService.afterLoginRout]);
+              }else{
+                this.authService.restartPage();
+              }
               this.messageService.toast('success', 'Successfully logged in!');
-              this.authService.restartPage();
             }
             this.isValid = true;
             this.systemService.hideLoading();

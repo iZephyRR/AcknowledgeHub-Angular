@@ -124,11 +124,69 @@
 </div>
 
 <!-- Second Row: Bar Chart and Pie Chart -->
+<div class="grid" *ngIf="authService.role == 'MAIN_HR'">
+    <!-- Announcements Table (left column, 7/12 width) -->
+    <div class="col-7">
+        <div class="enterprise-card-table shadow-3 surface-card" style="position: relative;">
+            <h5 class="text-primary">Employees Who Noted Most</h5>
+            <p-table [value]="users" [paginator]="true" [rows]="5" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>No.</th>
+                        <th>&nbsp;</th>
+                        <th>Staff Id</th>
+                        <th>Name</th>
+                        <th>Times</th>
+                        <th>Department</th>
+                        <th>Company</th>
+                        <th>View</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-user let-i="rowIndex">
+                    <tr>
+                        <td>{{i + 1}}</td>
+                        <td><img *ngIf="user.profileImage; else default" [src]="user.profileImage" alt="Profile Image"
+                                class="profile-image" />
+                            <ng-template #default>
+                                <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
+                            </ng-template>
+                        </td>
+                        <td>{{ user.staffId }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.notedCount }}</td>
+                        <td>{{ user.departmentName }}</td>
+                        <td>{{ user.companyName }}</td>
+                        <td>
+                            <button pButton pRipple type="button" icon="pi pi-search"
+                                (click)="systemService.showDetails(user)"
+                                class="p-button p-component p-button-text p-button-icon-only"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <!-- Pie Chart (right column, 5/12 width) -->
+    <div class="col-5" *ngIf="authService.role == 'MAIN_HR'">
+        <div class="enterprise-pie-card shadow-3 surface-card">
+            <h5 class="text-primary">Pie Chart - Employee Distribution</h5>
+            <div class="chart-container" *ngIf="!loading">
+                <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
+            </div>
+            <div class="chart-container" *ngIf="loading">
+                <p-skeleton styleClass="skeleton-full" width="100%" height="90%" shape="circle"
+                    size="22rem"></p-skeleton>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="grid">
     <!-- Bar Chart (left column, 7/12 width) -->
     <div class="col-7">
         <div class="enterprise-chart-card" style="min-height: 350px; padding: 20px; position: relative;">
-            <h5 class="text-primary" style="margin-bottom: 1.5rem;">Bar Chart - Category Count</h5>
+            <h5 class="text-primary" style="margin-bottom: 1.5rem;">Yearly Announcement Distribution Chart</h5>
 
             <!-- Year Selector in the top right corner -->
             <div class="year-selector">
@@ -156,59 +214,8 @@
         </div>
     </div>
 
-    <!-- Pie Chart (right column, 5/12 width) -->
-    <div class="col-5" *ngIf="authService.role == 'MAIN_HR'">
-        <div class="enterprise-pie-card shadow-3 surface-card">
-            <h5 class="text-primary">Pie Chart - Employee Distribution</h5>
-            <div class="chart-container" *ngIf="!loading">
-                <p-chart type="pie" [data]="pieChartData" [options]="chartOptions"></p-chart>
-            </div>
-            <div class="chart-container" *ngIf="loading">
-                <p-skeleton styleClass="skeleton-full" width="100%" height="90%" shape="circle"
-                    size="22rem"></p-skeleton>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="grid" *ngIf="authService.role == 'MAIN_HR'">
-    <!-- Announcements Table (left column, 7/12 width) -->
-    <div class="col-7">
-        <div class="enterprise-card-table shadow-3 surface-card" style="position: relative;">
-            <h5 class="text-primary">Employees Who Noted Most</h5>
-            <p-table [value]="users" [paginator]="true" [rows]="5" responsiveLayout="scroll">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>No.</th>
-                        <th>Staff Id</th>
-                        <th>Name</th>
-                        <th>Times</th>
-                        <th>Department</th>
-                        <th>Company</th>
-                        <th>View</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-user let-i="rowIndex">
-                    <tr>
-                        <td>{{i + 1}}</td>
-                        <td>{{ user.staffId }}</td>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.notedCount }}</td>
-                        <td>{{ user.departmentName }}</td>
-                        <td>{{ user.companyName }}</td>
-                        <td>
-                            <button pButton pRipple type="button" icon="pi pi-search"
-                                (click)="systemService.showDetails(user)"
-                                class="p-button p-component p-button-text p-button-icon-only"></button>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
-
     <!-- Noted Percentage by Department (right column, 5/12 width) -->
-    <div class="col-5">
+    <!-- <div class="col-5">
         <div class="enterprise-line-card">
             <div class="flex justify-content-between align-items-center mb-5">
                 <h5>Noted Percentage by Department</h5>
@@ -234,7 +241,7 @@
                 </ul>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 
@@ -242,6 +249,13 @@
 
 
 <style>
+    .profile-image {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
     .enterprise-chart-table,
     .enterprise-line-card {
         height: 455px;

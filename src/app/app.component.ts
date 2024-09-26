@@ -33,8 +33,14 @@ export class AppComponent implements OnInit {
     this.routerSubscription = this.router.events.subscribe(event => {
        if (event instanceof NavigationEnd) {
          this.systemService.currentRout.set(event.urlAfterRedirects);
-         console.log(event.urlAfterRedirects);
        }
+       if (!this.authService.pauseAfterLoginConfig) {
+        if (this.router.url.startsWith('/announcement-page')) {
+          this.authService.afterLoginRout = this.router.url;
+        }
+      } else {
+        this.authService.afterLoginRout = null;
+      }
     });
     
   }

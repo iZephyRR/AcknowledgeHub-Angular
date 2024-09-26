@@ -1,4 +1,4 @@
-import { AnnouncementResponseCondition, ContentType, Role } from "../constants";
+import { AnnouncementResponseCondition, AnnounementSelectAll, ContentType, Role } from "../constants";
 
 
 export interface Announcement {
@@ -13,7 +13,7 @@ export interface Announcement {
     createdAt: Date | string;
     companyName:string;
     announcementResponseCondition: AnnouncementResponseCondition;
-    selectAll : boolean;
+    selectAll : AnnounementSelectAll;
 }
 export enum FileType {
     AUDIO = 'AUDIO',

@@ -14,6 +14,10 @@ export type Status2 = 'FALSE' | 'TRUE' | 'TRUE_PENDING';
 
 export type AnnouncementResponseCondition = 'CREATOR'|'RECEIVER'|'VIEWER';
 
+export type AnnounementSelectAll = 'FALSE' | 'TRUE';
+
+export type Target = 'COMPANY'|'DEPARTMENT'|'EMPLOYEE';
+
 export type Color =
   'ALICEBLUE' | 'ANTIQUEWHITE' | 'AQUA' | 'AQUAMARINE' | 'AZURE' | 'BEIGE' |
   'BISQUE' | 'BLACK' | 'BLANCHEDALMOND' | 'BLUE' | 'BLUEVIOLET' | 'BROWN' |
