@@ -14,6 +14,7 @@ export interface Announcement {
     companyName:string;
     announcementResponseCondition: AnnouncementResponseCondition;
     selectAll : AnnounementSelectAll;
+    deadline: Date;
 }
 export enum FileType {
     AUDIO = 'AUDIO',

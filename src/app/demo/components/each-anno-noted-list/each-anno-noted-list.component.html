@@ -3,7 +3,7 @@
         <div class="card">
             <h5><span *ngFor="let link of links;let i=index"><span *ngIf="i>0">>></span><span
                         (click)="openChild(link.data)" style="cursor: pointer;">{{link.label}}</span></span></h5>
-                        <p-button label="Test" (onClick)="downloadSmartPDF()"></p-button>
+                        
             <p-table #dt1 [value]="showingList.childPreviews" dataKey="id" [rows]="10" [rowHover]="true"
                 styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name']"
                 responsiveLayout="scroll">
@@ -14,6 +14,7 @@
                             <input pInputText type="text" #filter (input)="onGlobalFilter(dt1, $event)"
                                 placeholder="Search Keyword" class="w-full" />
                         </span>
+                        <p-button label="Download" (onClick)="downloadSmartPDF()"></p-button>
                         <p-dropdown [options]="timeRangeOptions" placeholder="Select Time Range" class="ml-2 mb-2"
                             (onChange)="onTimeRangeChange($event)">
                         </p-dropdown>
@@ -87,12 +88,15 @@
                         <td>
                             {{ row.receiverName }}
                         </td>
-                        <td style="display: flex; align-items: center;">
+                        <td *ngIf="row.notedProgress!='-1'" style="display: flex; align-items: center;">
                             <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
                                 [ngStyle]="{height: '8px'}">
                                 <div class="bg-orange-500 h-full" [ngStyle]="{width: row.notedProgress+'%'}"></div>
                             </div>
                             <span class="text-orange-500 ml-3 font-medium">{{ row.notedProgress }}%</span>
+                        </td>
+                        <td  *ngIf="row.notedProgress=='-1'">
+                           <span style="color: red;">Passed Deadline!</span>
                         </td>
                     </tr>
                 </ng-template>

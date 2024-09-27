@@ -79,6 +79,10 @@ export class UserService {
     return this.http.get<User[]>(`${this.baseUrl}/getNotedCount`);
   }
 
+  addAssHR(assHR:HR):Observable<User>{
+    return this.http.post<User>(`${this.baseUrl}/mhr/ass-hr`, assHR);
+  }
+
  
 }
 

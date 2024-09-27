@@ -9,7 +9,7 @@ import { CategoryService } from 'src/app/services/category/category.service';
 import { NgForm } from '@angular/forms';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
-import { catchError, map, throwError } from 'rxjs';
+import { catchError, interval, map, Subscription, switchMap, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { Company } from 'src/app/modules/company';
 import { UserService } from 'src/app/services/user/user.service';
@@ -60,6 +60,9 @@ export class FormLayoutDemoComponent implements OnInit {
   selectAllCompanies: boolean;
   isEmailSelected: boolean = false;
   currentDate: string = '';
+  showDeadlineDate: boolean = false;
+  deadlineDate: Date = new Date();
+  pollingSubscription: Subscription;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -78,10 +81,11 @@ export class FormLayoutDemoComponent implements OnInit {
 
   onUpload(event: any) {
     console.log('event ', event);
-    // Make sure the event has files before accessing them
     if (event && event.files && event.files.length > 0) {
       const file = event.files[0]; // Get the first uploaded file
       console.log('file ', file);
+      console.log('fileType ', file.type);
+
 
       this.file = file;
       this.filename = file.name;
@@ -120,10 +124,10 @@ export class FormLayoutDemoComponent implements OnInit {
 
   ngOnInit() {
     this.customTargetGroup();
+    this.startPollingGroups();
     this.role = this.authService.role;
     //this.companyId = this.authService.companyId;
     this.loadCategories();
-
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
       this.getCompanyById();
       this.retrieveAllUsersByConpanyId();
@@ -144,6 +148,14 @@ export class FormLayoutDemoComponent implements OnInit {
       complete: () => {
 
       }
+    });
+  }
+
+  startPollingGroups() {
+    this.pollingSubscription = interval(10000).pipe(
+      switchMap(() => this.customTargetGroupService.findAllByHRID())
+    ).subscribe(data => {
+      this.groups = data; // Group the fetched data
     });
   }
 
@@ -224,6 +236,10 @@ export class FormLayoutDemoComponent implements OnInit {
   //   }
   // }
 
+  // checkDateValidity(): void {
+  //   this.isDateValid = !!this.scheduleDate; // Set true if scheduleDate is not null
+  // }
+
   toggleDatePicker(event: any): void {
     if (event.checked) {
       this.showDatePicker = true;
@@ -234,9 +250,13 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
-  // checkDateValidity(): void {
-  //   this.isDateValid = !!this.scheduleDate; // Set true if scheduleDate is not null
-  // }
+  toggleDatePickerDeadline(event: any): void {
+    if (event.checked) {
+      this.showDeadlineDate = true;
+    } else {
+      this.showDeadlineDate = false;
+    }
+  }
 
   triggerFileInput(): void {
     const fileInput = document.getElementById('pdf-file') as HTMLInputElement;
@@ -246,7 +266,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
-    this.systemService.showProgress('Uploading an announcement...', true, false, 5);
+    this.systemService.showProgress('Uploading an announcement...', true, false, 150);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
@@ -333,6 +353,7 @@ export class FormLayoutDemoComponent implements OnInit {
     formData.append('target', JSON.stringify(this.targetData));
     console.log("select all companies : ", this.selectAllCompanies);
     formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
+    formData.append('deadline',new Date(this.deadlineDate).toISOString());
     return formData;
   }
 
@@ -429,6 +450,7 @@ export class FormLayoutDemoComponent implements OnInit {
     this.selectedTargets = [];
     this.selectedEmployees = [];
     this.onViewChange('tree');
+    this.onClear();
   }
 
   isImage(): boolean {

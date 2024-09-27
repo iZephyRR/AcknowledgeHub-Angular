@@ -27,7 +27,8 @@ export class EachAnnoNotedListComponent implements OnInit {
         { label: '1 Hour', data: 60 * 60 },
         { label: '1 Day', data: 24 * 60 * 60 },
         { label: '1 Week', data: 7 * 24 * 60 * 60 },
-        { label: 'Custom', data: 'CUSTOM' }
+        { label: 'Custom', data: 'CUSTOM' },
+        //{ label: 'Passed deadline', data: 'PASS_DEADLINE' }
     ];
     customData: { year: number, day: number, hour: number, minute: number } = {} as { year: number, day: number, hour: number, minute: number };
     displayCustomDialog: boolean = false;
@@ -124,7 +125,11 @@ export class EachAnnoNotedListComponent implements OnInit {
             this.displayCustomDialog = true;
         } else if (event.value.data == 'ALL_TIME') {
             this.refreshData(BigInt(0));
-        } else {
+        }
+        //  else if(event.value.data == 'PASS_DEADLINE'){
+        //     this.refreshData(BigInt(-1));
+        // }
+        else{
             this.refreshData(BigInt(event.value.data));
         }
     }

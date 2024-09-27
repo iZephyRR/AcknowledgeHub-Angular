@@ -291,7 +291,7 @@ export class UserUploadValidatorService {
               USER.staffId = cell;
               break;
             case "telegramusername":
-              USER.telegramUsername = cell;
+              USER.telegramUsername = cell.startsWith('@') ? cell.substring(1) : cell;
               break;
             case "email":
               USER.email = cell;

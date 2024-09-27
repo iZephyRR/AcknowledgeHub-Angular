@@ -1,10 +1,10 @@
 <div class="layout-topbar">
-  <a [routerLink]="['/dashboard']" style="margin-left: 7.5%;margin-right: 7.5%;">
+  <button (click)="directRoute()" style="margin-left: 7.5%;margin-right: 7.5%; background-color: transparent; border: none;">
     <div class="layout-topbar-logo">
       <span class="company-logo">ACE</span><br>
       <span class="company-subtitle">Data Systems Ltd.</span>
     </div>
-  </a>
+  </button>
   <button #menubutton class="p-link layout-menu-button layout-topbar-button" (click)="layoutService.onMenuToggle()">
     <i class="pi pi-bars"></i>
   </button>
@@ -14,7 +14,7 @@
         'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
       }">
     <!-- Notification Icon and Dropdown -->
-    <div class="notification-icon" (click)="toggleNotificationDropdown()" #notificationIcon>
+    <div *ngIf="authService.role != 'ADMIN'" class="notification-icon" (click)="toggleNotificationDropdown()" #notificationIcon>
       <img src="assets/alarm_alert_attention_bell_clock_notification_ring_icon_123203.ico" alt="Notification Icon"
         class="custom-notification-icon" />
       <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
@@ -95,9 +95,34 @@
         <span>{{ user.departmentName }}</span>
       </div>
       <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
+      <a *ngIf="authService.role == 'MAIN_HR' || authService.role == 'HR'" (click)="addHRView = true" class="change-password-link">Add assistance account</a >
     </div>
   </div>
 </div>
+
+<p-dialog [(visible)]="addHRView" [modal]="true" [closable]="false" [dismissableMask]="true"  [style]="{width: '400px'}">
+  <div class="row hr-row">
+      <label for="item2"><strong>Add Main HR Account</strong></label>
+      <i class="pi pi-times" (click)="addHRView = false" style="cursor: pointer;"></i>
+  </div>
+  <div class="p-fluid">
+      <div class="p-field">
+          <label for="name">Name</label>
+          <input id="name" type="text" pInputText [(ngModel)]="assHR.hrName" />
+      </div>
+      <div class="p-field">
+          <label for="email">Email</label>
+          <input id="email" type="email" pInputText [(ngModel)]="assHR.hrEmail" />
+      </div>
+      <div class="p-field">
+          <label for="staff_id">Staff ID</label>
+          <input id="staff_id" type="text" pInputText [(ngModel)]="assHR.staffId" />
+      </div>
+  </div>
+  <p-footer>
+      <button pButton label="Save" icon="pi pi-check" (click)="addAssHR()"></button>
+  </p-footer>
+</p-dialog>
 
 <!-- PrimeNG Dialog -->
 <p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">

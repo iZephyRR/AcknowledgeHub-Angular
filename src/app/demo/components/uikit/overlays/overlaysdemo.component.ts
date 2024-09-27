@@ -14,6 +14,7 @@ import { CompanyService } from 'src/app/services/company/company.service';
 import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 import { MessageDemoService } from 'src/app/services/message/message.service';
 import { SystemService } from 'src/app/services/system/system.service';
+import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
   templateUrl: './overlaysdemo.component.html'
@@ -37,10 +38,10 @@ export class OverlaysDemoComponent implements OnInit {
   role: string;
   draft: Draft;
   draftId: number;
-  fileUrl : string;
-  selectAllCompanies : boolean;
+  fileUrl: string;
+  selectAllCompanies: boolean;
   isEmailSelected: boolean = false;
-  contentType: any[] =[];
+  contentType: any[] = [];
 
   constructor(
     private announcementService: AnnouncementService,
@@ -49,7 +50,8 @@ export class OverlaysDemoComponent implements OnInit {
     private companyService: CompanyService,
     private messageService: MessageDemoService,
     private systemService: SystemService,
-    private mapToTreeService: MaptotreeService
+    private mapToTreeService: MaptotreeService,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -67,10 +69,32 @@ export class OverlaysDemoComponent implements OnInit {
       { label: 'IMAGE', value: 'IMAGE' },
       { label: 'PDF', value: 'PDF' },
       { label: 'VIDEO', value: 'VIDEO' }
+    ];
+  }
 
+  onUpload(event: any) {
+    console.log('event ', event);
+    // Make sure the event has files before accessing them
+    if (event && event.files && event.files.length > 0) {
+      const file = event.files[0]; // Get the first uploaded file
+      console.log('file ', file);
 
-      
-  ];
+      this.file = file;
+      this.filename = file.name;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.filePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.error('No file selected');
+    }
+  }
+
+  onClear(): void {
+    console.log("this.file = null");
+    this.file = null;
   }
 
   loadDrafts() {
@@ -168,7 +192,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    //this.systemService.showLoading('Processing...');
+    this.systemService.showProgress('Uploading an announcement...', true, false, 150);
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
@@ -178,15 +202,28 @@ export class OverlaysDemoComponent implements OnInit {
     ).subscribe(
       {
         complete: () => {
-          this.messageService.toast("success", "Announcement Created");
-          this.resetForm(form);
-          this.clearPreview();
-          this.systemService.hideLoading();
-          this.hideModal();
-          this.deleteDraft(this.draftId);
+          this.systemService.stopProgress().then(async (data) => {
+            this.messageService.toast("success", "Announcement Created");
+            let image = null;
+            if (this.userService.profileImage == null) {
+              image = "assets/default-profile.png";
+            } else {
+              image = this.userService.profileImage;
+            }
+            let companyName = this.userService.companyName;
+            this.messageService.sentWindowNotification("New Announcement Create", { body: 'Accouncement Created by ' + companyName, icon: image });
+            this.resetForm(form);
+            this.onClear();
+            this.clearPreview();
+            this.systemService.hideLoading();
+            this.hideModal();
+            this.deleteDraft(this.draftId);
+          });
         },
         error: (err) => {
-          this.messageService.toast("error", "Can't Create");
+          this.systemService.stopProgress("ERROR").then((error) => {
+            this.messageService.toast("error", "Can't Create");
+          });
         }
       }
     );
@@ -223,7 +260,7 @@ export class OverlaysDemoComponent implements OnInit {
     console.log("targets : ", JSON.stringify(this.targetData));
     formData.append('target', JSON.stringify(this.targetData));
     console.log("file url : ", this.fileUrl);
-    formData.append('fileUrl',this.fileUrl);
+    formData.append('fileUrl', this.fileUrl);
     formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
     return formData;
   }
@@ -249,13 +286,13 @@ export class OverlaysDemoComponent implements OnInit {
         sendTo: target.data.id,
         receiverType: target.data.type as 'COMPANY' | 'DEPARTMENT'
       }));
-      if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
-        this.selectAllCompanies = true;
-      }
+    if (this.selectedTargets.some(target => target.data.type === 'ALL COMPANIES')) {
+      this.selectAllCompanies = true;
+    }
     return targetData;
   }
 
-  deleteDraft(id : number){
+  deleteDraft(id: number) {
     this.announcementService.deleteDraft(id).subscribe({
       next: (response) => {
         this.messageService.toast('success', 'Delete Success');
@@ -265,7 +302,7 @@ export class OverlaysDemoComponent implements OnInit {
         this.messageService.toast('error', "Can't delete");
       }
     });
-  } 
+  }
 
   async delete(id: number) {
     if (await this.messageService.confirmed('Delete Confirmation', 'Are you sure to delete?', 'Yes', 'No', 'WHITE', 'BLACK')) {
@@ -291,7 +328,7 @@ export class OverlaysDemoComponent implements OnInit {
     this.title = '';
     this.file = null;
   }
-  
+
   clear(table: Table) {
     table.clear();
     this.filter.nativeElement.value = '';

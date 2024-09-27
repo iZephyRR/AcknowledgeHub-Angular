@@ -15,6 +15,9 @@ import { from, fromEvent, Observable, of, Subscription, throwError } from 'rxjs'
 import { SystemService } from '../services/system/system.service';
 import { NotificationService } from '../services/notifications/notification service';
 import { Notification } from '../modules/notification.model';
+import { Router } from '@angular/router';
+import { HR } from '../modules/company';
+import { Mail } from '../modules/mails';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
@@ -56,11 +59,11 @@ export class AppTopBarComponent implements OnInit {
   visibleSidebar: boolean = false;
   isProfileCardVisible = false;
   isChangePasswordModalVisible: boolean = false;
-
+  addHRView: boolean = false;
   currentPassword: string = '';
   newPassword: string = '';
   confirmPassword: string = '';
-
+  assHR: HR = {} as HR;
   currentPasswordError: string = '';
   newPasswordError: string = '';
   confirmPasswordError: string = '';
@@ -80,7 +83,9 @@ export class AppTopBarComponent implements OnInit {
     private sanitizer: DomSanitizer,
     public authService: AuthService,
     private firestore: AngularFirestore,
-    public systemService: SystemService, private renderer: Renderer2, private elementRef: ElementRef
+    public systemService: SystemService,
+    private renderer: Renderer2,
+    private route: Router
   ) { }
 
   ngOnInit(): void {
@@ -95,6 +100,58 @@ export class AppTopBarComponent implements OnInit {
       this.notifications = notifications;
       this.updateCombinedNotifications();
     });
+  }
+
+  addAssHR(): void {
+    this.addHRView=false;
+    this.systemService.showProgress('Adding Main HR account...', true, false, 7);
+    this.userService.addAssHR(this.assHR).subscribe({
+      next: (data) => {
+        console.log('after save ' + JSON.stringify(data));
+      },
+      complete: () => {
+        this.authService.getDefaultPassword().subscribe({
+          next: (defaultPassword) => {
+            this.messageService.sendEmail(Mail.addedAssHR(this.assHR.hrEmail, this.assHR.hrName, defaultPassword.STRING_RESPONSE)).subscribe({
+              complete: () => {
+                this.systemService.stopProgress().then((data) => {
+                  this.messageService.toast('success', 'Added assistance HR account.');
+                  this.addHRView = false;
+                });
+              },
+              error: (err) => {
+                this.systemService.stopProgress().then((data) => {
+                  this.messageService.message('error', 'Registered assistance HR account but an error occured on sending email.');
+                  this.addHRView = false;
+                });
+                console.error(err);
+              }
+            });
+          },
+          error: (err) => {
+            this.systemService.stopProgress('ERROR').then((data) => {
+              this.messageService.message('error', 'An error occured when adding assistance HR acount.');
+            });
+            console.error(err);
+          }
+        });
+      },
+      error: (err) => {
+        this.systemService.stopProgress('ERROR').then((data) => {
+          this.messageService.message('error', 'An error occured when adding assistance HR acount.');
+        });
+        console.error(err);
+      }
+    });
+
+  }
+
+  directRoute() {
+    if (this.authService.role != 'STAFF') {
+      this.route.navigate(['/dashboard']);
+    } else {
+      this.route.navigate(['/']);
+    }
   }
 
   profile(): void {
@@ -360,6 +417,8 @@ export class AppTopBarComponent implements OnInit {
       this.isProfileCardVisible = false; // Close the card
     }
   }
+
+
 
   onChangeProfile(): void {
 

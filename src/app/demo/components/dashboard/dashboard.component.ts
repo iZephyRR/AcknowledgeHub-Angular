@@ -72,6 +72,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
    if (this.authService.role == 'MAIN_HR') {
     this.loadPieChartData();
     this.startPieChartPolling();
+    this.getNotedCount();
+    this.startNotedCountPolling();
    }
 
     this.getNotedPercentageByDepartment();
@@ -86,8 +88,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const currentYear = new Date().getFullYear();
     this.selectedYear = currentYear;
     this.fetchAnnouncementsForYear(this.selectedYear);
-    this.getNotedCount();
-    this.startNotedCountPolling();
   }
 
   initializeChartOptions(): void {
@@ -357,6 +357,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     const subscription = this.announcementService.getPieChart().subscribe(
       (data: Map<string, BigInt>) => {
+        this.loading = false;
         const labels: string[] = [];
         const values: number[] = [];
 
@@ -415,11 +416,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   startPieChartPolling(): void {
+    
     // Poll for pie chart data every 1 min
-    const pieChartPollingSubscription = interval(60000).pipe(
+    const pieChartPollingSubscription = interval(10000).pipe(
       switchMap(() => this.announcementService.getPieChart())
     ).subscribe(
       (data: Map<string, BigInt>) => {
+        
         const labels: string[] = [];
         const values: number[] = [];
   
@@ -459,6 +462,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         departmentName: key,
         percentage: data[key]
       }));
+      this.loading = false;
     },
     (error) => {
       console.error('Error fetching noted percentages by department', error);
@@ -469,8 +473,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 }
 
 startNotedPercentagePolling(): void {
-  // Poll for the noted percentages by department every 1 min
-  const notedPercentagePollingSubscription = interval(60000).pipe(
+  // Poll for the noted percentages by department every 30s
+  const notedPercentagePollingSubscription = interval(30000).pipe(
     switchMap(() => this.announcementService.getNotedPercentageByDepartment())
   ).subscribe(
     (data) => {
@@ -597,7 +601,7 @@ startNotedPercentagePolling(): void {
   }
 
   startNotedCountPolling() : void {
-    const notedCountPollingsubscription = interval(10000).pipe(
+    const notedCountPollingsubscription = interval(30000).pipe(
       switchMap(() => this.userService.getNotedCount())
     ).subscribe({
       next:(data: User[]) => {
