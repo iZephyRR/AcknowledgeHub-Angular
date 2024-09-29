@@ -29,6 +29,7 @@ export class UserUploadValidatorComponent {
           this.systemService.stopProgress().then(() => {
             this.messageService.toast('success', 'User excel uploaded.');
             this.userUploadValidator.showExcelImport = false;
+            
           });
         },
         error: (err) => {

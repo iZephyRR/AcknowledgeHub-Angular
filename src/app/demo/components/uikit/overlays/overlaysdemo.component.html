@@ -102,28 +102,20 @@
                             <input type="file" id="media" name="media"
                                 accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
                                 (change)="onFileChange($event)" #fileInput style="display: none;" />
-    
-                            <div *ngIf="filePreview">
-                                <p class="mt-3">File selected: {{filename}}</p>
-                                <div *ngIf="isImage()">
-                                    <img [src]="filePreview" alt="Preview" class="img-fluid mt-3">
-                                </div>
-                                <div *ngIf="isVideo()">
-                                    <video [src]="filePreview" controls class="mt-3"></video>
-                                </div>
-                                <div *ngIf="isAudio()">
-                                    <audio [src]="filePreview" controls class="mt-3"></audio>
-                                </div>
-                            </div>
-                        </div> -->
+                                </div> -->
+                        
                         <p-fileUpload #fileUploader name="demo[]" [showCancelButton]="false" [showUploadButton]="false"
                             (onSelect)="onUpload($event)" [multiple]="false" (onRemove)="onClear()"
                             accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-zip-compressed"
                             [maxFileSize]="104857600" style="width:100%;">
+                            <ng-template pTemplate="content">
+                                <ul *ngIf="file == null">
+                                    <li>{{filename}}</li>
+                                </ul>
+                            </ng-template>
                         </p-fileUpload>
                     </div>
                     <br>
-
                     <!-- Tree View -->
                     <div class="form-group">
                         <div>

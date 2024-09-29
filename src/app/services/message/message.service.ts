@@ -347,7 +347,7 @@ export class MessageDemoService {
           clearInterval(intervalId);
         }
           
-        }, 100);
+        }, 2000);
       
 
       yesButton.addEventListener("click", () => {

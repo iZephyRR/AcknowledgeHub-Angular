@@ -70,20 +70,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     //this.startCountPolling();
 
    if (this.authService.role == 'MAIN_HR') {
-    this.loadPieChartData();
-    this.startPieChartPolling();
+    //this.loadPieChartData();
+    //this.startPieChartPolling();
     this.getNotedCount();
     this.startNotedCountPolling();
    }
 
-    this.getNotedPercentageByDepartment();
-    this.startNotedPercentagePolling();
+     this.getNotedPercentageByDepartment();
+     //this.startNotedPercentagePolling();
   
     this.countCompany();
     //this.startCompanyPolling();
   
     this.countEmployee();
-    //this.startEmployeePolling();
+    this.startEmployeePolling();
   
     const currentYear = new Date().getFullYear();
     this.selectedYear = currentYear;
@@ -417,7 +417,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   startPieChartPolling(): void {
     // Poll for pie chart data every 1 min
-    const pieChartPollingSubscription = interval(10000).pipe(
+    const pieChartPollingSubscription = interval(30000).pipe(
       switchMap(() => this.announcementService.getPieChart())
     ).subscribe(
       (data: Map<string, BigInt>) => {

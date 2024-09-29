@@ -11,13 +11,19 @@
             <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image facebook-profile-image" />
           </ng-template>
           <div class="header-info" style="margin-left: 10px;">
-            <h3 class="user-name">{{ announcement.createdBy }}</h3>
-            <p class="created-at">{{ announcement.createdAt | date: 'MMM d, y' }}, {{ announcement.createdAt | timeAgo }}</p>
+            <div class="user-info">
+              <h3 class="user-name">{{ announcement.createdBy }}</h3>
+              <p class="created-at"> 
+                <span class="created-date">{{ announcement.createdAt | date: 'MMM d, y' }}</span>,
+                <span class="time-ago">{{ announcement.createdAt | timeAgo }}</span>
+              </p>
+            </div>
           </div>
+          
         </div>
         <div class="header-buttons">
           <button *ngIf="announcement.announcementResponseCondition!='RECEIVER'" pButton pRipple label="Report" (click)="showReport()" class="header-btn"></button> &nbsp;
-          <button *ngIf="announcement.toOwnCompany == 'TRUE'" pButton icon="pi pi-plus" type="button" label="New Version" (click)="newVersionModel(announcement.title)" class="header-btn"></button>
+          <button *ngIf="announcement.toOwnCompany == 'TRUE' && authService.role != 'STAFF' && authService.role != 'ADMIN'" pButton icon="pi pi-plus" type="button" label="New Version" (click)="newVersionModel(announcement.title, announcement.id)" class="header-btn"></button>
         </div>
       </div>
       <div class="card-content" style="padding: 0 10px;">
@@ -142,7 +148,7 @@
           </div>
           <!-- No Comments Template -->
           <ng-template #noComments>
-            <p class="no-comments-text">There has no comments.</p>
+            <p class="no-comments-text">There has no comments yet.</p>
           </ng-template>
         </p-dialog>
 
@@ -154,7 +160,7 @@
             <div class="form-group d-flex align-items-center">
               <div class="title-group flex-grow-1">
                 <label for="title">Title</label>
-                <input type="text" id="title" name="title" [(ngModel)]="title" required style="width: 100%;" />
+                <input type="text" id="title" name="title" [(ngModel)]="title" required style="width: 100%;" readonly/>
               </div>
             </div>
             <br>

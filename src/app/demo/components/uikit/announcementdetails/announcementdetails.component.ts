@@ -128,9 +128,19 @@ export class AnnouncementDetailsComponent implements OnInit {
 
   }
 
-  newVersionModel (title : string) {
+  newVersionModel (title : string, id: number) {
     this.displayNewVersionModal = true;
-    this.title = title + ' version - II';
+    let version;
+    this.announcementService.nextVersion(id).subscribe({
+      next : (nextVersion) => {
+        version = nextVersion.STRING_RESPONSE;
+      },
+      complete:()=>{
+        console.log("version : ", version);
+        this.title = title + ' Version - '+version;
+      }
+    });
+   
   }
 
   showReport(): void {
@@ -261,6 +271,7 @@ export class AnnouncementDetailsComponent implements OnInit {
   }
 
   newVersionCreate(form : NgForm, oldVersion : number) {
+    this.systemService.showProgress('Uploading New Announcement Version...', true, false, 10);
     const formData = new FormData();
     formData.append("title", this.title);
     formData.append('file', this.file);
@@ -272,7 +283,7 @@ export class AnnouncementDetailsComponent implements OnInit {
     }
     formData.append('deadline',new Date(this.deadlineDate).toISOString());
     console.log("oldVersion : ", oldVersion);
-    formData.append('oldVersion', oldVersion.toString());
+    formData.append('oldVersion', oldVersion.toString());    
     this.announcementService.createVersion(formData).subscribe({
       complete: () => {
         this.systemService.stopProgress().then((data) => {
@@ -284,9 +295,7 @@ export class AnnouncementDetailsComponent implements OnInit {
             image = this.userService.profileImage;
           }
           let companyName = this.userService.companyName;
-          this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
-          this.resetForm(form);
-          
+          this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image}); 
         });
       },
       error: () => {
@@ -295,6 +304,8 @@ export class AnnouncementDetailsComponent implements OnInit {
         });
       }
     });
+    this.resetForm(form);
+    this.displayNewVersionModal = false;
   }
 
   resetForm(form: NgForm): void {

@@ -76,6 +76,9 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { OverlaysDemoComponent } from './demo/components/uikit/overlays/overlaysdemo.component';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { FileUploadModule } from 'primeng/fileupload';
+import { CustomGroupEntityComponent } from './demo/components/uikit/custom-group-entity/custom-group-entity.component';
+import { CustomGroupListComponent } from './demo/components/uikit/custom-group-list/custom-group-list.component';
+import { FileDemoComponent } from './demo/components/uikit/file/filedemo.component';
 
 @NgModule({
   declarations: [
@@ -107,7 +110,10 @@ import { FileUploadModule } from 'primeng/fileupload';
     AnnouncementreportComponent,
     CategoryComponent,
     EachAnnoNotedListComponent,
-    OverlaysDemoComponent
+    OverlaysDemoComponent,
+    CustomGroupEntityComponent,
+    CustomGroupListComponent,
+    FileDemoComponent
   ],
   imports: [
     BadgeModule,

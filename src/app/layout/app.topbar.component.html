@@ -133,6 +133,10 @@
       <label for="staff_id">Staff ID</label>
       <input id="staff_id" type="text" pInputText [(ngModel)]="assHR.staffId" />
     </div>
+    <div class="p-field">
+      <label for="staff_id">Telegram Username</label>
+      <input id="staff_id" type="text" pInputText [(ngModel)]="assHR.telegramUsername" />
+    </div>
   </div>
   <p-footer>
     <button pButton label="Save" icon="pi pi-check" (click)="addAssHR()"></button>
@@ -176,7 +180,7 @@
 </p-dialog>
 
 <!-- PrimeNG Dialog -->
-<p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()">
+<p-dialog [(visible)]="isChangePasswordModalVisible" modal="modal" header="Change Password" (onHide)="onCancel()" [style]="{'min-width':'400px'}">
   <form (ngSubmit)="onSave()" class="change-password-form">
     <div class="p-fluid">
       <!-- Current Password -->

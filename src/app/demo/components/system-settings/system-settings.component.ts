@@ -23,6 +23,7 @@ export class SystemSettingsComponent implements OnInit {
     hrEmail: string,
     staffId: string,
     companyName:string
+    
   };
   constructor(
     private messageService: MessageDemoService,

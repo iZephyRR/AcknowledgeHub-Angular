@@ -132,7 +132,6 @@ export class OverlaysDemoComponent implements OnInit {
     this.announcementService.getDraftById(draftId).subscribe({
       next: (response) => {
         this.draft = response;
-        console.log("draft announcement : " + JSON.stringify(this.draft.target));
         this.selectedCategory = this.draft.categoryId;
         this.title = this.draft.title;
         this.filePreview = this.draft.filename;
@@ -210,7 +209,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    this.systemService.showProgress('Uploading an announcement...', true, false, 150);
+    this.systemService.showProgress('Uploading an announcement...', true, false, 10);
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
       catchError(error => {
@@ -230,9 +229,6 @@ export class OverlaysDemoComponent implements OnInit {
             }
             let companyName = this.userService.companyName;
             this.messageService.sentWindowNotification("New Announcement Create", { body: 'Accouncement Created by ' + companyName, icon: image });
-            this.resetForm(form);
-            this.onClear();
-            this.clearPreview();
             this.systemService.hideLoading();
             this.hideModal();
             this.deleteDraft(this.draftId);
@@ -245,6 +241,9 @@ export class OverlaysDemoComponent implements OnInit {
         }
       }
     );
+    this.resetForm(form);
+    this.onClear();
+    this.clearPreview();
   }
 
   prepareFormData(): FormData {
@@ -280,7 +279,7 @@ export class OverlaysDemoComponent implements OnInit {
     console.log("file url : ", this.fileUrl);
     formData.append('fileUrl', this.fileUrl);
     formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
-    formData.append('deadline',new Date(this.deadlineDate).toISOString());
+    formData.append('deadline', new Date(this.deadlineDate).toISOString());
     return formData;
   }
 

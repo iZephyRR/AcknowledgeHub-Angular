@@ -14,7 +14,7 @@ import { NotedPreview2 } from 'src/app/modules/noted-models';
 })
 export class AnnouncementService {
   private baseUrl = 'http://localhost:8080/api/v1/announcement';
-  showNotedReport:boolean;
+  showNotedReport: boolean;
   private pieChartDataCache: Map<string, BigInt> | null = null;
   private notedPercentagesCache: { [key: string]: number } | null = null;
 
@@ -80,8 +80,8 @@ export class AnnouncementService {
     return this.http.get<Draft>(`${this.baseUrl}/getDraftById/${draftId}`);
   }
 
-  deleteDraft(draftId: number): Observable<{STRING_RESPONSE: string}> {
-    return this.http.delete<{STRING_RESPONSE: string}>(`${this.baseUrl}/delete-draft/${draftId}`);
+  deleteDraft(draftId: number): Observable<{ STRING_RESPONSE: string }> {
+    return this.http.delete<{ STRING_RESPONSE: string }>(`${this.baseUrl}/delete-draft/${draftId}`);
   }
 
   countAnnouncements(): Observable<number> {
@@ -151,12 +151,20 @@ export class AnnouncementService {
     return this.http.get<TargetCompany[]>(`${this.baseUrl}/targetsByAnnouncement/${id}`);
   }
 
-  getNotedList(announcementId:bigint,duration:bigint):Observable<NotedPreview2>{
+  getNotedList(announcementId: bigint, duration: bigint): Observable<NotedPreview2> {
     return this.http.get<NotedPreview2>(`${this.baseUrl}/noted-list?announcementId=${announcementId}&duration=${duration}`);
   }
 
-  createVersion (formData : FormData): Observable<Announcement> {
-    return this.http.post<Announcement> (`${this.baseUrl}//version`,formData);
+  createVersion(formData: FormData): Observable<Announcement> {
+    return this.http.post<Announcement>(`${this.baseUrl}/version`, formData);
+  }
+
+  nextVersion(id: number): Observable<{ STRING_RESPONSE: string }> {
+    return this.http.get<{ STRING_RESPONSE: string }>(`${this.baseUrl}/get-next-version/${id}`);
+  }
+
+  getByCustomGroup(id:number):Observable<Announcement[]>{
+    return this.http.get<Announcement[]>(`${this.baseUrl}/by-cus/${id}`);
   }
 
 }

@@ -21,6 +21,10 @@
                     <label for="companyName">Company Name</label>
                     <input type="text" id="companyName" [(ngModel)]="HR.companyName" (input)="checkFormValidity()">
                 </div>
+                <div class="p-field">
+                    <label for="companyName">Telegram Username</label>
+                    <input type="text" id="telegramUsername" [(ngModel)]="HR.telegramUsername" (input)="checkFormValidity()">
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="p-button" (click)="addCompany()" [disabled]="!isFormValid">Add</button>

@@ -182,7 +182,6 @@
     <div class="col-7">
         <div class="enterprise-chart-card" style="min-height: 350px; padding: 20px; position: relative;">
             <h5 class="text-primary" style="margin-bottom: 1.5rem;">Yearly Announcement Distribution Chart</h5>
-
             <!-- Year Selector in the top right corner -->
             <div class="year-selector">
                 <label for="yearSelect" class="year-selector-label"></label>
@@ -208,35 +207,6 @@
                 style="height: 300px; width: 100%;"></p-chart>
         </div>
     </div>
-
-    <!-- Noted Percentage by Department (right column, 5/12 width) -->
-    <!-- <div class="col-5">
-        <div class="enterprise-line-card">
-            <div class="flex justify-content-between align-items-center mb-5">
-                <h5>Noted Percentage by Department</h5>
-            </div>
-            <div *ngIf="loading" class="skeleton-line">
-                <p-skeleton styleClass="skeleton-full" width="100%" height="170%"></p-skeleton>
-            </div>
-            <div *ngIf="!loading" class="line-chart-container">
-                <ul class="list-none p-0 m-0">
-                    <li *ngFor="let department of notedPercentages"
-                        class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ department.departmentName }}</span>
-                        </div>
-                        <div class="mt-2 md:mt-0 flex align-items-center">
-                            <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem"
-                                [ngStyle]="{height: '8px'}">
-                                <div class="bg-green-500 h-full" [ngStyle]="{width: department.percentage + '%'}"></div>
-                            </div>
-                            <span class="text-green-500 ml-3 font-medium">{{ department.percentage }}%</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div> -->
 </div>
 
 

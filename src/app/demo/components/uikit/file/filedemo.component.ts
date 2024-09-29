@@ -183,7 +183,7 @@ export class FileDemoComponent implements OnInit {
       const title: string = confirmed.inputValue;
       this.customTargetGroupService
 
-        .save({ title: title, entities: this.targetData })
+        .save({ title: title, customTargetGroupEntities: this.targetData })
 
         .subscribe({
           next: () => {

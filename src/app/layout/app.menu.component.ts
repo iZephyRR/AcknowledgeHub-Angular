@@ -39,12 +39,12 @@ export class AppMenuComponent implements OnChanges {
     mainCount:number=0;
     subCount:number=0;
     showMoreMain = {
-        label: 'Show more',
+        label: 'See more',
         icon: '',
         command: () => this.addMainPreviews()
     };
     showMoreSub = {
-        label: 'Show more',
+        label: 'See more',
         icon: '',
         command: () => this.addSubPreviews()
     };
@@ -193,9 +193,20 @@ export class AppMenuComponent implements OnChanges {
 
                                 },
                                 {
-                                    label: 'Create custom target group',
+                                    label: 'Custom target group',
                                     icon: 'pi pi-user-plus',
-                                    routerLink: ['/announcement/file']
+                                    items:[
+                                        {
+                                            label: 'Create new',
+                                            icon: 'pi pi-user-plus',
+                                            routerLink: ['/announcement/custom-target/create']
+                                        },
+                                        {
+                                            label: 'List',
+                                            icon: 'pi pi-user-plus',
+                                            routerLink: ['/announcement/custom-target']
+                                        }
+                                    ]
                                 },
                                 {
                                     label: 'Announcement Report',

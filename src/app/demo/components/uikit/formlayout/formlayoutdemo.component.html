@@ -155,7 +155,7 @@
                                 [min]="currentDate" (change)="checkDateValidity()" required />
                         </div>
                     </div>
-                    <p-checkbox binary="true" label="Save target" [disabled]="targetData.length === 0" on
+                    <p-checkbox binary="true" label="Save Group" [disabled]="targetData.length === 0" on
                         (onChange)="saveTargetToggle($event)" [(ngModel)]="canSaveTarget" class="p-checkbox-success">
                     </p-checkbox>
                 </div>

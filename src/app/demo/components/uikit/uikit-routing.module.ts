@@ -5,11 +5,14 @@ import { MediaDemoComponent } from './media/mediademo.component';
 import { CategoryComponent } from './category/category.component';
 import { AnnouncementreportComponent } from './announcementreport/announcementreport.component';
 import { OverlaysDemoComponent } from './overlays/overlaysdemo.component';
+import { FileDemoComponent } from './file/filedemo.component';
+import { CustomGroupListComponent } from './custom-group-list/custom-group-list.component';
 
 
 @NgModule({
     imports: [RouterModule.forChild([
-        { path: 'file', data: { breadcrumb: 'File' }, loadChildren: () => import('./file/filedemo.module').then(m => m.FileDemoModule) },
+        { path: 'custom-target/create', component:FileDemoComponent},
+        { path: 'custom-target', component:CustomGroupListComponent},
         { path: 'floatlabel', data: { breadcrumb: 'Float Label' }, loadChildren: () => import('./floatlabel/floatlabeldemo.module').then(m => m.FloatlabelDemoModule) },
         { path: 'create', data: { breadcrumb: 'Form Layout' }, loadChildren: () => import('./formlayout/formlayoutdemo.module').then(m => m.FormLayoutDemoModule) },
         { path: 'schedule-list', data: { breadcrumb: 'Input' }, loadChildren: () => import('./input/inputdemo.module').then(m => m.InputDemoModule) },

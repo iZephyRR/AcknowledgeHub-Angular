@@ -8,6 +8,8 @@ import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
 })
 export class CustomTargetGroupService {
   private static readonly baseUrl: string = 'http://localhost:8080/api/v1/custom-target';
+  showEntity:boolean=false;
+
   constructor(private http: HttpClient) {
   }
 
@@ -30,4 +32,9 @@ export class CustomTargetGroupService {
   deleteById(id:number):Observable<void>{
     return this.http.delete<void>(`${CustomTargetGroupService.baseUrl}/${id}`);
   }
+
+  findReceiverName(receiverType:'DEPARTMENT' | 'COMPANY' | 'EMPLOYEE' | 'CUSTOM',receiverId:number):Observable<{STRING_RESPONSE:string}>{
+    return this.http.get<{STRING_RESPONSE:string}>(`http://localhost:8080/api/v1/custom-group-entity?receiverType=${receiverType}&receiverId=${receiverId}`);
+  }
+
 }

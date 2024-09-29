@@ -53,7 +53,6 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
       }
     });
   }
-
   loadDepartments(): void {
     const companyId:number=Number.parseInt(this.route.snapshot.paramMap.get('id'));
     this.companyService.getDTOById(Number.isNaN(companyId)?this.authService.companyId:companyId).subscribe({
@@ -79,7 +78,6 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     });
-
   }
 
   getEmployees(id: number) {

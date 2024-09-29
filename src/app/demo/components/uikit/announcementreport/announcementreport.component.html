@@ -52,22 +52,25 @@
           [contentStyle]="{'font-size': '14px'}" [closable]="true" [style]="{'width': '50vw'}" (onHide)="closeDialog()">
 
           <ng-container *ngIf="targetCompany && targetCompany.length > 0; else noDataTemplate">
-            <div *ngFor="let company of targetCompany">
-              <h2>{{ company.companyName }}</h2>
-              <div *ngFor="let department of company.departments">
-                <h3>{{ department.departmentName }}</h3>
-                <ul>
-                  <li *ngFor="let employee of department.employees">
-                    {{ employee.employeeName }}
+            <ul class="company-list">
+              <li *ngFor="let company of targetCompany" class="company-item">
+                <span class="arrow">▶</span>
+                <span class="company-name">{{ company.companyName }}</span>
+                <ul class="department-list">
+                  <li *ngFor="let department of company.departments" class="department-item">
+                    <span class="arrow">▶</span>
+                    <span class="department-name">{{ department.departmentName }}</span>
+                    <ul class="employee-list">
+                      <li *ngFor="let employee of department.employees" class="employee-item">
+                        <span class="arrow">▶</span>
+                        <span class="employee-name">{{ employee.employeeName }}</span>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
-              </div>
-            </div>
+              </li>
+            </ul>
           </ng-container>
-
-          <ng-template #noDataTemplate>
-            <p>No data available</p>
-          </ng-template>
 
           <p-footer>
             <button type="button" pButton label="Close" (click)="closeDialog()"></button>

@@ -16,4 +16,5 @@ export interface HR {
     hrEmail: string;
     staffId: string;
     companyName: string;
+    telegramUsername? : string;
 }

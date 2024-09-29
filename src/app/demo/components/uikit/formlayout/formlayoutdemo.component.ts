@@ -141,11 +141,11 @@ export class FormLayoutDemoComponent implements OnInit {
     this.loadCategories();
     if (this.role === "HR" || this.role === "HR_ASSISTANCE") {
       this.getCompanyById();
-      this.retrieveAllUsersByConpanyId();
+      //this.retrieveAllUsersByConpanyId();
     } else {
       this.getAllCompanies();
-      this.retrieveAllUsers();
     }
+    this.retrieveAllUsers();
   }
 
   customTargetGroup () {
@@ -277,7 +277,7 @@ export class FormLayoutDemoComponent implements OnInit {
   }
 
   onSubmit(form: NgForm): void {
-    this.systemService.showProgress('Uploading an announcement...', true, false, 150);
+    this.systemService.showProgress('Uploading an Announcement...', true, false, 10);
     //this.systemService.showProgress('Processing...',true,false,300);
     const formData = this.prepareFormData();
     this.announcementService.createAnnouncement(formData).pipe(
@@ -299,8 +299,6 @@ export class FormLayoutDemoComponent implements OnInit {
           let companyName = this.userService.companyName;
           this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
           this.customTargetGroup();
-          this.resetForm(form);
-          this.clearPreview();
         });
       },
       error: () => {
@@ -309,6 +307,8 @@ export class FormLayoutDemoComponent implements OnInit {
         });
       }
     });
+    this.resetForm(form);
+    this.clearPreview();
   }
 
   saveToDraft(form: NgForm): void {
@@ -424,7 +424,7 @@ export class FormLayoutDemoComponent implements OnInit {
       if (confirmed.confirmed) {
         this.systemService.showProgress('Saving custom target...', true, false, 3);
         const title: string = confirmed.inputValue;
-        this.customTargetGroupService.save({ title: title, entities: this.targetData }).subscribe({
+        this.customTargetGroupService.save({ title: title, customTargetGroupEntities: this.targetData }).subscribe({
           next: () => {
             this.systemService.stopProgress().then(() => {
               this.messageService.toast('success', 'Saved a custom target.');

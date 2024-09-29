@@ -1,0 +1,29 @@
+.company-list, .department-list, .employee-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .company-item, .department-item, .employee-item {
+    margin-bottom: 10px;
+    position: relative;
+    padding-left: 20px;
+  }
+  
+  .arrow {
+    position: absolute;
+    left: 0;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: transform 0.3s;
+  }
+  
+  .arrow:hover {
+    transform: rotate(90deg);
+  }
+  
+  .company-name, .department-name, .employee-name {
+    font-weight: bold;
+    font-size: 1em;
+  }
+  
