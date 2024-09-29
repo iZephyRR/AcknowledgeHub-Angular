@@ -5,8 +5,12 @@
 <div class="grid">
 	<div class="col-12">
 		<div class="card">
-			<h5>title</h5>
-			<p-table #dt1 [value]="users" dataKey="id" [rows]="10" [rowHover]="true"
+			<div style="display: flex;">
+				<h5><span (click)="backToCompany()" style="cursor: pointer;">{{company.name}}</span> =>
+					{{department.name}}</h5><i *ngIf="canEdit()" pTooltip="Edit department name" class="pi pi-pencil"
+					style="margin-left: 10px;color: blue;font-size: 15px;" (click)="editName()"></i>
+					
+			</div>			<p-table #dt1 [value]="users" dataKey="id" [rows]="10" [rowHover]="true"
 				styleClass="p-datatable-gridlines" [paginator]="true"
 				[globalFilterFields]="['staffId','name','email','role','status']" responsiveLayout="scroll">
 				<ng-template pTemplate="caption">

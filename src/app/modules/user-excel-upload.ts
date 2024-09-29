@@ -20,8 +20,9 @@ export interface UpdateUser{
     role:Role;
     dob:string;
     telegramUsername:string;
+    telegramUserId?:string;
     nrc:string;
     gender:Gender;
     address:string;
+    notedCount:bigint;
 }
-

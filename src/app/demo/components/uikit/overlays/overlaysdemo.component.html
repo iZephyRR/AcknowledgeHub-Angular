@@ -64,7 +64,7 @@
                         <td>
                             <div style="display: flex; gap: 0.5rem;">
                                 <button pButton icon="pi pi-plus" label="Create" (click)="showModal(draft.id)"></button>
-                                <button pButton icon="pi pi-trash" label="Delete" (click)="deleteDraft(draft.id)"
+                                <button pButton icon="pi pi-trash" label="Delete" (click)="delete(draft.id)"
                                     class="btn-danger"></button>
                             </div>
                         </td>
@@ -116,15 +116,10 @@
                                 </div>
                             </div>
                         </div> -->
-                        <p-fileUpload name="demo[]" [showCancelButton]="false" [showUploadButton]="false"
+                        <p-fileUpload #fileUploader name="demo[]" [showCancelButton]="false" [showUploadButton]="false"
                             (onSelect)="onUpload($event)" [multiple]="false" (onRemove)="onClear()"
-                            accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip"
+                            accept="audio/*,video/*,image/*,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/zip,application/x-zip-compressed"
                             [maxFileSize]="104857600" style="width:100%;">
-                            <!-- <ng-template pTemplate="content">
-                            <ul *ngIf="file">
-                                {{file.name}} - {{file.size}} bytes
-                            </ul>
-                        </ng-template> -->
                         </p-fileUpload>
                     </div>
                     <br>
@@ -146,6 +141,24 @@
                             [propagateSelectionDown]="true" [propagateSelectionUp]="true">
                         </p-tree>
                     </div><br>
+                    <div style="display: flex;justify-content: space-between;">
+                        <div>
+                            <div class="form-group">
+                                <div class="schedule-options">
+                                    <p-checkbox binary="true" label="Enable Deadline" on
+                                        (onChange)="toggleDatePickerDeadline($event)" class="p-checkbox-success">
+                                    </p-checkbox>
+                                </div>
+                            </div>
+                            <br>
+                            <!-- Date Picker (hidden by default) -->
+                            <div class="form-group" *ngIf="showDeadlineDate">
+                                <label for="dead-line">Select Date and Time</label><br>
+                                <input type="datetime-local" id="dead-line" name="dead-line" [(ngModel)]="deadlineDate"
+                                    [min]="currentDate" (change)="checkDateValidity()" required />
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="form-group" style="display: flex;justify-content: space-between;">
                         <div>
@@ -153,7 +166,6 @@
                                 <div class="schedule-options">
                                     <p-checkbox binary="true" label="Enable Schedule" on
                                         (onChange)="toggleDatePicker($event)" class="p-checkbox-success">
-
                                     </p-checkbox>
                                 </div>
                             </div>

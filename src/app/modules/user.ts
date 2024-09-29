@@ -24,7 +24,7 @@ export interface User {
     notedAt: string;
     companyName: string;
     departmentName: string;
-    notedCount: number;
+    notedCount: bigint;
 }
 
 export interface UserProfile {

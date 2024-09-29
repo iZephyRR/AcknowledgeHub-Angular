@@ -39,6 +39,7 @@
               </td>
               <td>
                 <p *ngIf="announcement.selectAll === 'TRUE'">To All Companies</p>
+                <p *ngIf="" >To The Whole Company</p>
                 <button pButton pRipple type="button" icon="pi pi-ellipsis-v" *ngIf="announcement.selectAll === 'FALSE'"
                   (click)="getAnnounceTo(announcement.id); $event.stopPropagation()"
                   class="p-button p-component p-button-text p-button-icon-only"></button>

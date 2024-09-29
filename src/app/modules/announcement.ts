@@ -1,4 +1,4 @@
-import { AnnouncementResponseCondition, AnnounementSelectAll, ContentType, Role } from "../constants";
+import { AnnouncementResponseCondition, AnnounementSelectAll, ContentType, Role, ToOwnCompany } from "../constants";
 
 
 export interface Announcement {
@@ -15,6 +15,9 @@ export interface Announcement {
     announcementResponseCondition: AnnouncementResponseCondition;
     selectAll : AnnounementSelectAll;
     deadline: Date;
+    photoLink:string;
+    profileImage : string;
+    toOwnCompany : ToOwnCompany;
 }
 export enum FileType {
     AUDIO = 'AUDIO',

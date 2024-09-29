@@ -74,6 +74,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { TreeTableModule } from 'primeng/treetable';
 import { CheckboxModule } from 'primeng/checkbox';
 import { OverlaysDemoComponent } from './demo/components/uikit/overlays/overlaysdemo.component';
+import { SplitButtonModule } from 'primeng/splitbutton';
+import { FileUploadModule } from 'primeng/fileupload';
 
 @NgModule({
   declarations: [
@@ -156,7 +158,9 @@ import { OverlaysDemoComponent } from './demo/components/uikit/overlays/overlays
     InputTextareaModule,
     ToolbarModule,
     TreeTableModule,
-    CheckboxModule
+    CheckboxModule,
+    SplitButtonModule,
+    FileUploadModule
   ],
   providers: [
     {

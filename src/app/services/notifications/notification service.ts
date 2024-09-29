@@ -120,7 +120,7 @@ export class NotificationService {
 
             return {
               ...notification,
-              message: `${senderName} posted an announcement "${title}" on ${timestamp}`
+              message: `<i class="pi pi-fw pi-megaphone" style="margin-right: 5px;"></i>${senderName} posted an announcement "${title}" on ${timestamp}`
             };
           });
         })
@@ -260,9 +260,10 @@ export class NotificationService {
         }),
         map((commentNotifications: any[]) => commentNotifications.map(notification => {
           const message = notification.message || 'Unknown message';
+          const messageWithIcon = `<i class="pi pi-comments" style="font-size: 18px; margin-right: 5px; "></i> ${message}`;
           return {
             ...notification,
-            message: message
+            message: messageWithIcon
           } as Notification;
         }))
       );
@@ -299,9 +300,10 @@ export class NotificationService {
           }
           return replyNotifications.map(notification => {
             const message = notification.message || 'Unknown message';
+            const messageWithIcon = `<i class="pi pi-reply" style="font-size: 18px; margin-right: 5px; "></i> ${message}`;
             return {
               ...notification,
-              message: message
+              message: messageWithIcon
             } as Notification;
           });
         })
@@ -311,9 +313,6 @@ export class NotificationService {
     console.warn('User ID is undefined. Cannot load comment notifications.');
     return of([]); // Return empty array if userId is undefined
   }
-
-
-
 
   getNotedNotifications(): Observable<Notification[]> {
     const userId = this.authService.userId;
@@ -333,10 +332,10 @@ export class NotificationService {
         }),
         map((notedNotifications: any[]) => notedNotifications.map(notification => {
           const message = notification.message || 'Unknown message';
-
+          const messageWithIcon = `<i class="pi pi-fw pi-pencil" style="font-size: 18px; margin-right: 5px;"></i> ${message}`;
           return {
             ...notification,
-            message: message
+            message: messageWithIcon
           } as Notification;
         }))
       );

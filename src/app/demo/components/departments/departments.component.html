@@ -7,7 +7,10 @@
 	<div class="grid">
 		<div class="col-12">
 			<div class="card">
-				<h5>{{ company.name}}</h5>
+				<div style="display: flex;">
+					<h5>{{ company.name}}</h5><i pTooltip="Edit company name" class="pi pi-pencil"
+						style="margin-left: 10px;color: blue;font-size: 15px;" (click)="editName()"></i>
+				</div>
 				<p-table #dt1 [value]="departments" dataKey="id" [rows]="10" [rowHover]="true" 
 					styleClass="p-datatable-gridlines" [paginator]="true" [globalFilterFields]="['name','companyName']"
 					responsiveLayout="scroll">

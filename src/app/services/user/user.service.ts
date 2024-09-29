@@ -83,6 +83,10 @@ export class UserService {
     return this.http.post<User>(`${this.baseUrl}/mhr/ass-hr`, assHR);
   }
 
+  edit(user:UpdateUser):Observable<User>{
+    return this.http.put<User>(`${this.baseUrl}/user/edit`,user);
+  }
+
  
 }
 

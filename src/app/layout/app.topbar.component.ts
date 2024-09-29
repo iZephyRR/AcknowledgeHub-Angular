@@ -18,6 +18,7 @@ import { Notification } from '../modules/notification.model';
 import { Router } from '@angular/router';
 import { HR } from '../modules/company';
 import { Mail } from '../modules/mails';
+import { UpdateUser } from '../modules/user-excel-upload';
 @Component({
   selector: 'app-topbar',
   templateUrl: './app.topbar.component.html'
@@ -67,12 +68,13 @@ export class AppTopBarComponent implements OnInit {
   currentPasswordError: string = '';
   newPasswordError: string = '';
   confirmPasswordError: string = '';
-
+  settingItems: MenuItem[] = [];
   showCurrentPassword: boolean = false;
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
   selectedFile: File | null = null;
-
+  editProfileView: boolean = false;
+  editProfileData: UpdateUser = {} as UpdateUser;
   constructor(
     public layoutService: LayoutService,
     public userService: UserService,
@@ -90,7 +92,7 @@ export class AppTopBarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadChatNotificationsFromLocalStorage();
-    this.profile();
+    this.refreshProfile();
     //this.loadNotifications();
     this.notificationService.loadNotifications();
     this.loadNotedNotifications();
@@ -103,8 +105,8 @@ export class AppTopBarComponent implements OnInit {
   }
 
   addAssHR(): void {
-    this.addHRView=false;
-    this.systemService.showProgress('Adding Main HR account...', true, false, 7);
+    this.addHRView = false;
+    this.systemService.showProgress('Adding HR Assistance account...', true, false, 7);
     this.userService.addAssHR(this.assHR).subscribe({
       next: (data) => {
         console.log('after save ' + JSON.stringify(data));
@@ -154,7 +156,7 @@ export class AppTopBarComponent implements OnInit {
     }
   }
 
-  profile(): void {
+  refreshProfile(): void {
     this.userService.getProfileInfo().subscribe({
       next: (data) => {
         console.log(data);
@@ -166,8 +168,55 @@ export class AppTopBarComponent implements OnInit {
         console.error('Profile error ' + err);
       }
     }
-
     );
+  }
+
+  async editProfile(): Promise<void> {
+    this.editProfileView=false;
+    if ((await this.messageService.confirmed('Edit profile', 'Are you sure to update profile data?', 'Yes', 'No', 'WHITE', 'YELLOW')).confirmed) {
+      this.systemService.showProgress('Editing profile data...', true, false, 3);
+      this.userService.edit(this.editProfileData).subscribe({
+        complete: () => {
+          this.systemService.stopProgress().then((data) => {
+            this.refreshProfile();
+            this.messageService.toast('info', 'Profile details edited.');
+          })
+        },
+        error: (err) => {
+          this.systemService.stopProgress('ERROR').then((data) => {
+            this.messageService.toast('error', 'Failed to edit profile data.');
+          });
+        }
+      });
+    }
+  }
+
+  showEditProfile(): void {
+    let user: User;
+    this.userService.getUserById(Number.parseInt(this.authService.userId)).subscribe({
+      next: (data) => {
+        user = data;
+      },
+      complete: () => {
+        this.editProfileData.name = user.name;
+        this.editProfileData.email = user.email;
+        this.editProfileData.gender = user.gender;
+        this.editProfileData.staffId = user.staffId;
+        this.editProfileData.telegramUsername = user.telegramUsername;
+        this.editProfileData.telegramUserId = user.telegramUserId;
+        this.editProfileData.address = user.address;
+        this.editProfileData.role = user.role;
+        this.editProfileData.status = user.status;
+        this.editProfileData.notedCount = user.notedCount;
+        this.editProfileData.nrc = user.nrc;
+        this.editProfileData.id=user.id;
+        this.editProfileView = true;
+        console.log(user);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   // Load general notifications
@@ -449,7 +498,7 @@ export class AppTopBarComponent implements OnInit {
     if (this.selectedFile) {
       this.userService.uploadProfileImage(this.selectedFile).subscribe({
         next: (response) => {
-          this.profile();
+          this.refreshProfile();
           this.messageService.toast("success", "Upload Profile Successful");
 
         },
@@ -532,9 +581,6 @@ export class AppTopBarComponent implements OnInit {
     this.currentPassword = '';
     this.newPassword = '';
     this.confirmPassword = '';
-    // this.passwordsMatch = true;
-    // this.newPasswordError = false;
-    // this.passwordValidationError = '';
     this.isChangePasswordModalVisible = false;
   }
 

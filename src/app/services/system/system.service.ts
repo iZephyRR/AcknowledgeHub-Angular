@@ -30,6 +30,9 @@ export class SystemService {
   userProfile = signal('');
   selectedUser = signal(null);
   selectedUserProfile = signal('');
+  
+  canContinueLogin=signal(false);
+  
 
   showLoading(message: string, hideBackground?: boolean): void {
     this.loading.set(true);
@@ -99,6 +102,10 @@ export class SystemService {
       }
     });
   }
+
+  
+
+  
 
   isLoading() {
     return this.loading();

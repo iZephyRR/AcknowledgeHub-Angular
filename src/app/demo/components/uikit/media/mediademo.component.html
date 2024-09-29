@@ -28,9 +28,12 @@
                         <th style="min-width: 8rem">Announcer<p-columnFilter type="text" field="createdBy" display="menu"
                                 placeholder="Search by creator"></p-columnFilter>
                         </th>
+                        <th style="min-width: 8rem">Company<p-columnFilter type="text" field="company" display="menu"
+                            placeholder="Search by company"></p-columnFilter>
+                    </th>
                         <th style="min-width: 12rem">Created At<p-columnFilter type="date" field="createdAt" display="menu" placeholder="mm/dd/yyyy"></p-columnFilter>
                         </th>
-                        <th style="min-width: 12rem">Status<p-columnFilter field="status" matchMode="equals"
+                        <!-- <th style="min-width: 12rem">Status<p-columnFilter field="status" matchMode="equals"
                             display="menu">
                             <ng-template pTemplate="filter" let-user let-filter="filterCallback">
                                 <p-dropdown [ngModel]="announcements" [options]="announcementstatus" (onChange)="filter($event.value)"
@@ -40,7 +43,7 @@
                                     </ng-template>
                                 </p-dropdown>
                             </ng-template>
-                        </p-columnFilter></th>
+                        </p-columnFilter></th> -->
                         <th style="min-width: 8rem">Category<p-columnFilter type="text" field="category" display="menu"
                             placeholder="Search by category"></p-columnFilter>
                         </th>
@@ -51,9 +54,10 @@
                     <tr (click)="showDetails(announcement.id)">
                         <td>{{i + 1}}</td>
                         <td>{{announcement.title}}</td>
-                        <td>{{announcement.createdBy}}</td>
+                        <td>{{announcement.createdBy}}({{announcement.role}})</td>
+                        <td>{{announcement.company}}</td>
                         <td>{{announcement.createdAt}}</td>
-                        <td>{{announcement.status}}</td>
+                        <!-- <td>{{announcement.status}}</td> -->
                         <td>{{announcement.categoryName}}</td>
                        
                     </tr>

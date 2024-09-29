@@ -30,4 +30,7 @@ export class CommentService {
   getReply(commentId: number) : Observable<ReplyList[]> {
     return this.http.get<ReplyList[]> (`${this.apiUrl}/getReplyBy/${commentId}`);
   }
+
+  
+
 }

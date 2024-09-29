@@ -10,6 +10,9 @@ import { EditDepartmentComponent } from '../edit-department/edit-department.comp
 import { EditDepartmentService } from 'src/app/services/edit-department/edit-department.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { SystemService } from 'src/app/services/system/system.service';
+import { Company } from 'src/app/modules/company';
+import { CompanyService } from 'src/app/services/company/company.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
 
 @Component({
   selector: 'app-department',
@@ -20,6 +23,7 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   @ViewChild('filter') filter!: ElementRef;
   users: User[] = [];
   department: Department;
+  company: Company = {} as Company;
 
   private routerSubscription: Subscription;
 
@@ -30,7 +34,9 @@ export class DepartmentComponent implements OnInit, OnDestroy {
     private userService: UserService,
     public editDepartmentValidator: EditDepartmentService,
     private authService: AuthService,
-    private systemService: SystemService
+    private systemService: SystemService,
+    private companyService: CompanyService,
+    private messageService: MessageDemoService
 
   ) {
 
@@ -46,6 +52,11 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   }
 
   loadUsers(): void {
+    this.companyService.getByDepartmentId(BigInt(this.route.snapshot.paramMap.get('id'))).subscribe({
+      next: (company) => {
+        this.company = company;
+      }
+    })
     this.departmentService.getDTOById(this.route.snapshot.paramMap.get('id')).subscribe({
       next: (departmentData) => {
         this.department = departmentData;
@@ -68,8 +79,8 @@ export class DepartmentComponent implements OnInit, OnDestroy {
         this.authService.showNotFoundPage();
       }
     });
-
   }
+  
   ngOnDestroy(): void {
     if (this.routerSubscription) {
       this.routerSubscription.unsubscribe();
@@ -93,5 +104,30 @@ export class DepartmentComponent implements OnInit, OnDestroy {
   showEmployee(user: User): void {
     this.systemService.showDetails(user);
   }
+
+  canEdit():boolean{
+    return BigInt(this.authService.companyId)==this.company.id;
+  }
+
+  async editName(): Promise<void> {
+    const confirmed = await this.messageService.confirmed('Update department name', 'Enter department name', 'Save', 'Cancel', 'WHITE', 'DARKGREEN', true);
+    if (confirmed.confirmed) {
+      this.departmentService.save({ id: this.department.id, name: confirmed.inputValue }).subscribe({
+        complete: () => {
+          this.loadUsers();
+          this.messageService.toast('info', 'Saved department name.')
+        },
+        error: (err) => {
+          this.messageService.toast('error', 'An error occured on saving department name.');
+          console.error(err);
+        }
+      });
+    }
+  }
+
+  backToCompany(): void {
+    this.router.navigate([`/company/${this.company.id}`]);
+  }
+
 
 }

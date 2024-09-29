@@ -80,8 +80,8 @@ export class AnnouncementService {
     return this.http.get<Draft>(`${this.baseUrl}/getDraftById/${draftId}`);
   }
 
-  deleteDraft(draftId: number): Observable<String> {
-    return this.http.delete<String>(`${this.baseUrl}/delete-draft/${draftId}`);
+  deleteDraft(draftId: number): Observable<{STRING_RESPONSE: string}> {
+    return this.http.delete<{STRING_RESPONSE: string}>(`${this.baseUrl}/delete-draft/${draftId}`);
   }
 
   countAnnouncements(): Observable<number> {
@@ -153,6 +153,10 @@ export class AnnouncementService {
 
   getNotedList(announcementId:bigint,duration:bigint):Observable<NotedPreview2>{
     return this.http.get<NotedPreview2>(`${this.baseUrl}/noted-list?announcementId=${announcementId}&duration=${duration}`);
+  }
+
+  createVersion (formData : FormData): Observable<Announcement> {
+    return this.http.post<Announcement> (`${this.baseUrl}//version`,formData);
   }
 
 }

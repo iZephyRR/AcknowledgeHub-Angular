@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnInit, signal, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { ConfirmationService, MessageService, TreeNode } from 'primeng/api';
+import { FileUpload } from 'primeng/fileupload';
 import { Table } from 'primeng/table';
 import { catchError, map, throwError } from 'rxjs';
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
@@ -23,7 +24,8 @@ export class OverlaysDemoComponent implements OnInit {
   @ViewChild('filter') filter!: ElementRef;
   drafts = signal([] as Draft[]);
   displayModal: boolean = false;
-
+  showDeadlineDate: boolean = false;
+  deadlineDate: Date = new Date();
   file: File;
   categories: Category[] = [];
   companies = []; // Assuming you have this data structure
@@ -42,6 +44,8 @@ export class OverlaysDemoComponent implements OnInit {
   selectAllCompanies: boolean;
   isEmailSelected: boolean = false;
   contentType: any[] = [];
+
+  @ViewChild('fileUploader') fileUploader: FileUpload;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -92,9 +96,16 @@ export class OverlaysDemoComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    if (this.fileUploader) {
+      console.log("fileUploader initialized: ", this.fileUploader);
+    }
+  }
+
   onClear(): void {
     console.log("this.file = null");
     this.file = null;
+    this.fileUploader.clear();
   }
 
   loadDrafts() {
@@ -118,7 +129,6 @@ export class OverlaysDemoComponent implements OnInit {
     this.categoryService.getAllCategories().subscribe(data => {
       this.categories = data;
     });
-
     this.announcementService.getDraftById(draftId).subscribe({
       next: (response) => {
         this.draft = response;
@@ -132,7 +142,7 @@ export class OverlaysDemoComponent implements OnInit {
         if (typeof this.draft.target == 'string') {
           this.draft.target = JSON.parse(this.draft.target);
         }
-        this.selectedTargets = this.mapToTreeService.mapTargetsToTreeNodes(this.draft.target, this.companies);
+        this.selectedTargets = [...this.mapToTreeService.mapTargetsToTreeNodes(this.draft.target, this.companies)];
       },
       error: (err) => {
         console.error("Error fetching draft:", err);
@@ -179,6 +189,14 @@ export class OverlaysDemoComponent implements OnInit {
         this.filePreview = reader.result;
       };
       reader.readAsDataURL(file);
+    }
+  }
+
+  toggleDatePickerDeadline(event: any): void {
+    if (event.checked) {
+      this.showDeadlineDate = true;
+    } else {
+      this.showDeadlineDate = false;
     }
   }
 
@@ -262,6 +280,7 @@ export class OverlaysDemoComponent implements OnInit {
     console.log("file url : ", this.fileUrl);
     formData.append('fileUrl', this.fileUrl);
     formData.append('selectAll', JSON.stringify(this.selectAllCompanies));
+    formData.append('deadline',new Date(this.deadlineDate).toISOString());
     return formData;
   }
 
@@ -295,7 +314,7 @@ export class OverlaysDemoComponent implements OnInit {
   deleteDraft(id: number) {
     this.announcementService.deleteDraft(id).subscribe({
       next: (response) => {
-        this.messageService.toast('success', 'Delete Success');
+        this.messageService.toast('success', response.STRING_RESPONSE);
         this.loadDrafts();
       },
       error: (error) => {
@@ -305,7 +324,7 @@ export class OverlaysDemoComponent implements OnInit {
   }
 
   async delete(id: number) {
-    if (await this.messageService.confirmed('Delete Confirmation', 'Are you sure to delete?', 'Yes', 'No', 'WHITE', 'BLACK')) {
+    if ((await this.messageService.confirmed('Delete Confirmation', 'Are you sure to delete?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {
       this.deleteDraft(id);
     }
   }

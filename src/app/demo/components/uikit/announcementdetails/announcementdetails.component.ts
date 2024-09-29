@@ -1,6 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
 import { AnnouncementResponseCondition } from 'src/app/constants';
 import { Announcement } from 'src/app/modules/announcement';
@@ -10,6 +12,8 @@ import { Reply, ReplyList } from 'src/app/modules/reply';
 import { AnnouncementService } from 'src/app/services/announcement/announcement.service';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { CommentService } from 'src/app/services/comment/comment.service';
+import { MessageDemoService } from 'src/app/services/message/message.service';
+import { SystemService } from 'src/app/services/system/system.service';
 import { UserService } from 'src/app/services/user/user.service';
 
 @Component({
@@ -29,15 +33,27 @@ export class AnnouncementDetailsComponent implements OnInit {
   replies = signal([] as ReplyList[]);
   safePdfLink: SafeResourceUrl;
   activeReplyBoxId: number | null = null;
+  displayNewVersionModal : boolean = false;
+  title: string = '';
+  isEmailSelected: boolean = false;
+  showDeadlineDate: boolean = false;
+  deadlineDate: Date = new Date();
+  filename: string = '';
+  file: File;
+  filePreview: string | ArrayBuffer | null = null;
+ 
+  @ViewChild('fileUploader') fileUploader: FileUpload;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService,
+    private userService : UserService,
     public announcementService: AnnouncementService,
     private commentService: CommentService,
     private authService: AuthService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private systemService : SystemService,
+    private messageService : MessageDemoService
   ) { }
 
   ngOnInit(): void {
@@ -51,7 +67,6 @@ export class AnnouncementDetailsComponent implements OnInit {
       next: (data: boolean) => {
         if (data) {
           this.getAnnouncements();
-
         } else {
           this.router.navigate(['/login']);
         }
@@ -64,10 +79,11 @@ export class AnnouncementDetailsComponent implements OnInit {
     if (id) {
       this.announcementService.getAnnouncementById(id).subscribe({
         next: (data: Announcement) => {
-          console.log("anno " + JSON.stringify(data));
+          console.log("announcement : ", data);
           this.announcement = {
             ...data,
-            createdAt: this.parseDate(data.createdAt) // Directly modify the createdAt property
+            createdAt: this.parseDate(data.createdAt),
+            profileImage : data.photoLink ? `data:image/png;base64,${data.photoLink}` : undefined,
           };
           this.condition = this.announcement.announcementResponseCondition;
           if (this.announcement.contentType != 'EXCEL') {
@@ -110,6 +126,11 @@ export class AnnouncementDetailsComponent implements OnInit {
     this.showModal = true;
     this.getComments();
 
+  }
+
+  newVersionModel (title : string) {
+    this.displayNewVersionModal = true;
+    this.title = title + ' version - II';
   }
 
   showReport(): void {
@@ -204,6 +225,80 @@ export class AnnouncementDetailsComponent implements OnInit {
         console.error('Error fetching comment:', err);
       }
     });
+  }
+
+  onUpload(event: any) {
+    console.log('event ', event);
+    if (event && event.files && event.files.length > 0) {
+      const file = event.files[0]; // Get the first uploaded file
+      console.log('file ', file);
+      console.log('fileType ', file.type);
+
+
+      this.file = file;
+      this.filename = file.name;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.filePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      console.error('No file selected');
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this.fileUploader) {
+      
+    }
+  }
+
+  onClear(): void {
+    console.log("this.file = null");
+    this.file = null;
+    this.fileUploader.clear();
+  }
+
+  newVersionCreate(form : NgForm, oldVersion : number) {
+    const formData = new FormData();
+    formData.append("title", this.title);
+    formData.append('file', this.file);
+    formData.append('filename', this.filename);
+    if (this.isEmailSelected) {
+      formData.append("isEmailSelected", 'emailSelected');
+    } else {
+      formData.append("isEmailSelected", 'noEmailSelected');
+    }
+    formData.append('deadline',new Date(this.deadlineDate).toISOString());
+    console.log("oldVersion : ", oldVersion);
+    formData.append('oldVersion', oldVersion.toString());
+    this.announcementService.createVersion(formData).subscribe({
+      complete: () => {
+        this.systemService.stopProgress().then((data) => {
+          this.messageService.toast("success", "Announcement Created");
+          let image = null;
+          if(this.userService.profileImage == null) {
+            image = "assets/default-profile.png";
+          } else {
+            image = this.userService.profileImage;
+          }
+          let companyName = this.userService.companyName;
+          this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
+          this.resetForm(form);
+          
+        });
+      },
+      error: () => {
+        this.systemService.stopProgress("ERROR").then((error) => {
+          this.messageService.toast("error", "Can't Create");
+        });
+      }
+    });
+  }
+
+  resetForm(form: NgForm): void {
+    form.reset();
   }
 
 

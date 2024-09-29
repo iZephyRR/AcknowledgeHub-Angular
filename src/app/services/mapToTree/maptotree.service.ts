@@ -53,51 +53,55 @@ export class MaptotreeService {
   //     }))
 
   mapTargetsToTreeNodes(targets: AnnouncementTarget[], companies: TreeNode<any>[]): TreeNode<any>[] {
+    console.log("target : ", targets);
     const selectedNodes: TreeNode<any>[] = [];
-  
+
     if (!Array.isArray(targets) || !Array.isArray(companies)) {
-      console.error("Invalid input data. Targets or Companies is not an array.");
-      return selectedNodes;
+        console.error("Invalid input data. Targets or Companies is not an array.");
+        return selectedNodes;
     }
-  
+
     const allCompaniesNode = companies.find(node => node.data.type === 'ALL COMPANIES');
-  
+
     if (!allCompaniesNode) {
-      console.error("Root node 'All Companies' not found.");
-      return selectedNodes;
+        console.error("Root node 'All Companies' not found.");
+        return selectedNodes;
     }
-  
+
     // Helper function to check if all children are selected
     const allChildrenSelected = (node: TreeNode<any>, selectedNodes: TreeNode<any>[]): boolean => {
-      if (!node.children) return true;
-      return node.children.every(child => selectedNodes.includes(child) || allChildrenSelected(child, selectedNodes));
+        if (!node.children) return true; // No children means nothing to check
+        return node.children.every(child => selectedNodes.includes(child));
     };
-  
+
     // Iterate over the targets and map them to the tree nodes
     targets.forEach(target => {
-      allCompaniesNode.children?.forEach(companyNode => {
-        if (target.receiverType === "COMPANY" && target.sendTo === companyNode.data.id) {
-          selectedNodes.push(companyNode); // Select company node
-          companyNode.children?.forEach(departmentNode => {
-            selectedNodes.push(departmentNode); // Optionally select all departments under the company
-          });
-        }
-  
-        companyNode.children?.forEach(departmentNode => {
-          if (target.receiverType === "DEPARTMENT" && target.sendTo === departmentNode.data.id) {
-            selectedNodes.push(departmentNode); // Select department node
-          }
+        allCompaniesNode.children?.forEach(companyNode => {
+            if (target.receiverType === "COMPANY" && target.sendTo === companyNode.data.id) {
+                selectedNodes.push(companyNode); // Select company node
+                companyNode.children?.forEach(departmentNode => {
+                    selectedNodes.push(departmentNode); // Optionally select all departments under the company
+                });
+            }
+
+            companyNode.children?.forEach(departmentNode => {
+                if (target.receiverType === "DEPARTMENT" && target.sendTo === departmentNode.data.id) {
+                    selectedNodes.push(departmentNode); // Select department node
+                }
+            });
         });
-      });
     });
-  
-    // Check if all child nodes of the root node are selected
+
+    // Only push the 'All Companies' node if all its children are selected
     if (allChildrenSelected(allCompaniesNode, selectedNodes)) {
-      selectedNodes.push(allCompaniesNode);
+        selectedNodes.push(allCompaniesNode);
     }
-  
+
+    console.log("selected nodes : ", selectedNodes);
     return selectedNodes;
-  }
+}
+
+
   
 
   mapCompaniesToNodesWithEmployees(company: any): TreeNode<any> {

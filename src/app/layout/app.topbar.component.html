@@ -1,5 +1,6 @@
 <div class="layout-topbar">
-  <button (click)="directRoute()" style="margin-left: 7.5%;margin-right: 7.5%; background-color: transparent; border: none;">
+  <button (click)="directRoute()"
+    style="margin-left: 7.5%;margin-right: 7.5%; background-color: transparent; border: none;">
     <div class="layout-topbar-logo">
       <span class="company-logo">ACE</span><br>
       <span class="company-subtitle">Data Systems Ltd.</span>
@@ -14,7 +15,8 @@
         'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible
       }">
     <!-- Notification Icon and Dropdown -->
-    <div *ngIf="authService.role != 'ADMIN'" class="notification-icon" (click)="toggleNotificationDropdown()" #notificationIcon>
+    <div *ngIf="authService.role != 'ADMIN'" class="notification-icon" (click)="toggleNotificationDropdown()"
+      #notificationIcon>
       <img src="assets/alarm_alert_attention_bell_clock_notification_ring_icon_123203.ico" alt="Notification Icon"
         class="custom-notification-icon" />
       <span class="notification-badge" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
@@ -26,18 +28,20 @@
         <button class="mark-as-read-button" (click)="markAllAsRead()">Mark All as Read</button>
       </div>
       <div class="notification-items">
-        <div class="notification-item" *ngFor="let notification of visibleNotifications" (click)="markAsRead(notification)" 
+        <div class="notification-item" *ngFor="let notification of visibleNotifications"
+          (click)="markAsRead(notification)"
           [ngClass]="{ 'unread-notification': !notification.isRead, 'read-notification': notification.isRead }">
           <a [routerLink]="['/announcement-page/', notification.announcementId]">
             <div class="notification-content">
-              <p class="notification-message">{{ notification.message }}</p>
+              <p class="notification-message" [innerHTML]="notification.message"></p>
               <small class="notification-timestamp">{{ notification.timestamp | timeAgo }}</small>
             </div>
           </a>
         </div>
       </div>
       <div class="see-more-container" *ngIf="canLoadMore">
-        <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }" [disabled]="loading">
+        <button class="see-more-button" (click)="loadMoreNotifications()" [ngClass]="{ 'loading': loading }"
+          [disabled]="loading">
           <span *ngIf="!loading">See more</span>
           <span *ngIf="loading" class="loading-spinner"></span>
         </button>
@@ -46,18 +50,20 @@
 
     <!-- Profile Button and Dropdown -->
     <div style="display: flex; align-items: center;">
-      <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()">
-        <img *ngIf="userService.profileImage; else default" [src]="userService.profileImage" alt="Profile Image" class="profile-image" />
+      <button class="layout-config-button layout-topbar-button p-link" (click)="showProfileCard()" id="profile">
+        <img *ngIf="userService.profileImage; else default" [src]="userService.profileImage" alt="Profile Image"
+          class="profile-image" />
         <ng-template #default>
           <img [src]="'assets/default-profile.png'" alt="Profile Image" class="profile-image" />
         </ng-template>
       </button>
-      <div style="display: flex; flex-direction: column;">
-        <span class="user-role"><strong>{{ user.name }}</strong></span>
-        <span style="font-size: 15px;" class="user-role">({{ systemService.changeRoleToNormalCase(user.role) }})</span>
-      </div>
+      <label for="profile">
+        <div style="display: flex; flex-direction: column;">
+          <span class="user-role"><strong>{{ user.name }}</strong></span>
+          <span style="font-size: 15px;" class="user-role">({{ systemService.changeRoleToNormalCase(user.role)}})</span>
+        </div>
+      </label>
     </div>
-
     <!-- logout Button -->
     <button class="layout-topbar-button p-link" type="button" (click)="authService.logOut()">
       <i class="pi pi-sign-out"></i>
@@ -68,19 +74,25 @@
 <!-- Profile Sidebar Card -->
 <div *ngIf="isProfileCardVisible" class="profile-sidebar-card">
   <div class="profile-card">
-    <div class="card-header">
-      <img *ngIf="userService.profileImage; else defaultImage" [src]="userService.profileImage" alt="Profile Image" class="profile-img" />
+    <div (click)="onChangeProfile()" class="card-header">
+      <img *ngIf="userService.profileImage; else defaultImage" [src]="userService.profileImage" alt="Profile Image"
+        class="profile-img" />
       <input type="file" #fileInput (change)="onFileSelected($event)" style="display: none;" accept="image/*">
       <ng-template #defaultImage>
         <img [src]="'assets/default-profile.png'" alt="Default Profile Image" class="profile-img" />
       </ng-template>
-      <button (click)="onChangeProfile()" class="change-profile-btn">
-        <i class="fas fa-edit"></i> Change Profile
-      </button>
     </div>
     <div class="card-body">
       <div class="info-row">
         <strong>{{ user.name }} ({{ user.role }})</strong>
+      </div>
+      <div class="info-row">
+        <i pTooltip="Staff-ID" class="fas fa-envelope"></i>
+        <span>{{ user.staffId }}</span>
+      </div>
+      <div class="info-row" *ngIf="user.gender">
+        <i pTooltip="Gender" class="fas fa-envelope"></i>
+        <span>{{ user.gender }}</span>
       </div>
       <div class="info-row">
         <i pTooltip="Email" class="fas fa-envelope"></i>
@@ -95,32 +107,71 @@
         <span>{{ user.departmentName }}</span>
       </div>
       <a (click)="isChangePasswordModalVisible = true" class="change-password-link">Change Password</a>
-      <a *ngIf="authService.role == 'MAIN_HR' || authService.role == 'HR'" (click)="addHRView = true" class="change-password-link">Add assistance account</a >
+      <a *ngIf="authService.role == 'MAIN_HR' || authService.role == 'HR'" (click)="addHRView = true"
+        class="change-password-link">Add assistance account</a>
+        <a *ngIf="authService.role == 'MAIN_HR' || authService.role == 'HR' || authService.role == 'ADMIN'" (click)="showEditProfile()"
+        class="change-password-link">Edit profile</a>
     </div>
   </div>
 </div>
 
-<p-dialog [(visible)]="addHRView" [modal]="true" [closable]="false" [dismissableMask]="true"  [style]="{width: '400px'}">
+<p-dialog [(visible)]="addHRView" [modal]="true" [closable]="false" [dismissableMask]="true" [style]="{width: '400px'}">
   <div class="row hr-row">
-      <label for="item2"><strong>Add Main HR Account</strong></label>
-      <i class="pi pi-times" (click)="addHRView = false" style="cursor: pointer;"></i>
+    <label for="item2"><strong>Add assistance HR Account</strong></label>
+    <i class="pi pi-times" (click)="addHRView = false" style="cursor: pointer;"></i>
   </div>
   <div class="p-fluid">
-      <div class="p-field">
-          <label for="name">Name</label>
-          <input id="name" type="text" pInputText [(ngModel)]="assHR.hrName" />
-      </div>
-      <div class="p-field">
-          <label for="email">Email</label>
-          <input id="email" type="email" pInputText [(ngModel)]="assHR.hrEmail" />
-      </div>
-      <div class="p-field">
-          <label for="staff_id">Staff ID</label>
-          <input id="staff_id" type="text" pInputText [(ngModel)]="assHR.staffId" />
-      </div>
+    <div class="p-field">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText [(ngModel)]="assHR.hrName" />
+    </div>
+    <div class="p-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" pInputText [(ngModel)]="assHR.hrEmail" />
+    </div>
+    <div class="p-field">
+      <label for="staff_id">Staff ID</label>
+      <input id="staff_id" type="text" pInputText [(ngModel)]="assHR.staffId" />
+    </div>
   </div>
   <p-footer>
-      <button pButton label="Save" icon="pi pi-check" (click)="addAssHR()"></button>
+    <button pButton label="Save" icon="pi pi-check" (click)="addAssHR()"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="editProfileView" [modal]="true" [closable]="false" [dismissableMask]="true" [style]="{width: '400px'}">
+  <div class="row hr-row">
+    <label for="item2"><strong>Edit profile</strong></label>
+    <i class="pi pi-times" (click)="editProfileView = false" style="cursor: pointer;"></i>
+  </div>
+  <div class="p-fluid">
+    <div class="p-field">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText [(ngModel)]="editProfileData.name" />
+    </div>
+    <div class="p-field">
+      <label for="email">Email</label>
+      <input id="email" type="email" pInputText [(ngModel)]="editProfileData.email" />
+    </div> 
+     <div class="p-field" *ngIf="authService.role!='MAIN_HR'">
+      <label for="telegramUsername">Telegram Username</label>
+      <input id="telegramUsername" type="text" pInputText [(ngModel)]="editProfileData.telegramUsername"/>
+    </div>
+    <div class="p-field">
+     <label for="telegramUsername">Address</label>
+     <input id="telegramUsername" type="text" pInputText [(ngModel)]="editProfileData.address"/>
+   </div>
+    <div class="p-field">
+     <label for="nrc">NRC</label>
+     <input id="nrc" type="text" pInputText [(ngModel)]="editProfileData.nrc"/>
+   </div>
+    <div class="p-field">
+      <label for="staff_id">Staff ID</label>
+      <input id="staff_id" type="text" pInputText [(ngModel)]="editProfileData.staffId" readonly/>
+    </div>
+  </div>
+  <p-footer>
+    <button pButton label="Save" icon="pi pi-check" (click)="editProfile()"></button>
   </p-footer>
 </p-dialog>
 
@@ -167,28 +218,150 @@
 </p-dialog>
 
 <style>
+/* Align input-right content to the right */
+.input-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    text-align: right;
+}
+
+.input-right span {
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.input-right i {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #333;
+    font-size: 18px;
+}
+
+.pi-eye, .pi-eye-slash {
+    font-size: 18px;
+}
+
+/* Row styling to align label on the left and content on the right */
+.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+label {
+    flex: 0 0 200px; /* Adjust width of the label */
+    font-weight: bold;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+/* Heading style */
+h3 {
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Adjust row spacing and input box alignment */
+.input {
+    flex: 1;
+    padding-left: 15px;
+}
+
+/* Modal dialog styles */
+.p-dialog .ui-dialog-content {
+    padding: 20px;
+}
+
+/* Align close icon and label closer to top of the modal */
+.hr-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.hr-row label {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.hr-row i {
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+}
+
+/* Adjust input field spacing */
+.p-field {
+    margin-bottom: 15px;
+}
+
+.p-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.p-field input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Footer styles in modal */
+.p-footer {
+    text-align: right;
+    padding-top: 10px;
+}
+
+.p-button {
+    margin-left: 10px;
+}
+  
   .card-body {
-  display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  align-items: center; /* Center the content horizontally */
-  justify-content: center; /* Center the content vertically */
-  padding: 20px;
-  height: 100%; /* Optional: Ensures full height of the container */
-  text-align: center; /* Center the text inside the container */
-}
+    display: flex;
+    flex-direction: column;
+    /* Stack elements vertically */
+    align-items: center;
+    /* Center the content horizontally */
+    justify-content: center;
+    /* Center the content vertically */
+    padding: 20px;
+    height: 100%;
+    /* Optional: Ensures full height of the container */
+    text-align: center;
+    /* Center the text inside the container */
+  }
 
-.info-row {
-  display: flex;
-  align-items: center; /* Aligns the icon and text vertically */
-  justify-content: center; /* Centers the icons and text horizontally */
-  margin-bottom: 10px;
-}
+  .info-row {
+    display: flex;
+    align-items: center;
+    /* Aligns the icon and text vertically */
+    justify-content: center;
+    /* Centers the icons and text horizontally */
+    margin-bottom: 10px;
+  }
 
-.info-row i {
-  margin-right: 10px; /* Adds space between icon and text */
-  width: 20px; /* Ensures consistent width for icons */
-  text-align: center; /* Centers the icons within their width */
-}
+  .info-row i {
+    margin-right: 10px;
+    /* Adds space between icon and text */
+    width: 20px;
+    /* Ensures consistent width for icons */
+    text-align: center;
+    /* Centers the icons within their width */
+  }
+
   .layout-topbar {
     display: flex;
     justify-content: space-between;

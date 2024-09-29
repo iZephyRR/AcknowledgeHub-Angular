@@ -59,14 +59,14 @@ export class LoginComponent implements OnInit {
     public systemService: SystemService,
     public messageService: MessageDemoService,
     private session: LocalStorageService,
-    public departmentService:DepartmentService,
-    private announcementService : AnnouncementService
+    public departmentService: DepartmentService,
+    private announcementService: AnnouncementService
   ) { }
 
 
   canClickOTP(): boolean {
     this.combinedOTP = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
-    return this.combinedOTP.length === 6; 
+    return this.combinedOTP.length === 6;
   }
 
   // showOTPDialog() {
@@ -78,8 +78,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.authService.showNotFound=false;
-    this.authService.xShowNotFound=true;
+    this.authService.showNotFound = false;
+    this.authService.xShowNotFound = true;
     this.startCountdown();
     this.authService.severConnectionTest();
     this.announcementService.getPieChart();
@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit(): void {
-    this.systemService.showLoading('Logging in..',true);
+    this.systemService.showLoading('Logging in..', true);
     if (this.login.email != undefined && this.login.email != '' && this.login.password != undefined && this.login.password != '') {
       this.authService.login(this.login).pipe(
         catchError(error => {
@@ -136,7 +136,7 @@ export class LoginComponent implements OnInit {
               if ((await this.messageService.confirmed('Security Alert!', '"Welcome! For your security, please update your password as you are currently using the default password. Click yes to change your password now."', 'YES', 'NO', 'WHITE', 'YELLOWGREEN')).confirmed) {
                 if (AuthService.isDomainAvailable(this.login.email)) {
                   setTimeout(() => {
-                    this.systemService.showLoading('Sending OTP...',true);
+                    this.systemService.showLoading('Sending OTP...', true);
                   }, 0);
                   Mail.action = 'FIRST_LOGIN';
                   this.email = this.login.email;
@@ -157,16 +157,36 @@ export class LoginComponent implements OnInit {
                 }
               }
             } else {
-              this.session.add('token', response.STRING_RESPONSE);
-              if(this.authService.afterLoginRout){
-                this.router.navigate([this.authService.afterLoginRout]);
-              }else{
-                this.authService.restartPage();
-              }
-              this.messageService.toast('success', 'Successfully logged in!');
+              this.authService.hasTelegramUserId(this.login.email).subscribe({
+                next : (telegramId) => {
+                  this.systemService.canContinueLogin.set(telegramId.BOOLEAN_RESPONSE);
+                },
+                complete : async () => {
+                  this.systemService.hideLoading();
+                  if (this.systemService.canContinueLogin()) {
+                    this.session.add('token', response.STRING_RESPONSE);
+                    if (this.authService.afterLoginRout) {
+                      this.router.navigate([this.authService.afterLoginRout]);
+                    } else {
+                      this.authService.restartPage();
+                    }
+                    this.messageService.toast('success', 'Successfully logged in!');
+                  } else {
+                    this.systemService.hideLoading();
+                    if (await this.messageService.showTelegramBotBox(this.login.email)) {
+                      this.session.add('token', response.STRING_RESPONSE);
+                      if (this.authService.afterLoginRout) {
+                        this.router.navigate([this.authService.afterLoginRout]);
+                      } else {
+                        this.authService.restartPage();
+                      }
+                      this.messageService.toast('success', 'Successfully logged in!');
+                    }
+                  }
+                }
+              });
+              this.systemService.hideLoading();
             }
-            this.isValid = true;
-            this.systemService.hideLoading();
           }
         }
         );
@@ -175,6 +195,19 @@ export class LoginComponent implements OnInit {
       this.isValid = false;
     }
   }
+
+  hasTelegramUserId () {
+    this.authService.hasTelegramUserId(this.login.email).subscribe ({
+      next : (telegramUserId) => {
+        this.systemService.canContinueLogin.set(telegramUserId.BOOLEAN_RESPONSE);
+      },
+      error : (error) => {
+        console.log("has telegram user id : ", error);
+      },
+    });
+  }
+
+ 
 
   verifyOtp(): void {
     // let otp = `${this.otp1}${this.otp2}${this.otp3}${this.otp4}${this.otp5}${this.otp6}`;
@@ -208,20 +241,20 @@ export class LoginComponent implements OnInit {
 
   resendCode(name: string): void {
     if (this.isCountingDown) return; // Prevent multiple clicks
-  
+
     // Show loading and send OTP
     this.systemService.showLoading('Resending OTP...');
     this.hideOTPDialog();
     this.messageService.toast('info', 'Resending OTP...');
     console.log('Resending OTP...');
-  
+
     const otpEmail =
-    Mail.action === 'FIRST_LOGIN'
+      Mail.action === 'FIRST_LOGIN'
         ? Mail.firstLogin(this.email, name)
         : Mail.forgotPassword(this.email, name);
     this.sendOtpEmail(otpEmail);
   }
-  
+
   private sendOtpEmail(otpEmail: any): void {
     this.messageService.sendEmail(otpEmail).subscribe({
       complete: () => {
@@ -236,46 +269,46 @@ export class LoginComponent implements OnInit {
       },
     });
   }
-  
+
   private showOTPDialog(): void {
-      this.displayOtpDialog = true;
+    this.displayOtpDialog = true;
     this.startCountdown(); // Start countdown when OTP dialog is displayed
   }
-  
+
   private startCountdown(): void {
     this.isCountingDown = true;
     this.remainingTime = 120; // Set initial time to 120 seconds
-  
+
     // Unsubscribe if there was a previous countdown
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
-  
+
     // Timer that emits values every 1 second
     this.countdownSubscription = timer(0, 1000).subscribe((secondsElapsed) => {
       this.remainingTime = 120 - secondsElapsed;
-  
+
       if (this.remainingTime <= 0) {
         this.isCountingDown = false; // Stop countdown when time is up
         this.stopCountdown();
       }
     });
   }
-  
+
   private stopCountdown(): void {
     if (this.countdownSubscription) {
       this.countdownSubscription.unsubscribe();
     }
   }
-  
-  
+
+
   sendPasswordChangeOTP(): void {
     this.systemService.showLoading('Sending OTP..');
     console.log("Email : " + this.email);
     this.authService.isPasswordDefault(this.email).subscribe({
       next: (data) => {
         console.log(data);
-        if (!data.STRING_RESPONSE) {
+        if (!data.BOOLEAN_RESPONSE) {
           this.authService.findNameByEmail(this.email).subscribe({
             next: (data) => {
               console.log('findNameByEmail ' + data.STRING_RESPONSE);

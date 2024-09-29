@@ -280,7 +280,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       documentStyle.getPropertyValue('--blue-500'),
       documentStyle.getPropertyValue('--green-500'),
       documentStyle.getPropertyValue('--yellow-500'),
-      documentStyle.getPropertyValue('--red-500'),
+      documentStyle.getPropertyValue('--purple-500'),
       documentStyle.getPropertyValue('--orange-500')
     ];
 
@@ -373,8 +373,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           datasets: [
             {
               data: values,
-              // backgroundColor: this.generateRandomColors(labels.length),
-              // hoverBackgroundColor: this.generateHoverColors(labels.length)
+              backgroundColor: this.generateFixedColors(labels.length),
+              //hoverBackgroundColor: this.generateHoverColors(labels.length)
             }
           ]
         };
@@ -416,7 +416,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   startPieChartPolling(): void {
-    
     // Poll for pie chart data every 1 min
     const pieChartPollingSubscription = interval(10000).pipe(
       switchMap(() => this.announcementService.getPieChart())
@@ -438,8 +437,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
           datasets: [
             {
               data: values,
-              // backgroundColor: this.generateRandomColors(labels.length),
-              // hoverBackgroundColor: this.generateHoverColors(labels.length)
+              backgroundColor: this.generateFixedColors(labels.length),
+              //hoverBackgroundColor: this.generateHoverColors(labels.length)
             }
           ]
         };
@@ -492,23 +491,41 @@ startNotedPercentagePolling(): void {
   this.subscriptions.push(notedPercentagePollingSubscription); // Store the polling subscription for cleanup
 }
 
+generateFixedColors(count: number): string[] {
+  // Define a fixed array of colors, excluding the red family
+  const fixedColors: string[] = [
+    '#36A2EB', // Blue
+    '#FFCE56', // Yellow
+    '#4BC0C0', // Teal
+    '#9966FF', // Purple
+    '#FF9F40', // Orange
+    '#8BC34A', // Green
+    '#F44336', // Coral (more on the orange side)
+    '#607D8B', // Grey-blue
+    '#FFEB3B', // Bright Yellow
+    '#00BCD4'  // Cyan
+  ];
 
-  generateRandomColors(count: number): string[] {
-    const colors = [];
-    for (let i = 0; i < count; i++) {
-      const randomColor = `hsl(${Math.random() * 360}, 100%, 75%)`; // Generate random pastel color
-      colors.push(randomColor);
-    }
-    return colors;
-  }
+  // Repeat colors if the count exceeds the number of available colors
+  return Array(count)
+    .fill(null)
+    .map((_, index) => fixedColors[index % fixedColors.length]);
+}
+
 
   generateHoverColors(count: number): string[] {
-    const colors = [];
-    for (let i = 0; i < count; i++) {
-      const randomColor = `hsl(${Math.random() * 360}, 100%, 60%)`; // Generate darker shade
-      colors.push(randomColor);
-    }
-    return colors;
+    const colors: string[] = [];
+  for (let i = 0; i < count; i++) {
+    let hue: number;
+    // Keep generating until we get a hue that is far enough from red
+    do {
+      hue = Math.random() * 360;
+    } while ((hue >= 330 && hue <= 360) || (hue >= 0 && hue <= 30)); // Exclude a broader red range
+
+    const randomColor = `hsl(${hue}, 100%, 60%)`; // Generate color
+    colors.push(randomColor);
+  }
+  return colors;
   }
 
   countAnnouncements(): void {

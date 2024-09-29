@@ -256,7 +256,7 @@ export class AuthService {
   }
 
   isPasswordDefault(email: string) {
-    return this.http.post<{ STRING_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
+    return this.http.post<{ BOOLEAN_RESPONSE: boolean }>(`${this.baseUrl}/is-password-default`, email);
   }
 
   getDefaultPassword(): Observable<{ STRING_RESPONSE: string }> {
@@ -305,4 +305,9 @@ export class AuthService {
   restServer(): Observable<void> {
     return this.http.post<void>(`http://localhost:8080/api/v1/ad/rest-system`, {});
   }
+
+  hasTelegramUserId (email : string) : Observable<{BOOLEAN_RESPONSE : boolean}> {
+    return this.http.post<{BOOLEAN_RESPONSE : boolean}>(`${this.baseUrl}/is-registered-telegram`, email);
+  }
+
 }

@@ -45,4 +45,8 @@ export class CompanyService {
     return this.http.get<CompanyRequest>(`${this.baseUrl}/hrs/company/by-department/${id}`);
   }
 
+  editCompany(company:Company):Observable<Company>{
+    return this.http.put<Company>(`${this.baseUrl}/mhr/company`,company);
+  }
+
 }

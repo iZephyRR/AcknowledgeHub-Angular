@@ -109,4 +109,22 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
   onGlobalFilter(table: Table, event: Event) {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
+
+  async editName(): Promise<void> {
+    const confirmed = await this.messageService.confirmed('Update company name', 'Enter company name', 'Save', 'Cancel', 'WHITE', 'DARKGREEN', true);
+    if (confirmed.confirmed) {
+      this.companyService.editCompany({ id: this.company.id, name: confirmed.inputValue }).subscribe({
+        complete: () => {
+
+          this.loadDepartments();
+          this.messageService.toast('info', 'Saved company name.')
+        },
+        error: (err) => {
+          this.messageService.toast('error', 'An error occured on saving company name.');
+          console.error(err);
+        }
+      });
+    }
+  }
+
 }

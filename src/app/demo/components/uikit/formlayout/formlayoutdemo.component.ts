@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ViewChild } from '@angular/core';
 import { TreeNode } from 'primeng/api';
 import { AnnouncementTarget } from 'src/app/modules/announcement-target';
 import { Department } from 'src/app/modules/department';
@@ -19,6 +19,7 @@ import { MaptotreeService } from 'src/app/services/mapToTree/maptotree.service';
 import { User } from 'src/app/modules/user';
 import { Table } from 'primeng/table';
 import { CustomTergetGroup } from 'src/app/modules/custom-target-group';
+import { FileUpload } from 'primeng/fileupload';
 
 
 @Component({
@@ -63,6 +64,10 @@ export class FormLayoutDemoComponent implements OnInit {
   showDeadlineDate: boolean = false;
   deadlineDate: Date = new Date();
   pollingSubscription: Subscription;
+  isScheduleEnabled: boolean = false;
+
+  @ViewChild('fileUploader') fileUploader: FileUpload;
+  @ViewChild('scheduleCheckbox') scheduleCheckbox: any;
 
   constructor(
     private announcementService: AnnouncementService,
@@ -100,13 +105,19 @@ export class FormLayoutDemoComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit() {
+    if (this.fileUploader) {
+      
+    }
+  }
+
   onClear(): void {
     console.log("this.file = null");
     this.file = null;
+    this.fileUploader.clear();
   }
 
   onFileChange(event: any): void {
-
     console.log("event ", event);
     const fileInput = event.target;
     const file = fileInput.files[0];
@@ -288,7 +299,6 @@ export class FormLayoutDemoComponent implements OnInit {
           let companyName = this.userService.companyName;
           this.messageService.sentWindowNotification("New Announcement Create",{body:'Accouncement Created by '+ companyName ,icon:image});
           this.customTargetGroup();
-          this.onClear();
           this.resetForm(form);
           this.clearPreview();
         });
@@ -450,6 +460,9 @@ export class FormLayoutDemoComponent implements OnInit {
     this.selectedTargets = [];
     this.selectedEmployees = [];
     this.onViewChange('tree');
+    if (this.scheduleCheckbox) {
+      this.scheduleCheckbox.checked = false; // Explicitly set it to false
+    }
     this.onClear();
   }
 

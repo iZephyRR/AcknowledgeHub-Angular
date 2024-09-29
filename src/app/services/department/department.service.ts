@@ -22,5 +22,10 @@ export class DepartmentService {
   getDTOById(id:string): Observable<Department>{
     return this.http.get<Department>(`${this.baseUrl}/dto/${id}`);
   }
+
+  save(department:Department):Observable<Department>{
+    return this.http.put<Department>(`${this.baseUrl}`, department);
+  }
+
   
 }

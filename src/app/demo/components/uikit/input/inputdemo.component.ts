@@ -146,18 +146,26 @@ export class InputDemoComponent implements OnInit, OnDestroy {
     });
   }
 
+  async delete(id: number) {
+    if ((await this.messageService.confirmed('Delete Confirmation', 'Are you sure to delete?', 'Yes', 'No', 'WHITE', 'BLACK')).confirmed) {
+      this.deleteSchedule(id);
+    }
+  }
+
   // Upload now method
-  uploadNow(announcementId: number) {
-    console.log("Uploading now: ", announcementId);
-    this.announcementService.uploadNow(announcementId).subscribe({
-      next: (response) => {
-        this.messageService.toast("success", response.STRING_RESPONSE);
-        this.refreshScheduleList(); // Fetch and group data again
-      },
-      error: (error: any) => {
-        this.messageService.toast("error", "Something went wrong");
-      }
-    });
+  async uploadNow(announcementId: number) {
+    if(((await this.messageService.confirmed('Upload Confirmation', "Are you sure to Upload now?", 'Yes', 'No','WHITE','BLACK')).confirmed)){
+      console.log("Uploading now: ", announcementId);
+      this.announcementService.uploadNow(announcementId).subscribe({
+        next: (response) => {
+          this.messageService.toast("success", response.STRING_RESPONSE);
+          this.refreshScheduleList(); // Fetch and group data again
+        },
+        error: (error: any) => {
+          this.messageService.toast("error", "Something went wrong");
+        }
+      });
+    }
   }
 
   // Method to refresh the schedule list and re-group
