@@ -18,6 +18,9 @@ export class SystemSettingsComponent implements OnInit {
   canShow: boolean;
   existsMainHR: boolean;
   isServerInResting: boolean;
+  currentSessionExpireTime: number;
+  sessionTime: number=0;
+  editingSession: boolean = false;
   mainHR = {} as {
     hrName: string,
     hrEmail: string,
@@ -55,6 +58,38 @@ export class SystemSettingsComponent implements OnInit {
         console.error(err);
       }
     });
+    this.authService.getSessionExpire().subscribe({
+      next: (data) => {
+        console.log(data.STRING_RESPONSE);
+        this.currentSessionExpireTime = data.STRING_RESPONSE;
+        this.sessionTime=this.currentSessionExpireTime;
+      },
+      complete: () => {
+        console.log(this.currentSessionExpireTime);
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+  async editSessionExpire(): Promise<void> {
+    if (this.editingSession && this.sessionTime>0 && this.sessionTime!=this.currentSessionExpireTime) {
+      if((await this.messageService.confirmed('Change session expire time.','Are you sure you want to change session expired time from '+this.currentSessionExpireTime+' hours to '+this.sessionTime+' hours.','Sure','Cancel','WHITE','DARKGREEN')).confirmed){
+         this.authService.setSessionExpire(this.sessionTime).subscribe({
+        next: (data) => {
+          this.currentSessionExpireTime = data.STRING_RESPONSE;
+        },
+        complete: () => {
+          this.messageService.toast('info', 'Edited session expired time to ' + this.sessionTime +' hours');
+        },
+        error: (err) => {
+          this.messageService.toast('error', 'Failed to edit session expire.');
+          console.error(err);
+        }
+      });
+      }
+    }
+    this.editingSession = !this.editingSession;
   }
 
   togglePasswordVisibility() {

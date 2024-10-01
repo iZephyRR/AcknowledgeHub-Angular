@@ -310,4 +310,12 @@ export class AuthService {
     return this.http.post<{BOOLEAN_RESPONSE : boolean}>(`${this.baseUrl}/is-registered-telegram`, email);
   }
 
+  getSessionExpire():Observable<{STRING_RESPONSE:number}>{
+    return this.http.get<{STRING_RESPONSE:number}>(`http://localhost:8080/api/v1/ad/session`);
+  }
+
+  setSessionExpire(time:number):Observable<{STRING_RESPONSE:number}>{
+    return this.http.get<{STRING_RESPONSE:number}>(`http://localhost:8080/api/v1/ad/session/${time}`);
+  }
+
 }

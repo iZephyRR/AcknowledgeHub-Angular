@@ -16,13 +16,22 @@
         </div>
         <hr>
         <div class="row">
+            <label for="defaultPassword">Session Expire</label>
+            <div class="input-right">
+                <span *ngIf="!editingSession">{{currentSessionExpireTime}} hours</span>
+                <p-inputNumber *ngIf="editingSession" [value]="currentSessionExpireTime" [(ngModel)]="sessionTime"></p-inputNumber>
+
+                <i (click)="editSessionExpire()" [ngClass]="{'pi':true,'pi-pencil':!(editingSession && sessionTime>0&& sessionTime!=currentSessionExpireTime),'pi-save':editingSession && sessionTime>0&& sessionTime!=currentSessionExpireTime}"></i>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
             <label for="item3">Rest system</label>
             <p-inputSwitch [(ngModel)]="isServerInResting" (onChange)="restServer()"></p-inputSwitch>
         </div>
         <hr>
     </div>
 </div>
-
 <!-- Modal dialog for adding Main HR account -->
 <p-dialog [(visible)]="canShow" [modal]="true" [closable]="false" [dismissableMask]="true"  [style]="{width: '400px'}">
     <div class="row hr-row">

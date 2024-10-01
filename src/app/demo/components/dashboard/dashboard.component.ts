@@ -70,7 +70,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     //this.startCountPolling();
 
    if (this.authService.role == 'MAIN_HR') {
-    //this.loadPieChartData();
+    this.loadPieChartData();
     //this.startPieChartPolling();
     this.getNotedCount();
     this.startNotedCountPolling();
